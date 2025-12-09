@@ -99,4 +99,40 @@
 **Priority**: CRITICAL
 **Estimated Effort**: Medium
 
+## REVERSE-INTEGRATION NOTE #4
+
+**Date**: 2024-12-09
+**Created By**: AI Assistant (Claude)
+**Issue**: Missing workflow functions (getPhaseMetadata, generatePromptForPhase, exportFinalDocument) caused module import errors
+**Solution**: Added standalone function exports to workflow.js to match reference implementation pattern
+**Reference**: https://github.com/bordenet/product-requirements-assistant/blob/main/docs/js/workflow.js
+**Genesis Gap**: Genesis template uses class-based Workflow but project-view.js expects standalone functions
+**Recommendation**:
+  - Either standardize on class-based OR function-based workflow pattern
+  - Ensure workflow.js exports match what project-view.js imports
+  - Add validation that all imports resolve correctly
+**Files to Update**:
+  - genesis/templates/web-app/js/workflow-template.js
+  - genesis/templates/web-app/js/project-view-template.js
+**Priority**: CRITICAL
+**Estimated Effort**: Medium
+
+## REVERSE-INTEGRATION NOTE #5
+
+**Date**: 2024-12-09
+**Created By**: AI Assistant (Claude)
+**Issue**: Function named exportFinalPRD instead of generic exportFinalDocument
+**Solution**: Renamed to exportFinalDocument and updated references
+**Reference**: N/A - naming convention issue
+**Genesis Gap**: Genesis should use generic terminology, not PRD-specific names
+**Recommendation**:
+  - Use "document" or "output" instead of "PRD" in function names
+  - Use template variables for document type names
+  - Search for all PRD references and make them generic
+**Files to Update**:
+  - genesis/templates/web-app/js/workflow-template.js
+  - genesis/templates/web-app/js/project-view-template.js
+**Priority**: HIGH
+**Estimated Effort**: Small
+
 
