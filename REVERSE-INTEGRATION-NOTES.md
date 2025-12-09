@@ -152,4 +152,22 @@
 **Priority**: CRITICAL
 **Estimated Effort**: Small
 
+## REVERSE-INTEGRATION NOTE #7
+
+**Date**: 2024-12-09
+**Created By**: AI Assistant (Claude)
+**Issue**: Missing storage methods (getPrompt, savePrompt, getSetting, saveSetting, getStorageEstimate)
+**Solution**: Added all missing methods to storage.js
+**Reference**: https://github.com/bordenet/product-requirements-assistant/blob/main/docs/js/storage.js
+**Genesis Gap**: Genesis storage template missing prompt and settings store methods
+**Recommendation**:
+  - Add getPrompt/savePrompt methods to storage-template.js
+  - Add getSetting/saveSetting methods to storage-template.js
+  - Add getStorageEstimate as alias for getStorageInfo
+  - Ensure all methods that workflow.js and app.js expect are present
+**Files to Update**:
+  - genesis/templates/web-app/js/storage-template.js
+**Priority**: CRITICAL
+**Estimated Effort**: Small
+
 
