@@ -51,8 +51,21 @@
 
 ---
 
-## Notes for {{PROJECT_NAME}}
+## Notes for power-statement-assistant
 
-<!-- Add your notes below this line -->
+## REVERSE-INTEGRATION NOTE #1
+
+**Date**: 2024-12-09
+**Created By**: AI Assistant (Claude)
+**Issue**: App showed blank screen on load due to storage import mismatch
+**Solution**: Changed storage.js to use `export default new Storage()` to match reference implementation
+**Reference**: https://github.com/bordenet/product-requirements-assistant/blob/main/docs/js/storage.js#L189
+**Genesis Gap**: Genesis template uses `export const storage = new Storage()` (named export) but reference uses default export
+**Recommendation**: Update storage-template.js to use default export for consistency
+**Files to Update**:
+  - genesis/templates/web-app/js/storage-template.js (line 174)
+  - All test templates that import storage
+**Priority**: CRITICAL
+**Estimated Effort**: Small
 
 
