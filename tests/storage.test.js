@@ -70,8 +70,8 @@ describe('Storage Module', () => {
         });
 
         test('handles invalid project data', async () => {
-            await expect(saveProject(null)).rejects.toThrow();
-            await expect(saveProject({})).rejects.toThrow();
+            await expect(storage.saveProject(null)).rejects.toThrow();
+            await expect(storage.saveProject({})).rejects.toThrow();
         });
     });
 
@@ -96,8 +96,8 @@ describe('Storage Module', () => {
         });
 
         test('handles invalid ID', async () => {
-            await expect(getProject(null)).rejects.toThrow();
-            await expect(getProject('')).rejects.toThrow();
+            await expect(storage.getProject(null)).rejects.toThrow();
+            await expect(storage.getProject('')).rejects.toThrow();
         });
     });
 
@@ -183,8 +183,8 @@ describe('Storage Module', () => {
         });
 
         test('handles invalid ID', async () => {
-            await expect(deleteProject(null)).rejects.toThrow();
-            await expect(deleteProject('')).rejects.toThrow();
+            await expect(storage.deleteProject(null)).rejects.toThrow();
+            await expect(storage.deleteProject('')).rejects.toThrow();
         });
     });
 
@@ -209,7 +209,7 @@ describe('Storage Module', () => {
         });
 
         test('handles non-existent project', async () => {
-            await expect(exportProject('non-existent')).rejects.toThrow();
+            await expect(storage.exportProject('non-existent')).rejects.toThrow();
         });
     });
 
@@ -232,13 +232,13 @@ describe('Storage Module', () => {
         });
 
         test('handles invalid JSON', async () => {
-            await expect(importProject('invalid json')).rejects.toThrow();
+            await expect(storage.importProject('invalid json')).rejects.toThrow();
         });
 
         test('handles missing required fields', async () => {
             const invalidProject = { name: 'No ID' };
             const json = JSON.stringify(invalidProject);
-            await expect(importProject(json)).rejects.toThrow();
+            await expect(storage.importProject(json)).rejects.toThrow();
         });
     });
 });
