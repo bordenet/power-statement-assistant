@@ -68,4 +68,19 @@
 **Priority**: CRITICAL
 **Estimated Effort**: Small
 
+## REVERSE-INTEGRATION NOTE #2
+
+**Date**: 2024-12-09
+**Created By**: AI Assistant (Claude)
+**Issue**: App showed blank screen because HTML had `id="app"` but views.js expected `id="app-container"`
+**Solution**: Changed index.html to use `id="app-container"`
+**Reference**: https://github.com/bordenet/product-requirements-assistant/blob/main/docs/index.html
+**Genesis Gap**: Template inconsistency between index-template.html and views-template.js
+**Recommendation**: Ensure consistent container ID across all templates
+**Files to Update**:
+  - genesis/templates/web-app/index-template.html (use id="app-container")
+  - Verify all view templates reference the same container ID
+**Priority**: CRITICAL
+**Estimated Effort**: Small
+
 
