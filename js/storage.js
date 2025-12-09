@@ -171,5 +171,5 @@ class Storage {
 }
 
 // Export singleton instance
-export const storage = new Storage();
+export default new Storage();
 

@@ -6,7 +6,7 @@
  *     Study the reference implementation for proper patterns!
  */
 
-import { storage } from './storage.js';
+import storage from './storage.js';
 import { initRouter } from './router.js';
 import { loadDefaultPrompts } from './workflow.js';
 import { exportAllProjects, importProjects } from './projects.js';

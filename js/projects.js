@@ -9,7 +9,7 @@
  * - Import/export functionality
  */
 
-import { storage } from './storage.js';
+import storage from './storage.js';
 
 /**
  * Create a new project
