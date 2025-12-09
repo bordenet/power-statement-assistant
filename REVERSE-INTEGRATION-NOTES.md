@@ -135,4 +135,21 @@
 **Priority**: HIGH
 **Estimated Effort**: Small
 
+## REVERSE-INTEGRATION NOTE #6
+
+**Date**: 2024-12-09
+**Created By**: AI Assistant (Claude)
+**Issue**: Missing loading overlay and toast container in HTML caused UI errors
+**Solution**: Added loading-overlay and toast-container divs to index.html
+**Reference**: https://github.com/bordenet/product-requirements-assistant/blob/main/docs/index.html#L130-L145
+**Genesis Gap**: Genesis template index.html missing required UI elements that ui.js expects
+**Recommendation**:
+  - Add loading overlay to index-template.html
+  - Add toast container to index-template.html
+  - Ensure all UI elements that JavaScript references are present in HTML
+**Files to Update**:
+  - genesis/templates/web-app/index-template.html
+**Priority**: CRITICAL
+**Estimated Effort**: Small
+
 
