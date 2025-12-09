@@ -197,16 +197,16 @@ function showAboutModal() {
     modal.innerHTML = `
         <div class="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-2xl shadow-xl">
             <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                💪 {{PROJECT_TITLE}}
+                💪 Power Statement Assistant
             </h3>
             <div class="text-gray-700 dark:text-gray-300 space-y-3 mb-6">
-                <p>{{PROJECT_DESCRIPTION}}</p>
+                <p>A structured 3-phase workflow tool for creating world-class power statements with AI assistance.</p>
                 <p><strong>100% Client-Side:</strong> All your data is stored locally in your browser using IndexedDB. Nothing is ever sent to any server.</p>
                 <p><strong>Privacy-First:</strong> No tracking, no analytics, no cookies (except preferences).</p>
                 <p><strong>Open Source:</strong> Available on GitHub under MIT license.</p>
             </div>
             <div class="flex justify-between items-center">
-                <a href="https://github.com/{{GITHUB_USER}}/{{GITHUB_REPO}}" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">
+                <a href="https://github.com/bordenet/power-statement-assistant" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">
                     View on GitHub →
                 </a>
                 <button type="button" id="close-about-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">

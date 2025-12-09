@@ -1,11 +1,10 @@
 /**
  * IndexedDB Storage Module
- * Handles all client-side data persistence for {{PROJECT_TITLE}}
+ * Handles all client-side data persistence for Power Statement Assistant
  */
 
-const DB_NAME = '{{DB_NAME}}';
+const DB_NAME = 'power-statement-assistant';
 const DB_VERSION = 1;
-const STORE_NAME = '{{STORE_NAME}}';
 
 class Storage {
     constructor() {
@@ -29,8 +28,8 @@ class Storage {
                 const db = event.target.result;
 
                 // Projects store
-                if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    const projectStore = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                if (!db.objectStoreNames.contains('projects')) {
+                    const projectStore = db.createObjectStore('projects', { keyPath: 'id' });
                     projectStore.createIndex('updatedAt', 'updatedAt', { unique: false });
                     projectStore.createIndex('title', 'title', { unique: false });
                     projectStore.createIndex('phase', 'phase', { unique: false });
@@ -53,8 +52,8 @@ class Storage {
      * Get all projects, sorted by last updated
      */
     async getAllProjects() {
-        const tx = this.db.transaction(STORE_NAME, 'readonly');
-        const store = tx.objectStore(STORE_NAME);
+        const tx = this.db.transaction('projects', 'readonly');
+        const store = tx.objectStore('projects');
         const index = store.index('updatedAt');
 
         return new Promise((resolve, reject) => {
@@ -79,8 +78,8 @@ class Storage {
      * Get a single project by ID
      */
     async getProject(id) {
-        const tx = this.db.transaction(STORE_NAME, 'readonly');
-        const store = tx.objectStore(STORE_NAME);
+        const tx = this.db.transaction('projects', 'readonly');
+        const store = tx.objectStore('projects');
 
         return new Promise((resolve, reject) => {
             const request = store.get(id);
@@ -95,8 +94,8 @@ class Storage {
     async saveProject(project) {
         project.updatedAt = new Date().toISOString();
 
-        const tx = this.db.transaction(STORE_NAME, 'readwrite');
-        const store = tx.objectStore(STORE_NAME);
+        const tx = this.db.transaction('projects', 'readwrite');
+        const store = tx.objectStore('projects');
 
         return new Promise((resolve, reject) => {
             const request = store.put(project);
@@ -109,8 +108,8 @@ class Storage {
      * Delete a project
      */
     async deleteProject(id) {
-        const tx = this.db.transaction(STORE_NAME, 'readwrite');
-        const store = tx.objectStore(STORE_NAME);
+        const tx = this.db.transaction('projects', 'readwrite');
+        const store = tx.objectStore('projects');
 
         return new Promise((resolve, reject) => {
             const request = store.delete(id);
@@ -155,8 +154,8 @@ class Storage {
             throw new Error('Invalid import data');
         }
 
-        const tx = this.db.transaction(STORE_NAME, 'readwrite');
-        const store = tx.objectStore(STORE_NAME);
+        const tx = this.db.transaction('projects', 'readwrite');
+        const store = tx.objectStore('projects');
 
         for (const project of data.projects) {
             await new Promise((resolve, reject) => {
