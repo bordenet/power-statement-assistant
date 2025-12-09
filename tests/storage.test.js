@@ -4,7 +4,7 @@
  * Tests IndexedDB operations for project persistence.
  */
 
-import { storage } from '../js/storage.js';
+import storage from '../js/storage.js';
 
 describe('Storage Module', () => {
     beforeEach(async () => {
