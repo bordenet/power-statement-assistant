@@ -119,6 +119,62 @@ class Storage {
     }
 
     /**
+     * Get a prompt by phase number
+     */
+    async getPrompt(phase) {
+        const tx = this.db.transaction('prompts', 'readonly');
+        const store = tx.objectStore('prompts');
+
+        return new Promise((resolve, reject) => {
+            const request = store.get(phase);
+            request.onsuccess = () => resolve(request.result?.content || null);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    /**
+     * Save a prompt for a phase
+     */
+    async savePrompt(phase, content) {
+        const tx = this.db.transaction('prompts', 'readwrite');
+        const store = tx.objectStore('prompts');
+
+        return new Promise((resolve, reject) => {
+            const request = store.put({ phase, content });
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    /**
+     * Get a setting by key
+     */
+    async getSetting(key) {
+        const tx = this.db.transaction('settings', 'readonly');
+        const store = tx.objectStore('settings');
+
+        return new Promise((resolve, reject) => {
+            const request = store.get(key);
+            request.onsuccess = () => resolve(request.result?.value || null);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    /**
+     * Save a setting
+     */
+    async saveSetting(key, value) {
+        const tx = this.db.transaction('settings', 'readwrite');
+        const store = tx.objectStore('settings');
+
+        return new Promise((resolve, reject) => {
+            const request = store.put({ key, value });
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    /**
      * Get storage usage info
      */
     async getStorageInfo() {
@@ -131,6 +187,13 @@ class Storage {
             };
         }
         return null;
+    }
+
+    /**
+     * Get storage estimate (alias for getStorageInfo for compatibility)
+     */
+    async getStorageEstimate() {
+        return this.getStorageInfo();
     }
 
     /**
