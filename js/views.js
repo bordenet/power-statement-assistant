@@ -38,7 +38,7 @@ export async function renderProjectsList() {
                     No projects yet
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400 mb-6">
-                    Create your first {{PROJECT_TYPE}}
+                    Create your first Power Statement
                 </p>
                 <button id="new-project-btn-empty" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
                     + Create Your First Project
@@ -153,7 +153,7 @@ export function renderNewProjectForm() {
                             name="title"
                             required
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                            placeholder="e.g., {{PROJECT_TITLE_EXAMPLE}}"
+                            placeholder="e.g., Cari AI Receptionist Power Statement"
                         >
                     </div>
 
