@@ -11,7 +11,7 @@
  */
 
 import { getProject, updatePhase } from './projects.js';
-import { getPhaseMetadata, generatePromptForPhase, exportFinalPRD } from './workflow.js';
+import { getPhaseMetadata, generatePromptForPhase, exportFinalDocument } from './workflow.js';
 import { escapeHtml, showToast, copyToClipboard, showPromptModal } from './ui.js';
 import { navigateTo } from './router.js';
 
@@ -87,7 +87,7 @@ export async function renderProjectView(projectId) {
 
     // Event listeners
     document.getElementById('back-btn').addEventListener('click', () => navigateTo('home'));
-    document.getElementById('export-prd-btn').addEventListener('click', () => exportFinalPRD(project));
+    document.getElementById('export-prd-btn').addEventListener('click', () => exportFinalDocument(project));
 
     document.querySelectorAll('.phase-tab').forEach(tab => {
         tab.addEventListener('click', () => {

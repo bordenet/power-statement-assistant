@@ -3,6 +3,131 @@
  * Manages the 3-phase workflow for Power Statement Assistant
  */
 
+import storage from './storage.js';
+import { showToast } from './ui.js';
+
+// Default prompts (loaded from prompts/*.md files)
+let defaultPrompts = {};
+
+/**
+ * Load default prompts from markdown files
+ */
+export async function loadDefaultPrompts() {
+    try {
+        for (let phase = 1; phase <= 3; phase++) {
+            const response = await fetch(`prompts/phase${phase}.md`);
+            const content = await response.text();
+            defaultPrompts[phase] = content;
+
+            // Save to IndexedDB if not already saved
+            const existing = await storage.getPrompt(phase);
+            if (!existing) {
+                await storage.savePrompt(phase, content);
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load default prompts:', error);
+    }
+}
+
+/**
+ * Get phase metadata
+ */
+export function getPhaseMetadata(phase) {
+    const metadata = {
+        1: {
+            title: 'Phase 1: Initial Draft',
+            ai: 'Claude Sonnet 4.5',
+            description: 'Generate the initial power statement based on your requirements',
+            color: 'blue',
+            icon: '📝'
+        },
+        2: {
+            title: 'Phase 2: Adversarial Critique',
+            ai: 'Gemini 2.5 Pro',
+            description: 'Review and improve the initial draft',
+            color: 'purple',
+            icon: '🔍'
+        },
+        3: {
+            title: 'Phase 3: Final Synthesis',
+            ai: 'Claude Sonnet 4.5',
+            description: 'Compare both versions and create the final power statement',
+            color: 'green',
+            icon: '✨'
+        }
+    };
+
+    return metadata[phase] || {};
+}
+
+/**
+ * Generate prompt for a specific phase
+ */
+export async function generatePromptForPhase(project, phase) {
+    const template = await storage.getPrompt(phase) || defaultPrompts[phase] || '';
+
+    if (!template) {
+        throw new Error(`Phase ${phase} prompt template not found. Please ensure prompts are loaded.`);
+    }
+
+    let prompt = template;
+
+    // Replace project-specific variables
+    prompt = prompt.replace(/\{project_title\}/g, project.title || '');
+    prompt = prompt.replace(/\{product_name\}/g, project.productName || '');
+    prompt = prompt.replace(/\{customer_type\}/g, project.customerType || '');
+    prompt = prompt.replace(/\{problem\}/g, project.problem || '');
+    prompt = prompt.replace(/\{outcome\}/g, project.outcome || '');
+    prompt = prompt.replace(/\{proof_points\}/g, project.proofPoints || '');
+    prompt = prompt.replace(/\{differentiators\}/g, project.differentiators || '');
+    prompt = prompt.replace(/\{objections\}/g, project.objections || '');
+
+    // Replace phase outputs for phases 2 and 3
+    if (phase >= 2 && project.phases && project.phases[1]) {
+        prompt = prompt.replace(/\{phase1_output\}/g, project.phases[1].response || '');
+    }
+    if (phase >= 3 && project.phases && project.phases[2]) {
+        prompt = prompt.replace(/\{phase2_output\}/g, project.phases[2].response || '');
+    }
+
+    return prompt;
+}
+
+/**
+ * Export final document as markdown
+ */
+export async function exportFinalDocument(project) {
+    const finalResponse = project.phases?.[3]?.response || project.phases?.[2]?.response || project.phases?.[1]?.response;
+
+    if (!finalResponse) {
+        showToast('No power statement content to export', 'warning');
+        return;
+    }
+
+    const blob = new Blob([finalResponse], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${sanitizeFilename(project.title)}-power-statement.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    showToast('Power statement exported successfully!', 'success');
+}
+
+/**
+ * Sanitize filename
+ */
+function sanitizeFilename(filename) {
+    return filename
+        .replace(/[^a-z0-9]/gi, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .toLowerCase()
+        .substring(0, 50);
+}
+
 export const WORKFLOW_CONFIG = {
     phaseCount: 3,
     phases: [
