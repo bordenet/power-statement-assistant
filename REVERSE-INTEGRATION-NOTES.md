@@ -1,8 +1,52 @@
-# Reverse-Integration Notes for {{PROJECT_NAME}}
+# Reverse-Integration Notes for Power Statement Assistant
 
 **Purpose**: Track improvements that should be reverse-integrated back to Genesis
 
-**Instructions for AI Assistants**:
+**Project**: Power Statement Assistant
+**Genesis Version**: Based on product-requirements-assistant Genesis template
+**Date Range**: 2024-12-09
+**Total Issues Found**: 7 critical issues
+
+---
+
+## 📊 EXECUTIVE SUMMARY
+
+This project uncovered **7 CRITICAL issues** in the Genesis template system that prevented the app from working after initial generation. All issues have been fixed and documented below for reverse-integration.
+
+### Critical Issues by Category:
+
+1. **Template System Failures** (3 issues)
+   - #1: Storage export mismatch (named vs default)
+   - #2: App container ID mismatch
+   - #3: Unreplaced template placeholders ⚠️ **MOST CRITICAL**
+
+2. **Missing Code** (2 issues)
+   - #4: Missing workflow functions
+   - #7: Missing storage methods
+
+3. **Missing HTML Elements** (1 issue)
+   - #6: Missing loading overlay and toast container
+
+4. **Naming Conventions** (1 issue)
+   - #5: PRD-specific naming instead of generic
+
+### Impact:
+- **Initial State**: App completely broken (blank screen, JavaScript errors)
+- **After Fixes**: App fully functional with all features working
+- **Commits Required**: 7 separate fixes
+- **Time to Fix**: ~2 hours of debugging
+
+### Recommendation:
+**Genesis needs a comprehensive validation system** that checks for:
+- ✅ All template placeholders replaced
+- ✅ All imports/exports match
+- ✅ All HTML elements referenced by JavaScript exist
+- ✅ No hardcoded project-specific names in templates
+
+---
+
+## 📋 INSTRUCTIONS FOR AI ASSISTANTS
+
 - When you reference product-requirements-assistant or one-pager to solve a problem, **CREATE A NOTE HERE**
 - When you discover a pattern missing from Genesis, **CREATE A NOTE HERE**
 - When you fix a bug that Genesis should prevent, **CREATE A NOTE HERE**
@@ -170,4 +214,91 @@
 **Priority**: CRITICAL
 **Estimated Effort**: Small
 
+---
 
+## 🎯 ACTION PLAN FOR GENESIS MAINTAINER
+
+### Phase 1: Critical Fixes (Do First)
+
+**Issue #3: Template Placeholder Validation** ⚠️ **HIGHEST PRIORITY**
+- Create post-processing validation script
+- Scan all generated files for `{{.*}}` patterns
+- Fail loudly if any placeholders remain
+- Add to Genesis checklist
+- **Impact**: Prevents completely broken apps
+
+**Issue #1: Storage Export Consistency**
+- Change `storage-template.js` line 174 to `export default new Storage()`
+- Update all test templates to use default import
+- **Impact**: Prevents blank screen on load
+
+**Issue #2: Container ID Consistency**
+- Change `index-template.html` to use `id="app-container"`
+- Verify all view templates reference same ID
+- **Impact**: Prevents blank screen on load
+
+**Issue #6: Missing HTML Elements**
+- Add loading overlay to `index-template.html`
+- Add toast container to `index-template.html`
+- **Impact**: Prevents UI initialization errors
+
+**Issue #7: Missing Storage Methods**
+- Add `getPrompt/savePrompt` to `storage-template.js`
+- Add `getSetting/saveSetting` to `storage-template.js`
+- Add `getStorageEstimate` alias
+- **Impact**: Prevents app initialization errors
+
+### Phase 2: Code Quality Improvements
+
+**Issue #4: Workflow Function Consistency**
+- Standardize on class-based OR function-based pattern
+- Ensure workflow.js exports match project-view.js imports
+- Add import/export validation
+- **Impact**: Prevents module loading errors
+
+**Issue #5: Generic Naming Conventions**
+- Replace "PRD" with "document" or template variables
+- Search all templates for project-specific terminology
+- **Impact**: Improves template reusability
+
+### Phase 3: Long-term Improvements
+
+**Create Comprehensive Validation System**
+- ✅ Template placeholder validation
+- ✅ Import/export matching validation
+- ✅ HTML element existence validation
+- ✅ Naming convention validation
+- ✅ Pre-commit hooks for template changes
+- ✅ Automated testing of generated projects
+
+**Documentation Updates**
+- Add troubleshooting guide for common issues
+- Document all template variables
+- Create validation checklist
+- Add "known issues" section
+
+---
+
+## 📈 SUCCESS METRICS
+
+After implementing these fixes, Genesis should:
+- ✅ Generate working apps on first try (no debugging required)
+- ✅ Pass all validation checks automatically
+- ✅ Have zero unreplaced template placeholders
+- ✅ Have zero import/export mismatches
+- ✅ Have zero missing HTML elements
+- ✅ Use generic terminology throughout
+
+**Target**: 100% of generated apps work immediately after generation
+
+---
+
+## 📝 NOTES
+
+- All 7 issues were discovered and fixed on 2024-12-09
+- Total debugging time: ~2 hours
+- All fixes have been tested and verified working
+- Reference implementation: https://github.com/bordenet/product-requirements-assistant
+- This project: https://github.com/bordenet/power-statement-assistant
+
+**Status**: ✅ All issues documented and ready for reverse-integration
