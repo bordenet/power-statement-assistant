@@ -83,4 +83,20 @@
 **Priority**: CRITICAL
 **Estimated Effort**: Small
 
+## REVERSE-INTEGRATION NOTE #3
+
+**Date**: 2024-12-09
+**Created By**: AI Assistant (Claude)
+**Issue**: App completely broken due to unreplaced template placeholders ({{DB_NAME}}, {{STORE_NAME}}, {{PROJECT_TYPE}}, etc.)
+**Solution**: Manually replaced all template placeholders with actual values
+**Reference**: N/A - Genesis template system issue
+**Genesis Gap**: Genesis template replacement script failed to replace all placeholders
+**Recommendation**: Add validation step to Genesis that checks for unreplaced {{}} placeholders before completion
+**Files to Update**:
+  - Add post-processing validation script that scans all files for {{.*}} patterns
+  - Fail loudly if any placeholders remain unreplaced
+  - Add to checklist: "Verify no template placeholders remain"
+**Priority**: CRITICAL
+**Estimated Effort**: Medium
+
 
