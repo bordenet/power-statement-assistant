@@ -94,7 +94,9 @@ jobs:
         echo "✅ genesis/ directory properly removed"
 
         # Check for unreplaced template variables
-        if grep -r "{{" . --include="*.md" --include="*.js" --include="*.json" --include="*.html" --include="*.yml" --exclude-dir=node_modules --exclude-dir=.git 2>/dev/null; then
+        # Exclude REVERSE-INTEGRATION-NOTES.md (contains examples of template syntax)
+        # Exclude .github directory (contains GitHub Actions workflow files)
+        if grep -r "{{" . --include="*.md" --include="*.js" --include="*.json" --include="*.html" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude="REVERSE-INTEGRATION-NOTES.md" 2>/dev/null; then
           echo "❌ ERROR: Found unreplaced template variables ({{...}})"
           echo "All {{VARIABLE}} placeholders must be replaced with actual values."
           exit 1
