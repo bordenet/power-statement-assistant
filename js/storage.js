@@ -21,7 +21,7 @@ class Storage {
             request.onerror = () => reject(request.error);
             request.onsuccess = () => {
                 this.db = request.result;
-                resolve();
+                resolve(true);
             };
 
             request.onupgradeneeded = (event) => {
@@ -78,12 +78,16 @@ class Storage {
      * Get a single project by ID
      */
     async getProject(id) {
+        if (!id || id === '') {
+            throw new Error('Invalid project ID');
+        }
+
         const tx = this.db.transaction('projects', 'readonly');
         const store = tx.objectStore('projects');
 
         return new Promise((resolve, reject) => {
             const request = store.get(id);
-            request.onsuccess = () => resolve(request.result);
+            request.onsuccess = () => resolve(request.result || null);
             request.onerror = () => reject(request.error);
         });
     }
@@ -92,6 +96,10 @@ class Storage {
      * Save or update a project
      */
     async saveProject(project) {
+        if (!project || !project.id) {
+            throw new Error('Invalid project data: missing id');
+        }
+
         project.updatedAt = new Date().toISOString();
 
         const tx = this.db.transaction('projects', 'readwrite');
@@ -99,7 +107,7 @@ class Storage {
 
         return new Promise((resolve, reject) => {
             const request = store.put(project);
-            request.onsuccess = () => resolve(project);
+            request.onsuccess = () => resolve(true);
             request.onerror = () => reject(request.error);
         });
     }
@@ -108,14 +116,51 @@ class Storage {
      * Delete a project
      */
     async deleteProject(id) {
+        if (!id || id === '') {
+            throw new Error('Invalid project ID');
+        }
+
+        // Check if project exists first
+        const exists = await this.getProject(id);
+
         const tx = this.db.transaction('projects', 'readwrite');
         const store = tx.objectStore('projects');
 
         return new Promise((resolve, reject) => {
             const request = store.delete(id);
-            request.onsuccess = () => resolve();
+            request.onsuccess = () => resolve(exists !== null);
             request.onerror = () => reject(request.error);
         });
+    }
+
+    /**
+     * Export a single project as JSON
+     */
+    async exportProject(id) {
+        const project = await this.getProject(id);
+        if (!project) {
+            throw new Error(`Project not found: ${id}`);
+        }
+        return JSON.stringify(project);
+    }
+
+    /**
+     * Import a single project from JSON
+     */
+    async importProject(json) {
+        let project;
+        try {
+            project = JSON.parse(json);
+        } catch {
+            throw new Error('Invalid JSON');
+        }
+
+        if (!project.id) {
+            throw new Error('Missing required field: id');
+        }
+
+        await this.saveProject(project);
+        return true;
     }
 
     /**

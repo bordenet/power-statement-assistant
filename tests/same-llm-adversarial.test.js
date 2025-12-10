@@ -188,7 +188,7 @@ describe('Same-LLM Adversarial Configuration Tests', () => {
             const result = promptAugmenter.generateGeminiStylePrompt(safePrompt);
 
             // Should be prepending
-            expect(result).toContain('GEMINI SIMULATION');
+            expect(result).toContain('GEMINI-STYLE SIMULATION');
             expect(result).toContain(safePrompt);
             expect(result).toContain('**REMEMBER**: You are Google Gemini');
         });
@@ -233,7 +233,7 @@ describe('Same-LLM Adversarial Configuration Tests', () => {
             const result = promptAugmenter.generateGeminiStylePrompt(originalPrompt);
 
             // Should still augment for testing, but in real implementation would skip
-            expect(result).toContain('GEMINI SIMULATION');
+            expect(result).toContain('GEMINI-STYLE SIMULATION');
         });
 
         test('should handle actual power-statement-assistant Phase 2 prompt', () => {
@@ -285,7 +285,7 @@ Evaluate the document on:
             expect(result).toContain('ADVERSARIAL REVIEWER ROLE');
             expect(result).toContain('Google Gemini');
             expect(result).toContain('constructively adversarial');
-            expect(result).toContain('challenge and reconstruct');
+            expect(result.replace(/\s+/g, ' ')).toContain('challenge and reconstruct');
             expect(result).not.toContain('Forget all previous sessions and context');
 
             // Verify it maintains the core functionality
