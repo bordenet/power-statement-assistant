@@ -26,7 +26,7 @@ let mockModeEnabled = false;
 // Mock response templates for each phase
 const mockResponses = {
     phase1: {
-        success: `# {{PHASE_1_NAME}} - Mock Response
+        success: `# Phase 1: Initial Draft - Mock Response
 
 This is a mock response for testing purposes.
 
@@ -39,7 +39,7 @@ This is a mock response for testing purposes.
 ## Details
 
 The mock response includes realistic formatting and structure that matches
-what you would expect from {{PHASE_1_AI}}.
+what you would expect from Claude.
 
 ## Next Steps
 
@@ -52,7 +52,7 @@ Proceed to Phase 2 to continue testing the workflow.
     },
 
     phase2: {
-        success: `# {{PHASE_2_NAME}} - Mock Response
+        success: `# Phase 2: Adversarial Critique - Mock Response
 
 Building on the Phase 1 output, here's the mock response for Phase 2.
 
@@ -77,7 +77,7 @@ This mock response demonstrates the multi-phase workflow.
     },
 
     phase3: {
-        success: `# {{PHASE_3_NAME}} - Mock Response
+        success: `# Phase 3: Final Synthesis - Mock Response
 
 Final phase mock response incorporating all previous phases.
 
