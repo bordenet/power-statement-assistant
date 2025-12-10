@@ -228,7 +228,8 @@ describe('Storage Module', () => {
             expect(result).toBe(true);
 
             const retrieved = await storage.getProject('test-10');
-            expect(retrieved).toEqual(project);
+            expect(retrieved).toMatchObject(project);
+            expect(retrieved.updatedAt).toBeDefined();
         });
 
         test('handles invalid JSON', async () => {
