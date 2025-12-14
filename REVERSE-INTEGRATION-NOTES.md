@@ -302,3 +302,46 @@ After implementing these fixes, Genesis should:
 - This project: https://github.com/bordenet/power-statement-assistant
 
 **Status**: ✅ All issues documented and ready for reverse-integration
+
+---
+
+## REVERSE-INTEGRATION NOTE #8
+
+**Date**: 2024-12-14
+**Created By**: AI Assistant (Claude)
+**Issue**: UX patterns from one-pager needed to be manually synced to power-statement-assistant
+**Solution**: Referenced one-pager project-view.js to implement 10 UX enhancements
+**Reference**: https://github.com/bordenet/one-pager/blob/main/js/project-view.js
+**Genesis Gap**: Genesis doesn't include latest UX patterns that improve user experience
+**Recommendation**: Add these UX patterns to Genesis templates:
+  1. Footer stats auto-update (call updateStorageInfo after every route render)
+  2. Auto-advance on save (move to next phase automatically)
+  3. Button enable/disable based on user action (Open AI button disabled until Copy Prompt clicked)
+  4. Textarea enable/disable based on workflow (disabled until prerequisite action)
+  5. Shared browser tab for external links (target="ai-assistant-tab")
+  6. Extract title from markdown output (update project title from # Title in final output)
+  7. Dynamic AI name labels (show specific AI names like "Paste Claude's Response")
+  8. Step A/B vs Step 1/2 disambiguation (use letters for sub-steps within phases)
+  9. Phase tab underline sync (updatePhaseTabStyles function)
+  10. Clean .gitignore (remove Genesis template syntax like <!-- IF --> blocks)
+**Files to Update**:
+  - genesis/templates/web-app/js/router-template.js (add updateStorageInfo call)
+  - genesis/templates/web-app/js/project-view-template.js (add all UX patterns)
+  - genesis/templates/web-app/js/projects-template.js (remove auto-advance from updatePhase)
+  - genesis/templates/.gitignore-template (clean up, add Python/coverage patterns)
+**Priority**: HIGH
+**Estimated Effort**: Medium
+
+**Specific Changes Made**:
+1. **Footer Stats Auto-Update**: Exported updateStorageInfo from app.js, imported in router.js, called after every route render
+2. **Auto-Advance on Save**: Removed auto-advance from projects.js updatePhase, added to project-view.js saveResponseBtn handler
+3. **Button Enable/Disable**: Open AI button starts disabled (opacity-50, pointer-events-none), enabled after Copy Prompt clicked
+4. **Textarea Enable/Disable**: Response textarea starts disabled if no prompt, enabled after Copy Prompt or if has existing content
+5. **Shared Browser Tab**: All "Open AI" links use target="ai-assistant-tab"
+6. **Extract Title**: Added extractTitleFromMarkdown function, called on Phase 3 completion, updates project title
+7. **Dynamic AI Names**: Changed "Paste AI Response" to "Paste Claude's Response" or "Paste Gemini's Response" based on phase
+8. **Step A/B**: Changed "Step 1" and "Step 2" to "Step A" and "Step B" within each phase
+9. **Phase Tab Sync**: Added updatePhaseTabStyles function, called from all navigation points (tab clicks, prev/next, auto-advance)
+10. **Clean .gitignore**: Removed all <!-- IF --> blocks, added .coverage, .mypy_cache, .pytest_cache patterns
+
+**Testing**: All 60 tests pass, 0 lint errors (14 warnings for console.log which are acceptable)
