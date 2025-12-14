@@ -73,10 +73,8 @@ export async function updatePhase(projectId, phase, prompt, response) {
         completed: !!response
     };
 
-    // Auto-advance to next phase if current phase is completed
-    if (response && phase < 3) {
-        project.phase = phase + 1;
-    }
+    // Note: Auto-advance is now handled in project-view.js for better UX control
+    // We don't auto-advance here anymore
 
     project.updatedAt = new Date().toISOString();
     await storage.saveProject(project);

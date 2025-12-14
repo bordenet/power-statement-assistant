@@ -10,6 +10,7 @@
 
 import { renderProjectsList, renderNewProjectForm } from './views.js';
 import { renderProjectView } from './project-view.js';
+import { updateStorageInfo } from './app.js';
 
 const routes = {
     'home': renderProjectsList,
@@ -25,7 +26,7 @@ let currentParams = null;
  * @param {string} route - Route name ('home', 'new-project', 'project')
  * @param {...any} params - Route parameters (e.g., project ID)
  */
-export function navigateTo(route, ...params) {
+export async function navigateTo(route, ...params) {
     currentRoute = route;
     currentParams = params;
 
@@ -41,7 +42,9 @@ export function navigateTo(route, ...params) {
     // Render the route
     const handler = routes[route];
     if (handler) {
-        handler(...params);
+        await handler(...params);
+        // Update footer stats after every route render
+        await updateStorageInfo();
     } else {
         console.error(`Route not found: ${route}`);
         navigateTo('home');

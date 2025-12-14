@@ -22,18 +22,6 @@ venv/
 # Environment variables
 .env
 
-<!-- IF {{ENABLE_BACKEND}} -->
-# Go
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-{{PROJECT_NAME}}
-coverage.out
-*.test
-<!-- END IF -->
-
 # IDE
 .vscode/
 .idea/
@@ -51,13 +39,7 @@ desktop.ini
 .Trashes
 ehthumbs.db
 
-<!-- IF {{ENABLE_DESKTOP_CLIENTS}} -->
-# Desktop client build artifacts
-dist/
-cmd/webview/go.sum
-cmd/electron/node_modules/
-cmd/electron/package-lock.json
-<!-- END IF -->
+
 
 # Node.js / JavaScript
 node_modules/
@@ -71,26 +53,14 @@ lerna-debug.log*
 coverage/
 *.lcov
 .nyc_output/
-coverage.out
+.coverage
+.mypy_cache/
+.pytest_cache/
 
 # Build artifacts
 build/
 dist/
 *.log
 
-<!-- IF {{GITHUB_PAGES_FROM_ROOT}} -->
-################################################################################
-# GitHub Pages Architecture B: Serving from root (/)
-################################################################################
-# When GitHub Pages serves from root, docs/ should ONLY contain documentation,
-# NOT copies of app files. This prevents drift between root and docs/.
-#
-# See: genesis/docs/deployment/GITHUB-PAGES-template.md for architecture details
-docs/js/
-docs/css/
-docs/index.html
-docs/data/
-docs/*.html
-!docs/*.md
-<!-- END IF -->
+
 

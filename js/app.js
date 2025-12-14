@@ -173,8 +173,9 @@ function toggleTheme() {
 
 /**
  * Update storage info in footer
+ * Exported so router can call it after every route render
  */
-async function updateStorageInfo() {
+export async function updateStorageInfo() {
     const estimate = await storage.getStorageEstimate();
     const storageInfo = document.getElementById('storage-info');
 
