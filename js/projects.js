@@ -13,17 +13,28 @@ import storage from './storage.js';
 
 /**
  * Create a new project
- * @param {string} title - Project title
- * @param {string} problems - Problems to solve
- * @param {string} context - Additional context
+ * @param {Object} projectData - Project data object
+ * @param {string} projectData.title - Project title
+ * @param {string} projectData.productName - Product/service name
+ * @param {string} projectData.customerType - Customer type
+ * @param {string} projectData.problem - Problem being solved
+ * @param {string} projectData.outcome - Desired outcome
+ * @param {string} projectData.proofPoints - Proof points/results
+ * @param {string} projectData.differentiators - Key differentiators
+ * @param {string} projectData.objections - Common objections
  * @returns {Promise<Object>} Created project object
  */
-export async function createProject(title, problems, context) {
+export async function createProject(projectData) {
     const project = {
         id: crypto.randomUUID(),
-        title: title.trim(),
-        problems: problems.trim(),
-        context: context.trim(),
+        title: projectData.title.trim(),
+        productName: projectData.productName.trim(),
+        customerType: projectData.customerType.trim(),
+        problem: projectData.problem.trim(),
+        outcome: projectData.outcome.trim(),
+        proofPoints: projectData.proofPoints.trim(),
+        differentiators: projectData.differentiators.trim(),
+        objections: projectData.objections.trim(),
         phase: 1,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

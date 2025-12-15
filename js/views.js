@@ -122,7 +122,7 @@ export async function renderProjectsList() {
 
 /**
  * Render the new project form
- * Allows users to create a new project with title, problems, and context
+ * Collects all 7 required fields for power statement generation
  */
 export function renderNewProjectForm() {
     const container = document.getElementById('app-container');
@@ -139,8 +139,12 @@ export function renderNewProjectForm() {
 
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                    Create New Project
+                    Create New Power Statement
                 </h2>
+
+                <p class="text-gray-600 dark:text-gray-400 mb-6">
+                    Fill in the details below to generate a compelling power statement. All fields marked with * are required.
+                </p>
 
                 <form id="new-project-form" class="space-y-6">
                     <div>
@@ -155,41 +159,120 @@ export function renderNewProjectForm() {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Cari AI Receptionist Power Statement"
                         >
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">A descriptive name for this project</p>
                     </div>
 
                     <div>
-                        <label for="problems" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Problems to Solve *
+                        <label for="productName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Product/Service Name *
                         </label>
-                        <textarea
-                            id="problems"
-                            name="problems"
+                        <input
+                            type="text"
+                            id="productName"
+                            name="productName"
                             required
-                            rows="4"
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                            placeholder="Describe the problems this project will address..."
-                        ></textarea>
+                            placeholder="e.g., Cari AI Receptionist"
+                        >
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The name of your product or service</p>
                     </div>
 
                     <div>
-                        <label for="context" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Additional Context
+                        <label for="customerType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Customer Type *
                         </label>
-                        <textarea
-                            id="context"
-                            name="context"
-                            rows="6"
+                        <input
+                            type="text"
+                            id="customerType"
+                            name="customerType"
+                            required
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                            placeholder="Any simplifications, considerations, constraints, or other context..."
-                        ></textarea>
+                            placeholder="e.g., Small business owners with 5-50 employees"
+                        >
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Be specific about who you serve</p>
                     </div>
 
-                    <div class="flex justify-end space-x-3">
+                    <div>
+                        <label for="problem" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Problem Being Solved *
+                        </label>
+                        <textarea
+                            id="problem"
+                            name="problem"
+                            required
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., Missing calls leads to lost revenue and frustrated customers"
+                        ></textarea>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The pain point your customers recognize and feel</p>
+                    </div>
+
+                    <div>
+                        <label for="outcome" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Desired Outcome *
+                        </label>
+                        <textarea
+                            id="outcome"
+                            name="outcome"
+                            required
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., Never miss a call, capture every lead, and book more appointments"
+                        ></textarea>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The results customers want to achieve</p>
+                    </div>
+
+                    <div>
+                        <label for="proofPoints" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Proof Points/Results *
+                        </label>
+                        <textarea
+                            id="proofPoints"
+                            name="proofPoints"
+                            required
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., 48% appointment setting rate, 95% call answer rate, customers see ROI in first month"
+                        ></textarea>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Specific, quantified results and proof points</p>
+                    </div>
+
+                    <div>
+                        <label for="differentiators" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Key Differentiators *
+                        </label>
+                        <textarea
+                            id="differentiators"
+                            name="differentiators"
+                            required
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., Works with existing phone system, no complex training required, sounds completely human"
+                        ></textarea>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">What makes your solution unique</p>
+                    </div>
+
+                    <div>
+                        <label for="objections" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Common Objections to Address *
+                        </label>
+                        <textarea
+                            id="objections"
+                            name="objections"
+                            required
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., 'AI sounds robotic' - Our AI is trained on real conversations and sounds completely natural"
+                        ></textarea>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Common concerns and how you address them</p>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4">
                         <button type="button" id="cancel-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
                             Cancel
                         </button>
                         <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            Create Project
+                            Create Power Statement
                         </button>
                     </div>
                 </form>
@@ -205,11 +288,18 @@ export function renderNewProjectForm() {
         e.preventDefault();
 
         const formData = new FormData(e.target);
-        const title = formData.get('title');
-        const problems = formData.get('problems');
-        const context = formData.get('context') || '';
+        const projectData = {
+            title: formData.get('title'),
+            productName: formData.get('productName'),
+            customerType: formData.get('customerType'),
+            problem: formData.get('problem'),
+            outcome: formData.get('outcome'),
+            proofPoints: formData.get('proofPoints'),
+            differentiators: formData.get('differentiators'),
+            objections: formData.get('objections')
+        };
 
-        const project = await createProject(title, problems, context);
+        const project = await createProject(projectData);
         showToast('Project created successfully!', 'success');
         navigateTo('project', project.id);
     });
