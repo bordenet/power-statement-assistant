@@ -73,28 +73,6 @@ This project uncovered **7 CRITICAL issues** in the Genesis template system that
 
 ---
 
-## Example Note (DELETE THIS AFTER READING)
-
-```markdown
-## REVERSE-INTEGRATION NOTE #1
-
-**Date**: 2025-11-21
-**Created By**: AI Assistant (Claude)
-**Issue**: Dark mode toggle didn't work after initial Genesis setup
-**Solution**: Referenced product-requirements-assistant/docs/index.html lines 9-15 to add Tailwind config
-**Reference**: https://github.com/bordenet/product-requirements-assistant/blob/main/docs/index.html#L9-L15
-**Genesis Gap**: Genesis templates were missing the critical Tailwind `darkMode: 'class'` configuration
-**Recommendation**: Add Tailwind config to all HTML templates in genesis/templates/web-app/
-**Files to Update**: 
-  - genesis/templates/web-app/index-template.html
-  - genesis/examples/hello-world/index.html
-  - genesis/docs/WORKFLOW-ARCHITECTURE.md (add dark mode section)
-**Priority**: CRITICAL
-**Estimated Effort**: Small (already fixed in commit 814bfef)
-```
-
----
-
 ## Notes for power-statement-assistant
 
 ## REVERSE-INTEGRATION NOTE #1
