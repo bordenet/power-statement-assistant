@@ -14,9 +14,7 @@ Be respectful, professional, and constructive in all interactions.
 
 ### Prerequisites
 
-- Node.js 18+ (if using JavaScript)
-- Python 3.8+ (if using Python)
-- Go 1.21+ (if using Go)
+- Node.js 18+
 - Git
 - A code editor (VS Code recommended)
 
@@ -27,14 +25,17 @@ Be respectful, professional, and constructive in all interactions.
 git clone https://github.com/bordenet/power-statement-assistant.git
 cd power-statement-assistant
 
-# Install dependencies
-npm install  # or pip install -r requirements.txt
+# ⚠️ MANDATORY: Use setup script (NEVER manual npm install)
+./scripts/setup-macos.sh        # macOS
+./scripts/setup-linux.sh        # Linux
+./scripts/setup-windows-wsl.sh  # Windows WSL
 
 # Run tests
-npm test
+NODE_OPTIONS=--experimental-vm-modules npm test
 
-# Start development server
-npm run dev
+# Start local web server
+python3 -m http.server 8000
+# Open http://localhost:8000
 ```
 
 ---
@@ -63,9 +64,10 @@ Follow the coding standards below.
 All new code must include tests:
 - Unit tests for business logic
 - Integration tests for component interactions
-- E2E tests for user workflows
+- Integration tests for complete user workflows (form → prompt → output)
 
-**Minimum coverage**: 85% for logic and branches
+**Current coverage baseline**: 35.88% statements, 44.89% branches
+**Goal**: Maintain or improve coverage with each PR
 
 ### 4. Run Tests
 
@@ -141,46 +143,7 @@ async function saveProject(project) {
 }
 ```
 
-### Python
 
-- Follow PEP 8
-- Use type hints
-- Use docstrings for all functions
-- Use f-strings for formatting
-
-Example:
-```python
-def save_project(project: dict) -> dict:
-    """
-    Save a project to storage.
-    
-    Args:
-        project: Project dictionary
-        
-    Returns:
-        Saved project dictionary
-    """
-    validated = validate_project(project)
-    return storage.save(validated)
-```
-
-### Go
-
-- Follow Go conventions
-- Use `gofmt` for formatting
-- Use meaningful variable names
-- Add comments for exported functions
-
-Example:
-```go
-// SaveProject saves a project to storage
-func SaveProject(project *Project) (*Project, error) {
-    if err := validateProject(project); err != nil {
-        return nil, err
-    }
-    return storage.Save(project)
-}
-```
 
 ---
 
@@ -225,10 +188,11 @@ const cached = cache.get(key);
 
 ### Test Coverage
 
-- Minimum 85% coverage for logic and branches
+- Current baseline: 35.88% statements, 44.89% branches
+- Maintain or improve coverage with each PR
 - Test all error cases
 - Test edge cases
-- Test browser compatibility
+- Test complete user workflows (integration tests)
 
 ### Test Structure
 
@@ -263,13 +227,13 @@ describe('Feature', () => {
 ### Before Submitting
 
 - [ ] All tests pass
-- [ ] Code coverage ≥ 85%
+- [ ] Code coverage ≥ 35% (current baseline)
 - [ ] Documentation updated
-- [ ] CHANGELOG.md updated
-- [ ] No console.log() statements
+- [ ] No unnecessary console.log() statements (debug logging is acceptable)
 - [ ] No TODO comments
 - [ ] Code formatted
 - [ ] Commits follow convention
+- [ ] Linting passes (`npm run lint`)
 
 ### PR Description
 

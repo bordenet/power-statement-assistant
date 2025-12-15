@@ -13,15 +13,7 @@ Create world-class power statements.
 
 ## 🤖 For AI Assistants
 
-**READ THIS FIRST**: Before working on this codebase, read [`CLAUDE.md`](CLAUDE.md) for mandatory workflow requirements:
-
-- ✅ ALWAYS lint code after creating/modifying it (`npm run lint`)
-- ✅ ALWAYS run tests after creating/modifying tests (`npm test`)
-- ✅ ALWAYS proactively communicate "what's left" - don't wait to be asked
-- ❌ NEVER include `node_modules/`, `coverage/`, or build artifacts
-- ❌ NEVER create files without linting and testing them
-
-This ensures high-quality contributions that match professional engineering standards.
+**READ THIS FIRST**: Before working on this codebase, read [`CLAUDE.md`](CLAUDE.md) for mandatory workflow requirements.
 
 ---
 
@@ -104,22 +96,31 @@ python3 -m http.server 8000
 
 ### Example Usage
 
-1. **Create New Project**: Click "New Project" and enter project details
-2. **Phase 1 - Initial Draft**:
-   - Fill in customer type, problem, outcome, proof points
+1. **Create New Project**: Click "New Project" and fill in all 7 required fields:
+   - Project Title
+   - Product/Service Name
+   - Customer Type
+   - Problem Being Solved
+   - Desired Outcome
+   - Proof Points/Results
+   - Key Differentiators
+   - Common Objections to Address
+
+2. **Phase 1 - Initial Draft (Claude)**:
    - Copy the generated prompt
    - Paste into Claude
-   - Copy AI response back
-3. **Phase 2 - Adversarial Critique**:
-   - Review Phase 1 output
+   - Copy AI response back and save
+
+3. **Phase 2 - Adversarial Critique (Gemini)**:
    - Copy prompt for Phase 2
    - Paste into Gemini
-   - Copy AI response back
-4. **Phase 3 - Final Synthesis**:
-   - Review Phase 2 feedback
+   - Copy AI response back and save
+
+4. **Phase 3 - Final Synthesis (Claude)**:
    - Copy prompt for Phase 3
    - Paste into Claude
-   - Get final output
+   - Copy final output back and save
+
 5. **Export**: Download final document as Markdown
 
 ---
