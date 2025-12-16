@@ -4,6 +4,9 @@
 [![codecov](https://codecov.io/gh/bordenet/power-statement-assistant/branch/main/graph/badge.svg)](https://codecov.io/gh/bordenet/power-statement-assistant)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/bordenet/power-statement-assistant)](https://github.com/bordenet/power-statement-assistant/releases/latest)
+[![Dependabot Status](https://img.shields.io/badge/Dependabot-enabled-success.svg)](https://github.com/bordenet/power-statement-assistant/network/updates)
+[![Known Vulnerabilities](https://snyk.io/test/github/bordenet/power-statement-assistant/badge.svg)](https://snyk.io/test/github/bordenet/power-statement-assistant)
+[![npm dependencies](https://img.shields.io/librariesio/github/bordenet/power-statement-assistant)](https://libraries.io/github/bordenet/power-statement-assistant)
 
 Create world-class power statements.
 
