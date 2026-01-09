@@ -24,24 +24,24 @@ export async function renderProjectsList() {
     container.innerHTML = `
         <div class="mb-6 flex items-center justify-between">
             <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
-                My Projects
+                My <span class="text-blue-600 dark:text-blue-400">Power Statements</span>
             </h2>
             <button id="new-project-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                + New Project
+                + New Power Statement
             </button>
         </div>
 
         ${projects.length === 0 ? `
             <div class="text-center py-16 bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-                <span class="text-6xl mb-4 block">💪</span>
+                <span class="text-6xl mb-4 block">📋</span>
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                    No projects yet
+                    No Power Statements yet
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400 mb-6">
                     Create your first Power Statement
                 </p>
                 <button id="new-project-btn-empty" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                    + Create Your First Project
+                    + Create Your First Power Statement
                 </button>
             </div>
         ` : `
@@ -133,7 +133,7 @@ export function renderNewProjectForm() {
                     <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
-                    Back to Projects
+                    Back to Power Statements
                 </button>
             </div>
 
