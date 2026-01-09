@@ -432,5 +432,96 @@ describe('Form-to-Prompt Integration Tests', () => {
             expect(getPhaseMetadata(3).icon).toBe('✨');
         });
     });
+
+    describe('Phase 3 Completion UX', () => {
+        it('should have Phase 3 as the final phase in workflow config', async () => {
+            const { getPhaseMetadata, WORKFLOW_CONFIG } = await import('../js/workflow.js');
+
+            // Phase 3 is the final phase
+            expect(WORKFLOW_CONFIG.phaseCount).toBe(3);
+
+            const phase3 = getPhaseMetadata(3);
+            expect(phase3.title).toBe('Final Synthesis');
+            expect(phase3.ai).toBe('Claude');
+        });
+
+        it('should persist phase=3 when Phase 3 is saved', async () => {
+            const { createProject, updatePhase, updateProject, getProject } = await import('../js/projects.js');
+
+            // Create project
+            const project = await createProject({
+                title: 'Export Test',
+                productName: 'Test Product',
+                customerType: 'Test customers',
+                problem: 'Test problem',
+                outcome: 'Test outcome',
+                proofPoints: 'Test proof',
+                differentiators: 'Test differentiators',
+                objections: 'Test objections'
+            });
+
+            // Complete all phases
+            await updatePhase(project.id, 1, 'Phase 1 prompt', 'Phase 1 response');
+            await updateProject(project.id, { phase: 2 });
+            await updatePhase(project.id, 2, 'Phase 2 prompt', 'Phase 2 response');
+            await updateProject(project.id, { phase: 3 });
+            await updatePhase(project.id, 3, 'Phase 3 prompt', '# Final Power Statement\n\nContent here.');
+            await updateProject(project.id, { phase: 3 });
+
+            // Verify phase stays at 3 (not reset to 1)
+            const finalProject = await getProject(project.id);
+            expect(finalProject.phase).toBe(3);
+            expect(finalProject.phases[3].completed).toBe(true);
+        });
+
+        it('should mark all phases as completed after full workflow', async () => {
+            const { createProject, updatePhase, getProject } = await import('../js/projects.js');
+
+            const project = await createProject({
+                title: 'Complete Workflow Test',
+                productName: 'Test Product',
+                customerType: 'Test customers',
+                problem: 'Test problem',
+                outcome: 'Test outcome',
+                proofPoints: 'Test proof',
+                differentiators: 'Test differentiators',
+                objections: 'Test objections'
+            });
+
+            // Complete all phases
+            await updatePhase(project.id, 1, 'Prompt 1', 'Response 1');
+            await updatePhase(project.id, 2, 'Prompt 2', 'Response 2');
+            await updatePhase(project.id, 3, 'Prompt 3', 'Response 3');
+
+            const finalProject = await getProject(project.id);
+            expect(finalProject.phases[1].completed).toBe(true);
+            expect(finalProject.phases[2].completed).toBe(true);
+            expect(finalProject.phases[3].completed).toBe(true);
+        });
+
+        it('should not auto-advance past Phase 3', async () => {
+            const { createProject, updatePhase, updateProject, getProject } = await import('../js/projects.js');
+
+            const project = await createProject({
+                title: 'No Auto-Advance Test',
+                productName: 'Test Product',
+                customerType: 'Test customers',
+                problem: 'Test problem',
+                outcome: 'Test outcome',
+                proofPoints: 'Test proof',
+                differentiators: 'Test differentiators',
+                objections: 'Test objections'
+            });
+
+            // Set to phase 3 and complete it
+            await updateProject(project.id, { phase: 3 });
+            await updatePhase(project.id, 3, 'Phase 3 prompt', 'Final response');
+
+            // Phase should stay at 3, not go to 4
+            const finalProject = await getProject(project.id);
+            expect(finalProject.phase).toBe(3);
+            expect(finalProject.phases[3].completed).toBe(true);
+        });
+    });
 });
 
