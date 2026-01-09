@@ -268,14 +268,9 @@ export function renderNewProjectForm() {
                     </div>
 
                     <div class="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
-                        <div class="flex space-x-3">
-                            <button type="button" id="save-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
-                                Save
-                            </button>
-                            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                                Next Phase →
-                            </button>
-                        </div>
+                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                            Next Phase →
+                        </button>
                         <button type="button" id="delete-btn" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
                             Delete
                         </button>
@@ -290,31 +285,6 @@ export function renderNewProjectForm() {
 
     // Delete button - discard/cancel and go back
     document.getElementById('delete-btn').addEventListener('click', () => navigateTo('home'));
-
-    // Save button - save and stay on list
-    document.getElementById('save-btn').addEventListener('click', async () => {
-        const form = document.getElementById('new-project-form');
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-
-        const formData = new FormData(form);
-        const projectData = {
-            title: formData.get('title'),
-            productName: formData.get('productName'),
-            customerType: formData.get('customerType'),
-            problem: formData.get('problem'),
-            outcome: formData.get('outcome'),
-            proofPoints: formData.get('proofPoints'),
-            differentiators: formData.get('differentiators'),
-            objections: formData.get('objections')
-        };
-
-        await createProject(projectData);
-        showToast('Power Statement saved!', 'success');
-        navigateTo('home');
-    });
 
     // Next Phase button - save and continue to workflow
     document.getElementById('new-project-form').addEventListener('submit', async (e) => {
