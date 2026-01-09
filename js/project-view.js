@@ -319,22 +319,24 @@ function attachPhaseEventListeners(project, phase) {
                 // Auto-advance to next phase if not on final phase
                 if (phase < 3) {
                     showToast('Response saved! Moving to next phase...', 'success');
-                    // Re-fetch the updated project and advance
+                    // Re-fetch the updated project and advance - persist to storage
                     const updatedProject = await getProject(project.id);
                     updatedProject.phase = phase + 1;
+                    await updateProject(project.id, { phase: phase + 1 });
                     updatePhaseTabStyles(phase + 1);
                     document.getElementById('phase-content').innerHTML = renderPhaseContent(updatedProject, phase + 1);
                     attachPhaseEventListeners(updatedProject, phase + 1);
                 } else {
-                    // Phase 3 complete - extract and update project title if changed
+                    // Phase 3 complete - stay on phase 3, extract and update project title if changed
                     const extractedTitle = extractTitleFromMarkdown(response);
                     if (extractedTitle && extractedTitle !== project.title) {
-                        await updateProject(project.id, { title: extractedTitle });
+                        await updateProject(project.id, { title: extractedTitle, phase: 3 });
                         showToast(`Phase 3 complete! Title updated to "${extractedTitle}"`, 'success');
                     } else {
+                        await updateProject(project.id, { phase: 3 });
                         showToast('Phase 3 complete! Your power statement is ready.', 'success');
                     }
-                    // Re-render to show updated title and export button
+                    // Re-render to show updated title and export button - will stay on phase 3
                     renderProjectView(project.id);
                 }
             } else {
