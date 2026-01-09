@@ -267,12 +267,17 @@ export function renderNewProjectForm() {
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Common concerns and how you address them</p>
                     </div>
 
-                    <div class="flex justify-end space-x-3 pt-4">
-                        <button type="button" id="cancel-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-                            Cancel
-                        </button>
-                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            Create Power Statement
+                    <div class="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div class="flex space-x-3">
+                            <button type="button" id="save-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                                Save
+                            </button>
+                            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                                Next Phase →
+                            </button>
+                        </div>
+                        <button type="button" id="delete-btn" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+                            Delete
                         </button>
                     </div>
                 </form>
@@ -282,8 +287,36 @@ export function renderNewProjectForm() {
 
     // Event listeners
     document.getElementById('back-btn').addEventListener('click', () => navigateTo('home'));
-    document.getElementById('cancel-btn').addEventListener('click', () => navigateTo('home'));
 
+    // Delete button - discard/cancel and go back
+    document.getElementById('delete-btn').addEventListener('click', () => navigateTo('home'));
+
+    // Save button - save and stay on list
+    document.getElementById('save-btn').addEventListener('click', async () => {
+        const form = document.getElementById('new-project-form');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const formData = new FormData(form);
+        const projectData = {
+            title: formData.get('title'),
+            productName: formData.get('productName'),
+            customerType: formData.get('customerType'),
+            problem: formData.get('problem'),
+            outcome: formData.get('outcome'),
+            proofPoints: formData.get('proofPoints'),
+            differentiators: formData.get('differentiators'),
+            objections: formData.get('objections')
+        };
+
+        await createProject(projectData);
+        showToast('Power Statement saved!', 'success');
+        navigateTo('home');
+    });
+
+    // Next Phase button - save and continue to workflow
     document.getElementById('new-project-form').addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -300,7 +333,7 @@ export function renderNewProjectForm() {
         };
 
         const project = await createProject(projectData);
-        showToast('Project created successfully!', 'success');
+        showToast('Power Statement created! Starting Phase 1...', 'success');
         navigateTo('project', project.id);
     });
 }
