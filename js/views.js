@@ -9,7 +9,7 @@
  * Each view is rendered into the #app-container element
  */
 
-import { getAllProjects, createProject, deleteProject } from './projects.js';
+import { getAllProjects, createProject, deleteProject, getProject, updateProject } from './projects.js';
 import { formatDate, escapeHtml, confirm, showToast } from './ui.js';
 import { navigateTo } from './router.js';
 
@@ -24,7 +24,7 @@ export async function renderProjectsList() {
     container.innerHTML = `
         <div class="mb-6 flex items-center justify-between">
             <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
-                My <span class="text-blue-600 dark:text-blue-400">Power Statements</span>
+                My Power Statements
             </h2>
             <button id="new-project-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
                 + New Power Statement
@@ -335,6 +335,212 @@ export function renderNewProjectForm() {
         const project = await createProject(projectData);
         showToast('Power Statement created! Starting Phase 1...', 'success');
         navigateTo('project', project.id);
+    });
+}
+
+/**
+ * Render the edit project form
+ * Pre-populates form with existing project data
+ * @param {string} projectId - ID of the project to edit
+ */
+export async function renderEditProjectForm(projectId) {
+    const project = await getProject(projectId);
+
+    if (!project) {
+        showToast('Power Statement not found', 'error');
+        navigateTo('home');
+        return;
+    }
+
+    const container = document.getElementById('app-container');
+    container.innerHTML = `
+        <div class="max-w-3xl mx-auto">
+            <div class="mb-6">
+                <button id="back-btn" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Phase 1
+                </button>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                    Edit Power Statement Details
+                </h2>
+
+                <p class="text-gray-600 dark:text-gray-400 mb-6">
+                    Update the details below. Changes will be used when regenerating the Phase 1 prompt.
+                </p>
+
+                <form id="edit-project-form" class="space-y-6">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Project Title *
+                        </label>
+                        <input
+                            type="text"
+                            id="title"
+                            name="title"
+                            required
+                            value="${escapeHtml(project.title)}"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., Cari AI Receptionist Power Statement"
+                        >
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">A descriptive name for this project</p>
+                    </div>
+
+                    <div>
+                        <label for="productName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Product/Service Name *
+                        </label>
+                        <input
+                            type="text"
+                            id="productName"
+                            name="productName"
+                            required
+                            value="${escapeHtml(project.productName)}"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., Cari AI Receptionist"
+                        >
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The name of your product or service</p>
+                    </div>
+
+                    <div>
+                        <label for="customerType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Customer Type *
+                        </label>
+                        <input
+                            type="text"
+                            id="customerType"
+                            name="customerType"
+                            required
+                            value="${escapeHtml(project.customerType)}"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., Small business owners with 5-50 employees"
+                        >
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Be specific about who you serve</p>
+                    </div>
+
+                    <div>
+                        <label for="problem" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Problem Being Solved *
+                        </label>
+                        <textarea
+                            id="problem"
+                            name="problem"
+                            required
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., Missing calls leads to lost revenue and frustrated customers"
+                        >${escapeHtml(project.problem)}</textarea>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The pain point your customers recognize and feel</p>
+                    </div>
+
+                    <div>
+                        <label for="outcome" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Desired Outcome *
+                        </label>
+                        <textarea
+                            id="outcome"
+                            name="outcome"
+                            required
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., Never miss a call, capture every lead, and book more appointments"
+                        >${escapeHtml(project.outcome)}</textarea>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The results customers want to achieve</p>
+                    </div>
+
+                    <div>
+                        <label for="proofPoints" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Proof Points/Results *
+                        </label>
+                        <textarea
+                            id="proofPoints"
+                            name="proofPoints"
+                            required
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., 48% appointment setting rate, 95% call answer rate, customers see ROI in first month"
+                        >${escapeHtml(project.proofPoints)}</textarea>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Specific, quantified results and proof points</p>
+                    </div>
+
+                    <div>
+                        <label for="differentiators" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Key Differentiators *
+                        </label>
+                        <textarea
+                            id="differentiators"
+                            name="differentiators"
+                            required
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., Works with existing phone system, no complex training required, sounds completely human"
+                        >${escapeHtml(project.differentiators)}</textarea>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">What makes your solution unique</p>
+                    </div>
+
+                    <div>
+                        <label for="objections" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Common Objections to Address *
+                        </label>
+                        <textarea
+                            id="objections"
+                            name="objections"
+                            required
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            placeholder="e.g., 'AI sounds robotic' - Our AI is trained on real conversations and sounds completely natural"
+                        >${escapeHtml(project.objections)}</textarea>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Common concerns and how you address them</p>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div class="flex space-x-3">
+                            <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                                Save & Return to Phase 1
+                            </button>
+                        </div>
+                        <button type="button" id="cancel-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+
+    // Event listeners
+    document.getElementById('back-btn').addEventListener('click', () => navigateTo('project', projectId));
+    document.getElementById('cancel-btn').addEventListener('click', () => navigateTo('project', projectId));
+
+    // Form submit - save and return to Phase 1
+    document.getElementById('edit-project-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const updates = {
+            title: formData.get('title').trim(),
+            productName: formData.get('productName').trim(),
+            customerType: formData.get('customerType').trim(),
+            problem: formData.get('problem').trim(),
+            outcome: formData.get('outcome').trim(),
+            proofPoints: formData.get('proofPoints').trim(),
+            differentiators: formData.get('differentiators').trim(),
+            objections: formData.get('objections').trim()
+        };
+
+        // Clear Phase 1 prompt so it will be regenerated with new data
+        updates.phases = {
+            ...project.phases,
+            1: { prompt: '', response: '', completed: false }
+        };
+
+        await updateProject(projectId, updates);
+        showToast('Details updated! Phase 1 prompt will be regenerated.', 'success');
+        navigateTo('project', projectId);
     });
 }
 

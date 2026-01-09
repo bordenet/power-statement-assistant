@@ -173,26 +173,31 @@ function renderPhaseContent(project, phase) {
                 <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                     Step A: Copy Prompt to AI
                 </h4>
-                <div class="flex gap-3 flex-wrap">
-                    <button id="copy-prompt-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                        📋 Copy Prompt to Clipboard
+                <div class="flex justify-between items-center flex-wrap gap-3">
+                    <div class="flex gap-3 flex-wrap">
+                        <button id="copy-prompt-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                            📋 Copy Prompt to Clipboard
+                        </button>
+                        <a
+                            id="open-ai-btn"
+                            href="${aiUrl}"
+                            target="ai-assistant-tab"
+                            rel="noopener noreferrer"
+                            class="px-6 py-3 bg-green-600 text-white rounded-lg transition-colors font-medium ${!phaseData.prompt ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:bg-green-700'}"
+                            ${!phaseData.prompt ? 'aria-disabled="true"' : ''}
+                        >
+                            🔗 Open ${aiName}
+                        </a>
+                    </div>
+                    <button id="view-prompt-btn" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium">
+                        👁️ View Prompt
                     </button>
-                    <a
-                        id="open-ai-btn"
-                        href="${aiUrl}"
-                        target="ai-assistant-tab"
-                        rel="noopener noreferrer"
-                        class="px-6 py-3 bg-green-600 text-white rounded-lg transition-colors font-medium ${!phaseData.prompt ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'hover:bg-green-700'}"
-                        ${!phaseData.prompt ? 'aria-disabled="true"' : ''}
-                    >
-                        🔗 Open ${aiName}
-                    </a>
                 </div>
                 ${phaseData.prompt ? `
                     <div class="mt-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Generated Prompt:</span>
-                            <button class="view-prompt-btn text-blue-600 dark:text-blue-400 hover:underline text-sm">
+                            <button class="view-full-prompt-btn text-blue-600 dark:text-blue-400 hover:underline text-sm">
                                 View Full Prompt
                             </button>
                         </div>
@@ -228,9 +233,15 @@ function renderPhaseContent(project, phase) {
 
             <!-- Navigation -->
             <div class="flex justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
-                <button id="prev-phase-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors ${phase === 1 ? 'invisible' : ''}">
+                ${phase === 1 && !phaseData.response ? `
+                <button id="edit-details-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                    ← Edit Details
+                </button>
+                ` : phase === 1 ? '<div></div>' : `
+                <button id="prev-phase-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
                     ← Previous Phase
                 </button>
+                `}
                 ${phaseData.completed && phase < 3 ? `
                 <button id="next-phase-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     Next Phase →
@@ -325,12 +336,30 @@ function attachPhaseEventListeners(project, phase) {
         });
     }
 
-    // Wire up "View Full Prompt" button if it exists
-    const viewPromptBtn = document.querySelector('.view-prompt-btn');
-    if (viewPromptBtn && project.phases[phase].prompt) {
-        viewPromptBtn.addEventListener('click', () => {
+    // Wire up main "View Prompt" button (always visible)
+    const viewPromptBtn = document.getElementById('view-prompt-btn');
+    if (viewPromptBtn) {
+        viewPromptBtn.addEventListener('click', async () => {
+            const prompt = await generatePromptForPhase(project, phase);
+            const meta = getPhaseMetadata(phase);
+            showPromptModal(prompt, `Phase ${phase}: ${meta.title} Prompt`);
+        });
+    }
+
+    // Wire up inline "View Full Prompt" link (shows after prompt is copied)
+    const viewFullPromptBtn = document.querySelector('.view-full-prompt-btn');
+    if (viewFullPromptBtn && project.phases[phase].prompt) {
+        viewFullPromptBtn.addEventListener('click', () => {
             const meta = getPhaseMetadata(phase);
             showPromptModal(project.phases[phase].prompt, `Phase ${phase}: ${meta.title} Prompt`);
+        });
+    }
+
+    // Wire up "Edit Details" button for Phase 1 (only shows when no response saved)
+    const editDetailsBtn = document.getElementById('edit-details-btn');
+    if (editDetailsBtn) {
+        editDetailsBtn.addEventListener('click', () => {
+            navigateTo('edit-project', project.id);
         });
     }
 
