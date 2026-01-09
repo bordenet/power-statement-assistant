@@ -143,13 +143,13 @@ export function renderNewProjectForm() {
                 </h2>
 
                 <p class="text-gray-600 dark:text-gray-400 mb-6">
-                    Fill in the details below to generate a compelling power statement. All fields marked with * are required.
+                    Fill in the details below to generate a compelling power statement. All fields marked with <span class="text-red-500">*</span> are required.
                 </p>
 
                 <form id="new-project-form" class="space-y-6">
                     <div>
                         <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Project Title *
+                            Project Title <span class="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
@@ -164,7 +164,7 @@ export function renderNewProjectForm() {
 
                     <div>
                         <label for="productName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Product/Service Name *
+                            Product/Service Name <span class="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
@@ -179,7 +179,7 @@ export function renderNewProjectForm() {
 
                     <div>
                         <label for="customerType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Customer Type *
+                            Customer Type <span class="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
@@ -194,7 +194,7 @@ export function renderNewProjectForm() {
 
                     <div>
                         <label for="problem" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Problem Being Solved *
+                            Problem Being Solved <span class="text-red-500">*</span>
                         </label>
                         <textarea
                             id="problem"
@@ -209,7 +209,7 @@ export function renderNewProjectForm() {
 
                     <div>
                         <label for="outcome" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Desired Outcome *
+                            Desired Outcome <span class="text-red-500">*</span>
                         </label>
                         <textarea
                             id="outcome"
@@ -224,7 +224,7 @@ export function renderNewProjectForm() {
 
                     <div>
                         <label for="proofPoints" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Proof Points/Results *
+                            Proof Points/Results <span class="text-red-500">*</span>
                         </label>
                         <textarea
                             id="proofPoints"
@@ -239,7 +239,7 @@ export function renderNewProjectForm() {
 
                     <div>
                         <label for="differentiators" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Key Differentiators *
+                            Key Differentiators <span class="text-red-500">*</span>
                         </label>
                         <textarea
                             id="differentiators"
@@ -254,7 +254,7 @@ export function renderNewProjectForm() {
 
                     <div>
                         <label for="objections" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Common Objections to Address *
+                            Common Objections to Address <span class="text-red-500">*</span>
                         </label>
                         <textarea
                             id="objections"
@@ -346,7 +346,7 @@ export async function renderEditProjectForm(projectId) {
                 <form id="edit-project-form" class="space-y-6">
                     <div>
                         <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Project Title *
+                            Project Title <span class="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
@@ -362,7 +362,7 @@ export async function renderEditProjectForm(projectId) {
 
                     <div>
                         <label for="productName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Product/Service Name *
+                            Product/Service Name <span class="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
@@ -378,7 +378,7 @@ export async function renderEditProjectForm(projectId) {
 
                     <div>
                         <label for="customerType" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Customer Type *
+                            Customer Type <span class="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
@@ -394,7 +394,7 @@ export async function renderEditProjectForm(projectId) {
 
                     <div>
                         <label for="problem" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Problem Being Solved *
+                            Problem Being Solved <span class="text-red-500">*</span>
                         </label>
                         <textarea
                             id="problem"
@@ -409,7 +409,7 @@ export async function renderEditProjectForm(projectId) {
 
                     <div>
                         <label for="outcome" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Desired Outcome *
+                            Desired Outcome <span class="text-red-500">*</span>
                         </label>
                         <textarea
                             id="outcome"
@@ -424,7 +424,7 @@ export async function renderEditProjectForm(projectId) {
 
                     <div>
                         <label for="proofPoints" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Proof Points/Results *
+                            Proof Points/Results <span class="text-red-500">*</span>
                         </label>
                         <textarea
                             id="proofPoints"
@@ -439,7 +439,7 @@ export async function renderEditProjectForm(projectId) {
 
                     <div>
                         <label for="differentiators" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Key Differentiators *
+                            Key Differentiators <span class="text-red-500">*</span>
                         </label>
                         <textarea
                             id="differentiators"
@@ -454,7 +454,7 @@ export async function renderEditProjectForm(projectId) {
 
                     <div>
                         <label for="objections" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Common Objections to Address *
+                            Common Objections to Address <span class="text-red-500">*</span>
                         </label>
                         <textarea
                             id="objections"
