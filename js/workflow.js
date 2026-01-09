@@ -36,23 +36,23 @@ export async function loadDefaultPrompts() {
 export function getPhaseMetadata(phase) {
     const metadata = {
         1: {
-            title: 'Phase 1: Initial Draft',
-            ai: 'Claude Sonnet 4.5',
-            description: 'Generate the initial power statement based on your requirements',
+            title: 'Initial Draft',
+            ai: 'Claude',
+            description: 'Generate the first draft of your power statement using Claude',
             color: 'blue',
             icon: '📝'
         },
         2: {
-            title: 'Phase 2: Adversarial Critique',
-            ai: 'Gemini 2.5 Pro',
-            description: 'Review and improve the initial draft',
+            title: 'Adversarial Critique',
+            ai: 'Gemini',
+            description: 'Get a different perspective and improvements from Gemini',
             color: 'purple',
             icon: '🔍'
         },
         3: {
-            title: 'Phase 3: Final Synthesis',
-            ai: 'Claude Sonnet 4.5',
-            description: 'Compare both versions and create the final power statement',
+            title: 'Final Synthesis',
+            ai: 'Claude',
+            description: 'Combine the best elements into a polished final version',
             color: 'green',
             icon: '✨'
         }

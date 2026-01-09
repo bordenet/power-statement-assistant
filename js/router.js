@@ -8,13 +8,14 @@
  * - Individual project workflow view
  */
 
-import { renderProjectsList, renderNewProjectForm } from './views.js';
+import { renderProjectsList, renderNewProjectForm, renderEditProjectForm } from './views.js';
 import { renderProjectView } from './project-view.js';
 import { updateStorageInfo } from './app.js';
 
 const routes = {
     'home': renderProjectsList,
     'new-project': renderNewProjectForm,
+    'edit-project': renderEditProjectForm,
     'project': renderProjectView
 };
 
@@ -35,6 +36,8 @@ export async function navigateTo(route, ...params) {
         window.location.hash = '';
     } else if (route === 'new-project') {
         window.location.hash = '#new';
+    } else if (route === 'edit-project' && params[0]) {
+        window.location.hash = `#edit/${params[0]}`;
     } else if (route === 'project' && params[0]) {
         window.location.hash = `#project/${params[0]}`;
     }
@@ -74,6 +77,9 @@ function handleHashChange() {
         navigateTo('home');
     } else if (hash === 'new') {
         navigateTo('new-project');
+    } else if (hash.startsWith('edit/')) {
+        const projectId = hash.split('/')[1];
+        navigateTo('edit-project', projectId);
     } else if (hash.startsWith('project/')) {
         const projectId = hash.split('/')[1];
         navigateTo('project', projectId);

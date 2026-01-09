@@ -264,5 +264,173 @@ describe('Form-to-Prompt Integration Tests', () => {
             expect(phase3Template).toContain('## Version B: Structured (Full Version)');
         });
     });
+
+    describe('Edit Project Functionality', () => {
+        it('should update project fields via updateProject', async () => {
+            // Import updateProject
+            const { updateProject, getProject } = await import('../js/projects.js');
+
+            // Create initial project
+            const initialData = {
+                title: 'Original Title',
+                productName: 'Original Product',
+                customerType: 'Original Customers',
+                problem: 'Original Problem',
+                outcome: 'Original Outcome',
+                proofPoints: 'Original Proof',
+                differentiators: 'Original Diff',
+                objections: 'Original Objections'
+            };
+
+            const project = await createProject(initialData);
+
+            // Update the project
+            const updates = {
+                title: 'Updated Title',
+                productName: 'Updated Product',
+                problem: 'Updated Problem'
+            };
+
+            await updateProject(project.id, updates);
+
+            // Verify updates
+            const updatedProject = await getProject(project.id);
+            expect(updatedProject.title).toBe('Updated Title');
+            expect(updatedProject.productName).toBe('Updated Product');
+            expect(updatedProject.problem).toBe('Updated Problem');
+            // Unchanged fields should remain
+            expect(updatedProject.customerType).toBe('Original Customers');
+            expect(updatedProject.outcome).toBe('Original Outcome');
+        });
+
+        it('should allow clearing Phase 1 prompt after edit', async () => {
+            const { updateProject, getProject, updatePhase } = await import('../js/projects.js');
+
+            // Create project
+            const project = await createProject({
+                title: 'Test',
+                productName: 'Test Product',
+                customerType: 'Test Customers',
+                problem: 'Test Problem',
+                outcome: 'Test Outcome',
+                proofPoints: 'Test Proof',
+                differentiators: 'Test Diff',
+                objections: 'Test Objections'
+            });
+
+            // Simulate copying prompt (Phase 1 gets a prompt but no response)
+            await updatePhase(project.id, 1, 'Generated prompt content', '');
+
+            // Verify Phase 1 has prompt
+            let currentProject = await getProject(project.id);
+            expect(currentProject.phases[1].prompt).toBe('Generated prompt content');
+            expect(currentProject.phases[1].completed).toBe(false);
+
+            // Simulate edit: update project and clear Phase 1
+            await updateProject(project.id, {
+                productName: 'Updated Product',
+                phases: {
+                    ...currentProject.phases,
+                    1: { prompt: '', response: '', completed: false }
+                }
+            });
+
+            // Verify Phase 1 was cleared
+            currentProject = await getProject(project.id);
+            expect(currentProject.phases[1].prompt).toBe('');
+            expect(currentProject.phases[1].response).toBe('');
+            expect(currentProject.phases[1].completed).toBe(false);
+            expect(currentProject.productName).toBe('Updated Product');
+        });
+
+        it('should regenerate different prompt after field update', async () => {
+            const { getProject, updateProject } = await import('../js/projects.js');
+
+            // Create project
+            const project = await createProject({
+                title: 'Test',
+                productName: 'Original Product',
+                customerType: 'Original Customers',
+                problem: 'Original Problem',
+                outcome: 'Original Outcome',
+                proofPoints: 'Original Proof',
+                differentiators: 'Original Diff',
+                objections: 'Original Objections'
+            });
+
+            // Generate initial prompt
+            const initialPrompt = await generatePromptForPhase(project, 1);
+            expect(initialPrompt).toContain('Original Product');
+
+            // Update project
+            await updateProject(project.id, { productName: 'Updated Product' });
+
+            // Generate new prompt
+            const updatedProject = await getProject(project.id);
+            const newPrompt = await generatePromptForPhase(updatedProject, 1);
+
+            // New prompt should contain updated value
+            expect(newPrompt).toContain('Updated Product');
+            expect(newPrompt).not.toContain('Original Product');
+        });
+
+        it('should preserve Phase 2 and 3 when editing in Phase 1', async () => {
+            const { getProject, updateProject, updatePhase } = await import('../js/projects.js');
+
+            // Create project
+            const project = await createProject({
+                title: 'Test',
+                productName: 'Test Product',
+                customerType: 'Test Customers',
+                problem: 'Test Problem',
+                outcome: 'Test Outcome',
+                proofPoints: 'Test Proof',
+                differentiators: 'Test Diff',
+                objections: 'Test Objections'
+            });
+
+            // Simulate Phase 1 completion
+            await updatePhase(project.id, 1, 'Phase 1 prompt', 'Phase 1 response');
+
+            // Verify Phase 1 is complete
+            let currentProject = await getProject(project.id);
+            expect(currentProject.phases[1].completed).toBe(true);
+
+            // Update project details only (not phases) - simulating a different edit scenario
+            await updateProject(project.id, { productName: 'New Product Name' });
+
+            // Phases should be preserved
+            currentProject = await getProject(project.id);
+            expect(currentProject.phases[1].prompt).toBe('Phase 1 prompt');
+            expect(currentProject.phases[1].response).toBe('Phase 1 response');
+            expect(currentProject.phases[1].completed).toBe(true);
+        });
+    });
+
+    describe('Phase Metadata', () => {
+        it('should return correct AI names for each phase', async () => {
+            const { getPhaseMetadata } = await import('../js/workflow.js');
+
+            const phase1 = getPhaseMetadata(1);
+            expect(phase1.ai).toBe('Claude');
+            expect(phase1.title).toBe('Initial Draft');
+
+            const phase2 = getPhaseMetadata(2);
+            expect(phase2.ai).toBe('Gemini');
+            expect(phase2.title).toBe('Adversarial Critique');
+
+            const phase3 = getPhaseMetadata(3);
+            expect(phase3.ai).toBe('Claude');
+            expect(phase3.title).toBe('Final Synthesis');
+        });
+
+        it('should have icons for all phases', async () => {
+            const { getPhaseMetadata } = await import('../js/workflow.js');
+
+            expect(getPhaseMetadata(1).icon).toBe('📝');
+            expect(getPhaseMetadata(2).icon).toBe('🔍');
+            expect(getPhaseMetadata(3).icon).toBe('✨');
+        });
+    });
 });
 
