@@ -153,7 +153,30 @@ function renderPhaseContent(project, phase) {
     const hasExistingResponse = phaseData.response && phaseData.response.trim().length > 0;
     const textareaDisabled = !hasExistingResponse && !phaseData.prompt;
 
+    // Check if Phase 3 is complete - show success banner
+    const isPhase3Complete = phase === 3 && phaseData.completed;
+
     return `
+        ${isPhase3Complete ? `
+        <!-- SUCCESS BANNER - Phase 3 Complete -->
+        <div class="mb-6 p-6 bg-green-50 dark:bg-green-900/20 border-2 border-green-500 dark:border-green-600 rounded-lg">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                    <h3 class="text-xl font-bold text-green-800 dark:text-green-300 flex items-center">
+                        <span class="text-2xl mr-2">🎉</span>
+                        Your Power Statement is Complete!
+                    </h3>
+                    <p class="text-green-700 dark:text-green-400 mt-1">
+                        Export your finished power statement as a Markdown file to use in presentations and documents.
+                    </p>
+                </div>
+                <button id="export-complete-btn" class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-bold text-lg shadow-lg hover:shadow-xl">
+                    📥 Export Power Statement
+                </button>
+            </div>
+        </div>
+        ` : ''}
+
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="mb-6">
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -382,6 +405,12 @@ function attachPhaseEventListeners(project, phase) {
                 navigateTo('home');
             }
         });
+    }
+
+    // Wire up Phase 3 complete export button
+    const exportCompleteBtn = document.getElementById('export-complete-btn');
+    if (exportCompleteBtn) {
+        exportCompleteBtn.addEventListener('click', () => exportFinalDocument(project));
     }
 
     if (prevPhaseBtn) {
