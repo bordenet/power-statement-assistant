@@ -80,9 +80,11 @@ export async function renderProjectView(projectId) {
                         ${escapeHtml(project.problems)}
                     </p>
                 </div>
+                ${project.phases && project.phases[3] && project.phases[3].completed ? `
                 <button id="export-prd-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                    Export Power Statement
+                    📄 Export as Markdown
                 </button>
+                ` : ''}
             </div>
         </div>
 
@@ -159,19 +161,18 @@ function renderPhaseContent(project, phase) {
     return `
         ${isPhase3Complete ? `
         <!-- SUCCESS BANNER - Phase 3 Complete -->
-        <div class="mb-6 p-6 bg-green-50 dark:bg-green-900/20 border-2 border-green-500 dark:border-green-600 rounded-lg">
+        <div class="mb-6 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
             <div class="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h3 class="text-xl font-bold text-green-800 dark:text-green-300 flex items-center">
-                        <span class="text-2xl mr-2">🎉</span>
-                        Your Power Statement is Complete!
-                    </h3>
+                    <h4 class="text-lg font-semibold text-green-800 dark:text-green-300 flex items-center">
+                        <span class="mr-2">🎉</span> Your Power Statement is Complete!
+                    </h4>
                     <p class="text-green-700 dark:text-green-400 mt-1">
-                        Export your finished power statement as a Markdown file to use in presentations and documents.
+                        Download your finished power statement as a Markdown (.md) file.
                     </p>
                 </div>
-                <button id="export-complete-btn" class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-bold text-lg shadow-lg hover:shadow-xl">
-                    📥 Export Power Statement
+                <button id="export-complete-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-lg">
+                    📄 Export as Markdown
                 </button>
             </div>
         </div>
@@ -256,7 +257,7 @@ function renderPhaseContent(project, phase) {
 
             <!-- Navigation -->
             <div class="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
-                <div>
+                <div class="flex gap-3">
                     ${phase === 1 && !phaseData.response ? `
                     <button id="edit-details-btn" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
                         ← Edit Details
@@ -266,17 +267,15 @@ function renderPhaseContent(project, phase) {
                         ← Previous Phase
                     </button>
                     `}
-                </div>
-                <div class="flex gap-3">
                     ${phaseData.completed && phase < 3 ? `
                     <button id="next-phase-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                         Next Phase →
                     </button>
                     ` : ''}
-                    <button id="delete-project-btn" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                        Delete
-                    </button>
                 </div>
+                <button id="delete-project-btn" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+                    Delete
+                </button>
             </div>
         </div>
     `;
