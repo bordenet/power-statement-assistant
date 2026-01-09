@@ -97,6 +97,21 @@ show_elapsed_time() {
     printf "\nTotal execution time: %02d:%02d:%02d\n" "$hours" "$minutes" "$seconds"
 }
 
+format_duration() {
+    local seconds="${1:-$SECONDS}"
+    local hours=$((seconds / 3600))
+    local minutes=$(((seconds % 3600) / 60))
+    local secs=$((seconds % 60))
+
+    if [[ $hours -gt 0 ]]; then
+        printf "%dh %dm %ds" "$hours" "$minutes" "$secs"
+    elif [[ $minutes -gt 0 ]]; then
+        printf "%dm %ds" "$minutes" "$secs"
+    else
+        printf "%ds" "$secs"
+    fi
+}
+
 ################################################################################
 # Logging Functions
 ################################################################################
