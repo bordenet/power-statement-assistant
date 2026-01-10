@@ -182,7 +182,7 @@ function renderPhaseContent(project, phase) {
                 <div class="flex justify-between items-center flex-wrap gap-3">
                     <div class="flex gap-3 flex-wrap">
                         <button id="copy-prompt-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                            📋 Copy Prompt to Clipboard
+                            📋 ${phaseData.prompt ? 'Copy Prompt Again' : 'Generate & Copy Prompt'}
                         </button>
                         <a
                             id="open-ai-btn"
@@ -195,9 +195,11 @@ function renderPhaseContent(project, phase) {
                             🔗 Open ${aiName}
                         </a>
                     </div>
+                    ${phaseData.prompt ? `
                     <button id="view-prompt-btn" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium">
                         👁️ View Prompt
                     </button>
+                    ` : ''}
                 </div>
                 ${phaseData.prompt ? `
                     <div class="mt-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
