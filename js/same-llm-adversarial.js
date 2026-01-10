@@ -9,75 +9,75 @@
  */
 
 class SameLLMAdversarialSystem {
-    constructor() {
-        this.configManager = new ConfigurationManager();
-        this.promptAugmenter = new AdversarialPromptAugmenter();
-        this.qualityValidator = new AdversarialQualityValidator();
-    }
+  constructor() {
+    this.configManager = new ConfigurationManager();
+    this.promptAugmenter = new AdversarialPromptAugmenter();
+    this.qualityValidator = new AdversarialQualityValidator();
+  }
 
-    /**
+  /**
      * Main execution method that automatically detects and handles same-LLM configurations
      */
-    async executeWorkflow(userInput) {
-        const config = this.configManager.detectConfiguration();
+  async executeWorkflow(userInput) {
+    const config = this.configManager.detectConfiguration();
 
-        // Phase 1: Always use standard prompt
-        const phase1Output = await this.executePhase1(userInput);
+    // Phase 1: Always use standard prompt
+    const phase1Output = await this.executePhase1(userInput);
 
-        // Phase 2: Apply adversarial augmentation if same LLM detected
-        const phase2Output = await this.executePhase2(phase1Output, userInput, config);
+    // Phase 2: Apply adversarial augmentation if same LLM detected
+    const phase2Output = await this.executePhase2(phase1Output, userInput, config);
 
-        // Phase 3: Synthesis (standard approach)
-        const phase3Output = await this.executePhase3(phase1Output, phase2Output, userInput);
+    // Phase 3: Synthesis (standard approach)
+    const phase3Output = await this.executePhase3(phase1Output, phase2Output, userInput);
 
-        // Validate adversarial effectiveness
-        const qualityMetrics = this.qualityValidator.validateAdversarialTension(
-            phase1Output,
-            phase2Output
-        );
+    // Validate adversarial effectiveness
+    const qualityMetrics = this.qualityValidator.validateAdversarialTension(
+      phase1Output,
+      phase2Output
+    );
 
-        return {
-            phase1Output,
-            phase2Output,
-            phase3Output,
-            configuration: config,
-            qualityMetrics,
-            adversarialEffectiveness: qualityMetrics.isEffectivelyAdversarial
-        };
+    return {
+      phase1Output,
+      phase2Output,
+      phase3Output,
+      configuration: config,
+      qualityMetrics,
+      adversarialEffectiveness: qualityMetrics.isEffectivelyAdversarial
+    };
+  }
+
+  async executePhase2(phase1Output, userInput, config) {
+    if (config.isSameLLM) {
+      // Same LLM detected - apply Gemini personality simulation
+      console.log(`Same LLM detected via ${config.detectionMethod} (${config.deploymentType})`);
+      console.log('Applying Gemini adversarial personality simulation to Phase 2');
+
+      const augmentedPrompt = this.promptAugmenter.generateGeminiStylePrompt(
+        this.getOriginalPhase2Prompt()
+      );
+
+      return await this.callLLM(augmentedPrompt, {
+        phase1Output,
+        userInput,
+        context: 'adversarial_gemini_simulation',
+        detectionMethod: config.detectionMethod,
+        deploymentType: config.deploymentType
+      });
+    } else {
+      // Different LLMs - use standard Phase 2 prompt
+      console.log('Different LLMs detected - using standard adversarial approach');
+      return await this.callLLM(this.getOriginalPhase2Prompt(), {
+        phase1Output,
+        userInput,
+        context: 'standard_adversarial'
+      });
     }
+  }
 
-    async executePhase2(phase1Output, userInput, config) {
-        if (config.isSameLLM) {
-            // Same LLM detected - apply Gemini personality simulation
-            console.log(`Same LLM detected via ${config.detectionMethod} (${config.deploymentType})`);
-            console.log('Applying Gemini adversarial personality simulation to Phase 2');
-
-            const augmentedPrompt = this.promptAugmenter.generateGeminiStylePrompt(
-                this.getOriginalPhase2Prompt()
-            );
-
-            return await this.callLLM(augmentedPrompt, {
-                phase1Output,
-                userInput,
-                context: 'adversarial_gemini_simulation',
-                detectionMethod: config.detectionMethod,
-                deploymentType: config.deploymentType
-            });
-        } else {
-            // Different LLMs - use standard Phase 2 prompt
-            console.log('Different LLMs detected - using standard adversarial approach');
-            return await this.callLLM(this.getOriginalPhase2Prompt(), {
-                phase1Output,
-                userInput,
-                context: 'standard_adversarial'
-            });
-        }
-    }
-
-    getOriginalPhase2Prompt() {
-        // This would be loaded from the actual Phase 2 prompt file
-        // For demonstration purposes, returning a placeholder
-        return `You are tasked with providing an alternative perspective on the Phase 1 output.
+  getOriginalPhase2Prompt() {
+    // This would be loaded from the actual Phase 2 prompt file
+    // For demonstration purposes, returning a placeholder
+    return `You are tasked with providing an alternative perspective on the Phase 1 output.
 
 Analyze the provided document and offer a different approach or identify areas for improvement.
 Focus on being constructively critical and offering genuine alternatives.
@@ -86,168 +86,168 @@ Phase 1 Output: {phase1Output}
 User Input: {userInput}
 
 Provide your alternative analysis:`;
-    }
+  }
 
-    async callLLM(prompt, context) {
-        // This would integrate with actual LLM API calls
-        // For demonstration purposes, returning a mock response
-        return {
-            prompt: prompt,
-            context: context,
-            response: 'Mock LLM response - in production this would call the actual LLM API'
-        };
-    }
+  async callLLM(prompt, context) {
+    // This would integrate with actual LLM API calls
+    // For demonstration purposes, returning a mock response
+    return {
+      prompt: prompt,
+      context: context,
+      response: 'Mock LLM response - in production this would call the actual LLM API'
+    };
+  }
 
-    async executePhase1(_userInput) {
-        // Mock Phase 1 execution
-        return 'Mock Phase 1 output - comprehensive initial analysis';
-    }
+  async executePhase1(_userInput) {
+    // Mock Phase 1 execution
+    return 'Mock Phase 1 output - comprehensive initial analysis';
+  }
 
-    async executePhase3(_phase1Output, _phase2Output, _userInput) {
-        // Mock Phase 3 execution
-        return 'Mock Phase 3 output - synthesis of both perspectives';
-    }
+  async executePhase3(_phase1Output, _phase2Output, _userInput) {
+    // Mock Phase 3 execution
+    return 'Mock Phase 3 output - synthesis of both perspectives';
+  }
 }
 
 class ConfigurationManager {
-    detectConfiguration() {
-        const phase1Config = this.getPhaseConfig('phase1');
-        const phase2Config = this.getPhaseConfig('phase2');
-        const isSameLLM = this.isSameModel(phase1Config, phase2Config);
+  detectConfiguration() {
+    const phase1Config = this.getPhaseConfig('phase1');
+    const phase2Config = this.getPhaseConfig('phase2');
+    const isSameLLM = this.isSameModel(phase1Config, phase2Config);
 
-        return {
-            phase1: phase1Config,
-            phase2: phase2Config,
-            isSameLLM,
-            requiresAugmentation: isSameLLM,
-            detectionMethod: this.getDetectionMethod(phase1Config, phase2Config),
-            deploymentType: this.getDeploymentType(phase1Config, phase2Config)
-        };
+    return {
+      phase1: phase1Config,
+      phase2: phase2Config,
+      isSameLLM,
+      requiresAugmentation: isSameLLM,
+      detectionMethod: this.getDetectionMethod(phase1Config, phase2Config),
+      deploymentType: this.getDeploymentType(phase1Config, phase2Config)
+    };
+  }
+
+  getDetectionMethod(config1, config2) {
+    if (config1.provider === config2.provider && config1.model === config2.model) {
+      return 'provider_model_match';
     }
-
-    getDetectionMethod(config1, config2) {
-        if (config1.provider === config2.provider && config1.model === config2.model) {
-            return 'provider_model_match';
-        }
-        if (config1.url && config2.url && config1.url === config2.url) {
-            return 'url_match';
-        }
-        if (config1.endpoint && config2.endpoint && config1.endpoint === config2.endpoint) {
-            return 'endpoint_match';
-        }
-        return 'different_llms';
+    if (config1.url && config2.url && config1.url === config2.url) {
+      return 'url_match';
     }
+    if (config1.endpoint && config2.endpoint && config1.endpoint === config2.endpoint) {
+      return 'endpoint_match';
+    }
+    return 'different_llms';
+  }
 
-    getDeploymentType(config1, config2) {
-        // LibreChat detection
-        if ((config1.url && config1.url.includes('librechat')) ||
+  getDeploymentType(config1, config2) {
+    // LibreChat detection
+    if ((config1.url && config1.url.includes('librechat')) ||
             (config1.endpoint && config1.endpoint.includes('librechat'))) {
-            return 'librechat';
-        }
+      return 'librechat';
+    }
 
-        // Local deployment detection
-        if ((config1.endpoint && config1.endpoint.includes('localhost')) ||
+    // Local deployment detection
+    if ((config1.endpoint && config1.endpoint.includes('localhost')) ||
             (config1.url && config1.url.includes('localhost'))) {
-            return 'local_deployment';
-        }
-
-        // Corporate single-endpoint detection
-        if (config1.url === config2.url && config1.url) {
-            return 'corporate_single_endpoint';
-        }
-
-        // Same provider (different models)
-        if (config1.provider === config2.provider) {
-            return 'same_provider';
-        }
-
-        return 'multi_provider';
+      return 'local_deployment';
     }
 
-    // Helper method to detect common corporate deployment patterns
-    detectCorporateDeployment() {
-        const commonPatterns = [
-            'librechat',
-            'chatgpt-enterprise',
-            'azure-openai',
-            'aws-bedrock',
-            'google-vertex',
-            'internal-llm',
-            'corporate-ai'
-        ];
+    // Corporate single-endpoint detection
+    if (config1.url === config2.url && config1.url) {
+      return 'corporate_single_endpoint';
+    }
 
-        const phase1Config = this.getPhaseConfig('phase1');
-        const phase2Config = this.getPhaseConfig('phase2');
+    // Same provider (different models)
+    if (config1.provider === config2.provider) {
+      return 'same_provider';
+    }
 
-        for (const pattern of commonPatterns) {
-            if ((phase1Config.url && phase1Config.url.includes(pattern)) ||
+    return 'multi_provider';
+  }
+
+  // Helper method to detect common corporate deployment patterns
+  detectCorporateDeployment() {
+    const commonPatterns = [
+      'librechat',
+      'chatgpt-enterprise',
+      'azure-openai',
+      'aws-bedrock',
+      'google-vertex',
+      'internal-llm',
+      'corporate-ai'
+    ];
+
+    const phase1Config = this.getPhaseConfig('phase1');
+    const phase2Config = this.getPhaseConfig('phase2');
+
+    for (const pattern of commonPatterns) {
+      if ((phase1Config.url && phase1Config.url.includes(pattern)) ||
                 (phase1Config.endpoint && phase1Config.endpoint.includes(pattern))) {
-                return {
-                    isCorporate: true,
-                    pattern: pattern,
-                    requiresAugmentation: phase1Config.url === phase2Config.url ||
-                                        phase1Config.endpoint === phase2Config.endpoint
-                };
-            }
-        }
-
-        return { isCorporate: false, pattern: null, requiresAugmentation: false };
-    }
-
-    getPhaseConfig(phase) {
-        // Browser-safe environment variable access
-        // In browsers, use window.AI_CONFIG or fallback to defaults
-        const getEnvVar = (key, defaultValue = null) => {
-            // Check if running in Node.js environment
-            if (typeof process !== 'undefined' && process.env && process.env[key]) {
-                return process.env[key];
-            }
-            // Check if running in browser with window.AI_CONFIG
-            if (typeof window !== 'undefined' && window.AI_CONFIG && window.AI_CONFIG[key]) {
-                return window.AI_CONFIG[key];
-            }
-            return defaultValue;
-        };
-
-        const phaseUpper = phase.toUpperCase();
         return {
-            provider: getEnvVar(`${phaseUpper}_PROVIDER`, 'anthropic'),
-            model: getEnvVar(`${phaseUpper}_MODEL`, 'claude-3-sonnet'),
-            endpoint: getEnvVar(`${phaseUpper}_ENDPOINT`),
-            url: getEnvVar(`${phaseUpper}_URL`) || getEnvVar(`${phaseUpper}_ENDPOINT`)
+          isCorporate: true,
+          pattern: pattern,
+          requiresAugmentation: phase1Config.url === phase2Config.url ||
+                                        phase1Config.endpoint === phase2Config.endpoint
         };
+      }
     }
 
-    isSameModel(config1, config2) {
-        // Check if same provider and model
-        if (config1.provider === config2.provider && config1.model === config2.model) {
-            return true;
-        }
+    return { isCorporate: false, pattern: null, requiresAugmentation: false };
+  }
 
-        // Check if same URL/endpoint (for LibreChat and similar deployments)
-        if (config1.url && config2.url && config1.url === config2.url) {
-            return true;
-        }
+  getPhaseConfig(phase) {
+    // Browser-safe environment variable access
+    // In browsers, use window.AI_CONFIG or fallback to defaults
+    const getEnvVar = (key, defaultValue = null) => {
+      // Check if running in Node.js environment
+      if (typeof process !== 'undefined' && process.env && process.env[key]) {
+        return process.env[key];
+      }
+      // Check if running in browser with window.AI_CONFIG
+      if (typeof window !== 'undefined' && window.AI_CONFIG && window.AI_CONFIG[key]) {
+        return window.AI_CONFIG[key];
+      }
+      return defaultValue;
+    };
 
-        // Check if same endpoint
-        if (config1.endpoint && config2.endpoint && config1.endpoint === config2.endpoint) {
-            return true;
-        }
+    const phaseUpper = phase.toUpperCase();
+    return {
+      provider: getEnvVar(`${phaseUpper}_PROVIDER`, 'anthropic'),
+      model: getEnvVar(`${phaseUpper}_MODEL`, 'claude-3-sonnet'),
+      endpoint: getEnvVar(`${phaseUpper}_ENDPOINT`),
+      url: getEnvVar(`${phaseUpper}_URL`) || getEnvVar(`${phaseUpper}_ENDPOINT`)
+    };
+  }
 
-        return false;
+  isSameModel(config1, config2) {
+    // Check if same provider and model
+    if (config1.provider === config2.provider && config1.model === config2.model) {
+      return true;
     }
+
+    // Check if same URL/endpoint (for LibreChat and similar deployments)
+    if (config1.url && config2.url && config1.url === config2.url) {
+      return true;
+    }
+
+    // Check if same endpoint
+    if (config1.endpoint && config2.endpoint && config1.endpoint === config2.endpoint) {
+      return true;
+    }
+
+    return false;
+  }
 }
 
 class AdversarialPromptAugmenter {
-    generateGeminiStylePrompt(originalPrompt) {
-        // Check if original prompt contains "forget" clause that would nullify prepending
-        if (this.containsForgetClause(originalPrompt)) {
-            // Replace entire prompt with Gemini-enhanced version
-            return this.createReplacementGeminiPrompt();
-        } else {
-            // Safe to prepend Gemini personality
-            const geminiPersonality = this.getGeminiPersonalityTemplate();
-            return `${geminiPersonality}
+  generateGeminiStylePrompt(originalPrompt) {
+    // Check if original prompt contains "forget" clause that would nullify prepending
+    if (this.containsForgetClause(originalPrompt)) {
+      // Replace entire prompt with Gemini-enhanced version
+      return this.createReplacementGeminiPrompt();
+    } else {
+      // Safe to prepend Gemini personality
+      const geminiPersonality = this.getGeminiPersonalityTemplate();
+      return `${geminiPersonality}
 
 ---
 
@@ -258,23 +258,23 @@ ${originalPrompt}
 **REMEMBER**: You are Google Gemini. Be analytically rigorous, constructively adversarial,
 and systematically thorough in your critique. Challenge assumptions, demand evidence,
 and identify every possible improvement opportunity.`;
-        }
     }
+  }
 
-    containsForgetClause(prompt) {
-        const forgetPatterns = [
-            /forget\s+all\s+previous/i,
-            /ignore\s+previous/i,
-            /start\s+fresh/i,
-            /new\s+session/i,
-            /clear\s+context/i
-        ];
+  containsForgetClause(prompt) {
+    const forgetPatterns = [
+      /forget\s+all\s+previous/i,
+      /ignore\s+previous/i,
+      /start\s+fresh/i,
+      /new\s+session/i,
+      /clear\s+context/i
+    ];
 
-        return forgetPatterns.some(pattern => pattern.test(prompt));
-    }
+    return forgetPatterns.some(pattern => pattern.test(prompt));
+  }
 
-    createReplacementGeminiPrompt() {
-        return `# Phase 2: Gemini Review Prompt
+  createReplacementGeminiPrompt() {
+    return `# Phase 2: Gemini Review Prompt
 
 **INSTRUCTIONS FOR GEMINI:**
 
@@ -358,10 +358,10 @@ When ready, provide your improved version in this format:
 ---
 
 **REMEMBER**: You are Google Gemini. Be analytically rigorous, constructively adversarial, and systematically thorough in your critique. Challenge assumptions, demand evidence, and identify every possible improvement opportunity.`;
-    }
+  }
 
-    getGeminiPersonalityTemplate() {
-        return `## ADVERSARIAL REVIEWER ROLE (GEMINI-STYLE SIMULATION)
+  getGeminiPersonalityTemplate() {
+    return `## ADVERSARIAL REVIEWER ROLE (GEMINI-STYLE SIMULATION)
 
 You are now operating as Google Gemini, Google's flagship analytical LLM known for rigorous,
 constructively adversarial analysis. Completely abandon your previous conversational style
@@ -401,76 +401,76 @@ Maintain Gemini's characteristic analytical tone throughout your critique.
 **CRITICAL**: This is NOT a "review and improve" task. This is a "challenge and
 reconstruct" task. Offer a genuinely different analytical perspective that creates
 productive tension with the original approach.`;
-    }
+  }
 }
 
 class AdversarialQualityValidator {
-    validateAdversarialTension(phase1Output, phase2Output) {
-        const differenceScore = this.calculateSemanticDifference(phase1Output, phase2Output);
-        const adversarialLanguage = this.detectAdversarialLanguage(phase2Output);
-        const challengeCount = this.countChallenges(phase2Output);
+  validateAdversarialTension(phase1Output, phase2Output) {
+    const differenceScore = this.calculateSemanticDifference(phase1Output, phase2Output);
+    const adversarialLanguage = this.detectAdversarialLanguage(phase2Output);
+    const challengeCount = this.countChallenges(phase2Output);
 
-        return {
-            differenceScore,
-            adversarialLanguageCount: adversarialLanguage,
-            challengeCount,
-            isEffectivelyAdversarial: this.assessEffectiveness(differenceScore, adversarialLanguage, challengeCount)
-        };
-    }
+    return {
+      differenceScore,
+      adversarialLanguageCount: adversarialLanguage,
+      challengeCount,
+      isEffectivelyAdversarial: this.assessEffectiveness(differenceScore, adversarialLanguage, challengeCount)
+    };
+  }
 
-    calculateSemanticDifference(output1, output2) {
-        // Simplified semantic difference calculation
-        // In production, use proper semantic similarity models
-        const words1 = new Set(output1.toLowerCase().split(/\s+/));
-        const words2 = new Set(output2.toLowerCase().split(/\s+/));
+  calculateSemanticDifference(output1, output2) {
+    // Simplified semantic difference calculation
+    // In production, use proper semantic similarity models
+    const words1 = new Set(output1.toLowerCase().split(/\s+/));
+    const words2 = new Set(output2.toLowerCase().split(/\s+/));
 
-        const intersection = new Set([...words1].filter(x => words2.has(x)));
-        const union = new Set([...words1, ...words2]);
+    const intersection = new Set([...words1].filter(x => words2.has(x)));
+    const union = new Set([...words1, ...words2]);
 
-        return 1 - (intersection.size / union.size); // Higher = more different
-    }
+    return 1 - (intersection.size / union.size); // Higher = more different
+  }
 
-    detectAdversarialLanguage(output) {
-        const adversarialPhrases = [
-            'however', 'but', 'challenge', 'question', 'assumption',
-            'evidence', 'unclear', 'vague', 'inconsistent', 'gap',
-            'overlooks', 'fails to consider', 'lacks', 'insufficient',
-            'problematic', 'concerning', 'requires clarification'
-        ];
+  detectAdversarialLanguage(output) {
+    const adversarialPhrases = [
+      'however', 'but', 'challenge', 'question', 'assumption',
+      'evidence', 'unclear', 'vague', 'inconsistent', 'gap',
+      'overlooks', 'fails to consider', 'lacks', 'insufficient',
+      'problematic', 'concerning', 'requires clarification'
+    ];
 
-        return adversarialPhrases.filter(phrase =>
-            output.toLowerCase().includes(phrase)
-        ).length;
-    }
+    return adversarialPhrases.filter(phrase =>
+      output.toLowerCase().includes(phrase)
+    ).length;
+  }
 
-    countChallenges(output) {
-        const challengePatterns = [
-            /why\s+(?:does|is|are|would)/gi,
-            /what\s+evidence/gi,
-            /how\s+can\s+we\s+be\s+sure/gi,
-            /this\s+assumes/gi,
-            /lacks\s+(?:detail|evidence|clarity)/gi
-        ];
+  countChallenges(output) {
+    const challengePatterns = [
+      /why\s+(?:does|is|are|would)/gi,
+      /what\s+evidence/gi,
+      /how\s+can\s+we\s+be\s+sure/gi,
+      /this\s+assumes/gi,
+      /lacks\s+(?:detail|evidence|clarity)/gi
+    ];
 
-        return challengePatterns.reduce((count, pattern) => {
-            const matches = output.match(pattern);
-            return count + (matches ? matches.length : 0);
-        }, 0);
-    }
+    return challengePatterns.reduce((count, pattern) => {
+      const matches = output.match(pattern);
+      return count + (matches ? matches.length : 0);
+    }, 0);
+  }
 
-    assessEffectiveness(differenceScore, adversarialLanguage, challengeCount) {
-        // Effectiveness criteria
-        return differenceScore >= 0.3 && // At least 30% semantic difference
+  assessEffectiveness(differenceScore, adversarialLanguage, challengeCount) {
+    // Effectiveness criteria
+    return differenceScore >= 0.3 && // At least 30% semantic difference
                adversarialLanguage >= 3 && // At least 3 adversarial phrases
                challengeCount >= 2; // At least 2 direct challenges
-    }
+  }
 }
 
 // ✅ ES6 exports for browser compatibility
 export {
-    SameLLMAdversarialSystem,
-    ConfigurationManager,
-    AdversarialPromptAugmenter,
-    AdversarialQualityValidator
+  SameLLMAdversarialSystem,
+  ConfigurationManager,
+  AdversarialPromptAugmenter,
+  AdversarialQualityValidator
 };
 
