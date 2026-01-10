@@ -122,7 +122,11 @@ export async function renderProjectView(projectId) {
 
   // Event listeners
   document.getElementById('back-btn').addEventListener('click', () => navigateTo('home'));
-  document.getElementById('export-prd-btn').addEventListener('click', () => exportFinalDocument(project));
+
+  const exportBtn = document.getElementById('export-prd-btn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => exportFinalDocument(project));
+  }
 
   document.querySelectorAll('.phase-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -155,29 +159,7 @@ function renderPhaseContent(project, phase) {
   const hasExistingResponse = phaseData.response && phaseData.response.trim().length > 0;
   const textareaDisabled = !hasExistingResponse && !phaseData.prompt;
 
-  // Check if Phase 3 is complete - show success banner
-  const isPhase3Complete = phase === 3 && phaseData.completed;
-
   return `
-        ${isPhase3Complete ? `
-        <!-- SUCCESS BANNER - Phase 3 Complete -->
-        <div class="mb-6 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-            <div class="flex items-center justify-between flex-wrap gap-4">
-                <div>
-                    <h4 class="text-lg font-semibold text-green-800 dark:text-green-300 flex items-center">
-                        <span class="mr-2">🎉</span> Your Power Statement is Complete!
-                    </h4>
-                    <p class="text-green-700 dark:text-green-400 mt-1">
-                        Download your finished power statement as a Markdown (.md) file.
-                    </p>
-                </div>
-                <button id="export-complete-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-lg">
-                    📄 Export as Markdown
-                </button>
-            </div>
-        </div>
-        ` : ''}
-
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="mb-6">
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -255,6 +237,25 @@ function renderPhaseContent(project, phase) {
                 </div>
             </div>
 
+            ${phase === 3 && phaseData.completed ? `
+            <!-- Phase 3 Complete: Export Call-to-Action -->
+            <div class="mt-6 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <h4 class="text-lg font-semibold text-green-800 dark:text-green-300 flex items-center">
+                            <span class="mr-2">🎉</span> Your Power Statement is Complete!
+                        </h4>
+                        <p class="text-green-700 dark:text-green-400 mt-1">
+                            Download your finished power statement as a Markdown (.md) file.
+                        </p>
+                    </div>
+                    <button id="export-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                        📄 Export as Markdown
+                    </button>
+                </div>
+            </div>
+            ` : ''}
+
             <!-- Navigation -->
             <div class="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
                 <div class="flex gap-3">
@@ -294,31 +295,36 @@ function attachPhaseEventListeners(project, phase) {
   const nextPhaseBtn = document.getElementById('next-phase-btn');
 
   copyPromptBtn.addEventListener('click', async () => {
-    const prompt = await generatePromptForPhase(project, phase);
-    await copyToClipboard(prompt);
-    showToast('Prompt copied to clipboard!', 'success');
+    try {
+      const prompt = await generatePromptForPhase(project, phase);
+      await copyToClipboard(prompt);
+      showToast('Prompt copied to clipboard!', 'success');
 
-    // Save prompt but DON'T mark as completed - user is still working on this phase
-    await updatePhase(project.id, phase, prompt, project.phases[phase].response || '');
+      // Save prompt but DON'T mark as completed - user is still working on this phase
+      await updatePhase(project.id, phase, prompt, project.phases[phase]?.response || '');
 
-    // Enable the "Open AI" button now that prompt is copied
-    const openAiBtn = document.getElementById('open-ai-btn');
-    if (openAiBtn) {
-      openAiBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
-      openAiBtn.classList.add('hover:bg-green-700');
-      openAiBtn.removeAttribute('aria-disabled');
-    }
+      // Enable the "Open AI" button now that prompt is copied
+      const openAiBtn = document.getElementById('open-ai-btn');
+      if (openAiBtn) {
+        openAiBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+        openAiBtn.classList.add('hover:bg-green-700');
+        openAiBtn.removeAttribute('aria-disabled');
+      }
 
-    // Enable the response textarea now that prompt is copied
-    if (responseTextarea && responseTextarea.disabled) {
-      responseTextarea.disabled = false;
-      responseTextarea.classList.remove('opacity-50', 'cursor-not-allowed');
-      responseTextarea.focus();
-    }
+      // Enable the response textarea now that prompt is copied
+      if (responseTextarea) {
+        responseTextarea.disabled = false;
+        responseTextarea.classList.remove('opacity-50', 'cursor-not-allowed');
+        responseTextarea.focus();
+      }
 
-    // Enable save button if there's content
-    if (saveResponseBtn && responseTextarea.value.trim().length >= 3) {
-      saveResponseBtn.disabled = false;
+      // Enable save button if there's content
+      if (saveResponseBtn && responseTextarea.value.trim().length >= 3) {
+        saveResponseBtn.disabled = false;
+      }
+    } catch (error) {
+      console.error('Failed to copy prompt:', error);
+      showToast('Failed to copy to clipboard. Please check browser permissions.', 'error');
     }
   });
 
@@ -407,9 +413,9 @@ function attachPhaseEventListeners(project, phase) {
   }
 
   // Wire up Phase 3 complete export button
-  const exportCompleteBtn = document.getElementById('export-complete-btn');
-  if (exportCompleteBtn) {
-    exportCompleteBtn.addEventListener('click', () => exportFinalDocument(project));
+  const exportBtn = document.getElementById('export-btn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => exportFinalDocument(project));
   }
 
   if (prevPhaseBtn) {
