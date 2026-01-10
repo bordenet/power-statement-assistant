@@ -147,6 +147,17 @@ describe('UI Module', () => {
             await copyToClipboard('test text');
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith('test text');
         });
+
+        test('should throw error when clipboard API fails', async () => {
+            navigator.clipboard.writeText.mockRejectedValueOnce(new Error('Clipboard access denied'));
+            await expect(copyToClipboard('test text')).rejects.toThrow('Clipboard access denied');
+        });
+
+        test('should not show any toast notifications', async () => {
+            await copyToClipboard('test text');
+            const container = document.getElementById('toast-container');
+            expect(container.children.length).toBe(0);
+        });
     });
 });
 
