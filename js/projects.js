@@ -25,28 +25,28 @@ import storage from './storage.js';
  * @returns {Promise<Object>} Created project object
  */
 export async function createProject(projectData) {
-    const project = {
-        id: crypto.randomUUID(),
-        title: projectData.title.trim(),
-        productName: projectData.productName.trim(),
-        customerType: projectData.customerType.trim(),
-        problem: projectData.problem.trim(),
-        outcome: projectData.outcome.trim(),
-        proofPoints: projectData.proofPoints.trim(),
-        differentiators: projectData.differentiators.trim(),
-        objections: projectData.objections.trim(),
-        phase: 1,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        phases: {
-            1: { prompt: '', response: '', completed: false },
-            2: { prompt: '', response: '', completed: false },
-            3: { prompt: '', response: '', completed: false }
-        }
-    };
+  const project = {
+    id: crypto.randomUUID(),
+    title: projectData.title.trim(),
+    productName: projectData.productName.trim(),
+    customerType: projectData.customerType.trim(),
+    problem: projectData.problem.trim(),
+    outcome: projectData.outcome.trim(),
+    proofPoints: projectData.proofPoints.trim(),
+    differentiators: projectData.differentiators.trim(),
+    objections: projectData.objections.trim(),
+    phase: 1,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    phases: {
+      1: { prompt: '', response: '', completed: false },
+      2: { prompt: '', response: '', completed: false },
+      3: { prompt: '', response: '', completed: false }
+    }
+  };
 
-    await storage.saveProject(project);
-    return project;
+  await storage.saveProject(project);
+  return project;
 }
 
 /**
@@ -54,7 +54,7 @@ export async function createProject(projectData) {
  * @returns {Promise<Array>} Array of all projects
  */
 export async function getAllProjects() {
-    return await storage.getAllProjects();
+  return await storage.getAllProjects();
 }
 
 /**
@@ -63,7 +63,7 @@ export async function getAllProjects() {
  * @returns {Promise<Object|null>} Project object or null if not found
  */
 export async function getProject(id) {
-    return await storage.getProject(id);
+  return await storage.getProject(id);
 }
 
 /**
@@ -75,21 +75,21 @@ export async function getProject(id) {
  * @returns {Promise<Object>} Updated project object
  */
 export async function updatePhase(projectId, phase, prompt, response) {
-    const project = await storage.getProject(projectId);
-    if (!project) throw new Error('Project not found');
+  const project = await storage.getProject(projectId);
+  if (!project) throw new Error('Project not found');
 
-    project.phases[phase] = {
-        prompt: prompt || '',
-        response: response || '',
-        completed: !!response
-    };
+  project.phases[phase] = {
+    prompt: prompt || '',
+    response: response || '',
+    completed: !!response
+  };
 
-    // Note: Auto-advance is now handled in project-view.js for better UX control
-    // We don't auto-advance here anymore
+  // Note: Auto-advance is now handled in project-view.js for better UX control
+  // We don't auto-advance here anymore
 
-    project.updatedAt = new Date().toISOString();
-    await storage.saveProject(project);
-    return project;
+  project.updatedAt = new Date().toISOString();
+  await storage.saveProject(project);
+  return project;
 }
 
 /**
@@ -99,13 +99,13 @@ export async function updatePhase(projectId, phase, prompt, response) {
  * @returns {Promise<Object>} Updated project object
  */
 export async function updateProject(projectId, updates) {
-    const project = await storage.getProject(projectId);
-    if (!project) throw new Error('Project not found');
+  const project = await storage.getProject(projectId);
+  if (!project) throw new Error('Project not found');
 
-    Object.assign(project, updates);
-    project.updatedAt = new Date().toISOString();
-    await storage.saveProject(project);
-    return project;
+  Object.assign(project, updates);
+  project.updatedAt = new Date().toISOString();
+  await storage.saveProject(project);
+  return project;
 }
 
 /**
@@ -114,7 +114,7 @@ export async function updateProject(projectId, updates) {
  * @returns {Promise<void>}
  */
 export async function deleteProject(id) {
-    await storage.deleteProject(id);
+  await storage.deleteProject(id);
 }
 
 /**
@@ -123,16 +123,16 @@ export async function deleteProject(id) {
  * @returns {Promise<void>}
  */
 export async function exportProject(projectId) {
-    const project = await storage.getProject(projectId);
-    if (!project) throw new Error('Project not found');
+  const project = await storage.getProject(projectId);
+  if (!project) throw new Error('Project not found');
 
-    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${sanitizeFilename(project.title)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${sanitizeFilename(project.title)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 /**
@@ -140,22 +140,22 @@ export async function exportProject(projectId) {
  * @returns {Promise<void>}
  */
 export async function exportAllProjects() {
-    const projects = await storage.getAllProjects();
+  const projects = await storage.getAllProjects();
 
-    const backup = {
-        version: '1.0',
-        exportedAt: new Date().toISOString(),
-        projectCount: projects.length,
-        projects: projects
-    };
+  const backup = {
+    version: '1.0',
+    exportedAt: new Date().toISOString(),
+    projectCount: projects.length,
+    projects: projects
+  };
 
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `power-statement-assistant-backup-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `power-statement-assistant-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 /**
@@ -164,37 +164,37 @@ export async function exportAllProjects() {
  * @returns {Promise<number>} Number of projects imported
  */
 export async function importProjects(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
 
-        reader.onload = async (e) => {
-            try {
-                const content = JSON.parse(e.target.result);
-                let imported = 0;
+    reader.onload = async (e) => {
+      try {
+        const content = JSON.parse(e.target.result);
+        let imported = 0;
 
-                if (content.version && content.projects) {
-                    // Backup file format
-                    for (const project of content.projects) {
-                        await storage.saveProject(project);
-                        imported++;
-                    }
-                } else if (content.id && content.title) {
-                    // Single project format
-                    await storage.saveProject(content);
-                    imported = 1;
-                } else {
-                    throw new Error('Invalid file format');
-                }
+        if (content.version && content.projects) {
+          // Backup file format
+          for (const project of content.projects) {
+            await storage.saveProject(project);
+            imported++;
+          }
+        } else if (content.id && content.title) {
+          // Single project format
+          await storage.saveProject(content);
+          imported = 1;
+        } else {
+          throw new Error('Invalid file format');
+        }
 
-                resolve(imported);
-            } catch (error) {
-                reject(error);
-            }
-        };
+        resolve(imported);
+      } catch (error) {
+        reject(error);
+      }
+    };
 
-        reader.onerror = () => reject(reader.error);
-        reader.readAsText(file);
-    });
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(file);
+  });
 }
 
 /**
@@ -203,11 +203,11 @@ export async function importProjects(file) {
  * @returns {string} Sanitized filename
  */
 function sanitizeFilename(filename) {
-    return filename
-        .replace(/[^a-z0-9]/gi, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '')
-        .toLowerCase()
-        .substring(0, 50);
+  return filename
+    .replace(/[^a-z0-9]/gi, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase()
+    .substring(0, 50);
 }
 

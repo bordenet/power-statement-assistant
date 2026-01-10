@@ -18,10 +18,10 @@ import { navigateTo } from './router.js';
  * Shows all projects with their status and progress
  */
 export async function renderProjectsList() {
-    const projects = await getAllProjects();
+  const projects = await getAllProjects();
 
-    const container = document.getElementById('app-container');
-    container.innerHTML = `
+  const container = document.getElementById('app-container');
+  container.innerHTML = `
         <div class="mb-6 flex items-center justify-between">
             <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
                 My Power Statements
@@ -89,35 +89,35 @@ export async function renderProjectsList() {
         `}
     `;
 
-    // Event listeners
-    const newProjectBtns = container.querySelectorAll('#new-project-btn, #new-project-btn-empty');
-    newProjectBtns.forEach(btn => {
-        btn.addEventListener('click', () => navigateTo('new-project'));
-    });
+  // Event listeners
+  const newProjectBtns = container.querySelectorAll('#new-project-btn, #new-project-btn-empty');
+  newProjectBtns.forEach(btn => {
+    btn.addEventListener('click', () => navigateTo('new-project'));
+  });
 
-    const projectCards = container.querySelectorAll('[data-project-id]');
-    projectCards.forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (!e.target.closest('.delete-project-btn')) {
-                navigateTo('project', card.dataset.projectId);
-            }
-        });
+  const projectCards = container.querySelectorAll('[data-project-id]');
+  projectCards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (!e.target.closest('.delete-project-btn')) {
+        navigateTo('project', card.dataset.projectId);
+      }
     });
+  });
 
-    const deleteBtns = container.querySelectorAll('.delete-project-btn');
-    deleteBtns.forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const projectId = btn.dataset.projectId;
-            const project = projects.find(p => p.id === projectId);
+  const deleteBtns = container.querySelectorAll('.delete-project-btn');
+  deleteBtns.forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const projectId = btn.dataset.projectId;
+      const project = projects.find(p => p.id === projectId);
 
-            if (await confirm(`Are you sure you want to delete "${project.title}"?`, 'Delete Project')) {
-                await deleteProject(projectId);
-                showToast('Project deleted', 'success');
-                renderProjectsList();
-            }
-        });
+      if (await confirm(`Are you sure you want to delete "${project.title}"?`, 'Delete Project')) {
+        await deleteProject(projectId);
+        showToast('Project deleted', 'success');
+        renderProjectsList();
+      }
     });
+  });
 }
 
 /**
@@ -125,8 +125,8 @@ export async function renderProjectsList() {
  * Collects all 7 required fields for power statement generation
  */
 export function renderNewProjectForm() {
-    const container = document.getElementById('app-container');
-    container.innerHTML = `
+  const container = document.getElementById('app-container');
+  container.innerHTML = `
         <div class="max-w-3xl mx-auto">
             <div class="mb-6">
                 <button id="back-btn" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
@@ -280,32 +280,32 @@ export function renderNewProjectForm() {
         </div>
     `;
 
-    // Event listeners
-    document.getElementById('back-btn').addEventListener('click', () => navigateTo('home'));
+  // Event listeners
+  document.getElementById('back-btn').addEventListener('click', () => navigateTo('home'));
 
-    // Delete button - discard/cancel and go back
-    document.getElementById('delete-btn').addEventListener('click', () => navigateTo('home'));
+  // Delete button - discard/cancel and go back
+  document.getElementById('delete-btn').addEventListener('click', () => navigateTo('home'));
 
-    // Next Phase button - save and continue to workflow
-    document.getElementById('new-project-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
+  // Next Phase button - save and continue to workflow
+  document.getElementById('new-project-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-        const formData = new FormData(e.target);
-        const projectData = {
-            title: formData.get('title'),
-            productName: formData.get('productName'),
-            customerType: formData.get('customerType'),
-            problem: formData.get('problem'),
-            outcome: formData.get('outcome'),
-            proofPoints: formData.get('proofPoints'),
-            differentiators: formData.get('differentiators'),
-            objections: formData.get('objections')
-        };
+    const formData = new FormData(e.target);
+    const projectData = {
+      title: formData.get('title'),
+      productName: formData.get('productName'),
+      customerType: formData.get('customerType'),
+      problem: formData.get('problem'),
+      outcome: formData.get('outcome'),
+      proofPoints: formData.get('proofPoints'),
+      differentiators: formData.get('differentiators'),
+      objections: formData.get('objections')
+    };
 
-        const project = await createProject(projectData);
-        showToast('Power Statement created! Starting Phase 1...', 'success');
-        navigateTo('project', project.id);
-    });
+    const project = await createProject(projectData);
+    showToast('Power Statement created! Starting Phase 1...', 'success');
+    navigateTo('project', project.id);
+  });
 }
 
 /**
@@ -314,16 +314,16 @@ export function renderNewProjectForm() {
  * @param {string} projectId - ID of the project to edit
  */
 export async function renderEditProjectForm(projectId) {
-    const project = await getProject(projectId);
+  const project = await getProject(projectId);
 
-    if (!project) {
-        showToast('Power Statement not found', 'error');
-        navigateTo('home');
-        return;
-    }
+  if (!project) {
+    showToast('Power Statement not found', 'error');
+    navigateTo('home');
+    return;
+  }
 
-    const container = document.getElementById('app-container');
-    container.innerHTML = `
+  const container = document.getElementById('app-container');
+  container.innerHTML = `
         <div class="max-w-3xl mx-auto">
             <div class="mb-6">
                 <button id="back-btn" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center">
@@ -482,35 +482,35 @@ export async function renderEditProjectForm(projectId) {
         </div>
     `;
 
-    // Event listeners
-    document.getElementById('back-btn').addEventListener('click', () => navigateTo('project', projectId));
-    document.getElementById('cancel-btn').addEventListener('click', () => navigateTo('project', projectId));
+  // Event listeners
+  document.getElementById('back-btn').addEventListener('click', () => navigateTo('project', projectId));
+  document.getElementById('cancel-btn').addEventListener('click', () => navigateTo('project', projectId));
 
-    // Form submit - save and return to Phase 1
-    document.getElementById('edit-project-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
+  // Form submit - save and return to Phase 1
+  document.getElementById('edit-project-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-        const formData = new FormData(e.target);
-        const updates = {
-            title: formData.get('title').trim(),
-            productName: formData.get('productName').trim(),
-            customerType: formData.get('customerType').trim(),
-            problem: formData.get('problem').trim(),
-            outcome: formData.get('outcome').trim(),
-            proofPoints: formData.get('proofPoints').trim(),
-            differentiators: formData.get('differentiators').trim(),
-            objections: formData.get('objections').trim()
-        };
+    const formData = new FormData(e.target);
+    const updates = {
+      title: formData.get('title').trim(),
+      productName: formData.get('productName').trim(),
+      customerType: formData.get('customerType').trim(),
+      problem: formData.get('problem').trim(),
+      outcome: formData.get('outcome').trim(),
+      proofPoints: formData.get('proofPoints').trim(),
+      differentiators: formData.get('differentiators').trim(),
+      objections: formData.get('objections').trim()
+    };
 
-        // Clear Phase 1 prompt so it will be regenerated with new data
-        updates.phases = {
-            ...project.phases,
-            1: { prompt: '', response: '', completed: false }
-        };
+    // Clear Phase 1 prompt so it will be regenerated with new data
+    updates.phases = {
+      ...project.phases,
+      1: { prompt: '', response: '', completed: false }
+    };
 
-        await updateProject(projectId, updates);
-        showToast('Details updated! Phase 1 prompt will be regenerated.', 'success');
-        navigateTo('project', projectId);
-    });
+    await updateProject(projectId, updates);
+    showToast('Details updated! Phase 1 prompt will be regenerated.', 'success');
+    navigateTo('project', projectId);
+  });
 }
 

@@ -21,14 +21,14 @@ import { navigateTo } from './router.js';
  * @returns {string|null} - The extracted title or null if not found
  */
 export function extractTitleFromMarkdown(markdown) {
-    if (!markdown) return null;
+  if (!markdown) return null;
 
-    // Look for first H1 heading (# Title)
-    const match = markdown.match(/^#\s+(.+?)$/m);
-    if (match && match[1]) {
-        return match[1].trim();
-    }
-    return null;
+  // Look for first H1 heading (# Title)
+  const match = markdown.match(/^#\s+(.+?)$/m);
+  if (match && match[1]) {
+    return match[1].trim();
+  }
+  return null;
 }
 
 /**
@@ -36,16 +36,16 @@ export function extractTitleFromMarkdown(markdown) {
  * @param {number} activePhase - The currently active phase number
  */
 function updatePhaseTabStyles(activePhase) {
-    document.querySelectorAll('.phase-tab').forEach(tab => {
-        const tabPhase = parseInt(tab.dataset.phase);
-        if (tabPhase === activePhase) {
-            tab.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-gray-200');
-            tab.classList.add('border-b-2', 'border-blue-600', 'text-blue-600', 'dark:text-blue-400');
-        } else {
-            tab.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600', 'dark:text-blue-400');
-            tab.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-gray-200');
-        }
-    });
+  document.querySelectorAll('.phase-tab').forEach(tab => {
+    const tabPhase = parseInt(tab.dataset.phase);
+    if (tabPhase === activePhase) {
+      tab.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-gray-200');
+      tab.classList.add('border-b-2', 'border-blue-600', 'text-blue-600', 'dark:text-blue-400');
+    } else {
+      tab.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600', 'dark:text-blue-400');
+      tab.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-gray-200');
+    }
+  });
 }
 
 /**
@@ -53,16 +53,16 @@ function updatePhaseTabStyles(activePhase) {
  * @param {string} projectId - Project ID to render
  */
 export async function renderProjectView(projectId) {
-    const project = await getProject(projectId);
+  const project = await getProject(projectId);
 
-    if (!project) {
-        showToast('Project not found', 'error');
-        navigateTo('home');
-        return;
-    }
+  if (!project) {
+    showToast('Project not found', 'error');
+    navigateTo('home');
+    return;
+  }
 
-    const container = document.getElementById('app-container');
-    container.innerHTML = `
+  const container = document.getElementById('app-container');
+  container.innerHTML = `
         <div class="mb-6">
             <button id="back-btn" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center mb-4">
                 <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,16 +92,16 @@ export async function renderProjectView(projectId) {
         <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
             <div class="flex space-x-1">
                 ${[1, 2, 3].map(phase => {
-        const meta = getPhaseMetadata(phase);
-        const isActive = project.phase === phase;
-        const isCompleted = project.phases[phase].completed;
+    const meta = getPhaseMetadata(phase);
+    const isActive = project.phase === phase;
+    const isCompleted = project.phases[phase].completed;
 
-        return `
+    return `
                         <button
                             class="phase-tab px-6 py-3 font-medium transition-colors ${
-    isActive
-        ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
-        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+  isActive
+    ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
+    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
 }"
                             data-phase="${phase}"
                         >
@@ -110,7 +110,7 @@ export async function renderProjectView(projectId) {
                             ${isCompleted ? '<span class="ml-2 text-green-500">✓</span>' : ''}
                         </button>
                     `;
-    }).join('')}
+  }).join('')}
             </div>
         </div>
 
@@ -120,21 +120,21 @@ export async function renderProjectView(projectId) {
         </div>
     `;
 
-    // Event listeners
-    document.getElementById('back-btn').addEventListener('click', () => navigateTo('home'));
-    document.getElementById('export-prd-btn').addEventListener('click', () => exportFinalDocument(project));
+  // Event listeners
+  document.getElementById('back-btn').addEventListener('click', () => navigateTo('home'));
+  document.getElementById('export-prd-btn').addEventListener('click', () => exportFinalDocument(project));
 
-    document.querySelectorAll('.phase-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            const phase = parseInt(tab.dataset.phase);
-            project.phase = phase;
-            updatePhaseTabStyles(phase);
-            document.getElementById('phase-content').innerHTML = renderPhaseContent(project, phase);
-            attachPhaseEventListeners(project, phase);
-        });
+  document.querySelectorAll('.phase-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const phase = parseInt(tab.dataset.phase);
+      project.phase = phase;
+      updatePhaseTabStyles(phase);
+      document.getElementById('phase-content').innerHTML = renderPhaseContent(project, phase);
+      attachPhaseEventListeners(project, phase);
     });
+  });
 
-    attachPhaseEventListeners(project, project.phase);
+  attachPhaseEventListeners(project, project.phase);
 }
 
 /**
@@ -144,21 +144,21 @@ export async function renderProjectView(projectId) {
  * @returns {string} HTML content for the phase
  */
 function renderPhaseContent(project, phase) {
-    const meta = getPhaseMetadata(phase);
-    const phaseData = project.phases[phase];
+  const meta = getPhaseMetadata(phase);
+  const phaseData = project.phases[phase];
 
-    // Determine AI URL based on phase
-    const aiUrl = phase === 2 ? 'https://gemini.google.com' : 'https://claude.ai';
-    const aiName = phase === 2 ? 'Gemini' : 'Claude';
+  // Determine AI URL based on phase
+  const aiUrl = phase === 2 ? 'https://gemini.google.com' : 'https://claude.ai';
+  const aiName = phase === 2 ? 'Gemini' : 'Claude';
 
-    // Determine if textarea should be enabled (has existing content OR prompt was copied)
-    const hasExistingResponse = phaseData.response && phaseData.response.trim().length > 0;
-    const textareaDisabled = !hasExistingResponse && !phaseData.prompt;
+  // Determine if textarea should be enabled (has existing content OR prompt was copied)
+  const hasExistingResponse = phaseData.response && phaseData.response.trim().length > 0;
+  const textareaDisabled = !hasExistingResponse && !phaseData.prompt;
 
-    // Check if Phase 3 is complete - show success banner
-    const isPhase3Complete = phase === 3 && phaseData.completed;
+  // Check if Phase 3 is complete - show success banner
+  const isPhase3Complete = phase === 3 && phaseData.completed;
 
-    return `
+  return `
         ${isPhase3Complete ? `
         <!-- SUCCESS BANNER - Phase 3 Complete -->
         <div class="mb-6 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
@@ -287,147 +287,147 @@ function renderPhaseContent(project, phase) {
  * @param {number} phase - Phase number (1-3)
  */
 function attachPhaseEventListeners(project, phase) {
-    const copyPromptBtn = document.getElementById('copy-prompt-btn');
-    const saveResponseBtn = document.getElementById('save-response-btn');
-    const responseTextarea = document.getElementById('response-textarea');
-    const prevPhaseBtn = document.getElementById('prev-phase-btn');
-    const nextPhaseBtn = document.getElementById('next-phase-btn');
+  const copyPromptBtn = document.getElementById('copy-prompt-btn');
+  const saveResponseBtn = document.getElementById('save-response-btn');
+  const responseTextarea = document.getElementById('response-textarea');
+  const prevPhaseBtn = document.getElementById('prev-phase-btn');
+  const nextPhaseBtn = document.getElementById('next-phase-btn');
 
-    copyPromptBtn.addEventListener('click', async () => {
-        const prompt = await generatePromptForPhase(project, phase);
-        await copyToClipboard(prompt);
-        showToast('Prompt copied to clipboard!', 'success');
+  copyPromptBtn.addEventListener('click', async () => {
+    const prompt = await generatePromptForPhase(project, phase);
+    await copyToClipboard(prompt);
+    showToast('Prompt copied to clipboard!', 'success');
 
-        // Save prompt but DON'T mark as completed - user is still working on this phase
-        await updatePhase(project.id, phase, prompt, project.phases[phase].response || '');
+    // Save prompt but DON'T mark as completed - user is still working on this phase
+    await updatePhase(project.id, phase, prompt, project.phases[phase].response || '');
 
-        // Enable the "Open AI" button now that prompt is copied
-        const openAiBtn = document.getElementById('open-ai-btn');
-        if (openAiBtn) {
-            openAiBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
-            openAiBtn.classList.add('hover:bg-green-700');
-            openAiBtn.removeAttribute('aria-disabled');
-        }
+    // Enable the "Open AI" button now that prompt is copied
+    const openAiBtn = document.getElementById('open-ai-btn');
+    if (openAiBtn) {
+      openAiBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+      openAiBtn.classList.add('hover:bg-green-700');
+      openAiBtn.removeAttribute('aria-disabled');
+    }
 
-        // Enable the response textarea now that prompt is copied
-        if (responseTextarea && responseTextarea.disabled) {
-            responseTextarea.disabled = false;
-            responseTextarea.classList.remove('opacity-50', 'cursor-not-allowed');
-            responseTextarea.focus();
-        }
+    // Enable the response textarea now that prompt is copied
+    if (responseTextarea && responseTextarea.disabled) {
+      responseTextarea.disabled = false;
+      responseTextarea.classList.remove('opacity-50', 'cursor-not-allowed');
+      responseTextarea.focus();
+    }
 
-        // Enable save button if there's content
-        if (saveResponseBtn && responseTextarea.value.trim().length >= 3) {
-            saveResponseBtn.disabled = false;
-        }
+    // Enable save button if there's content
+    if (saveResponseBtn && responseTextarea.value.trim().length >= 3) {
+      saveResponseBtn.disabled = false;
+    }
+  });
+
+  // Update button state as user types
+  if (responseTextarea) {
+    responseTextarea.addEventListener('input', () => {
+      const hasEnoughContent = responseTextarea.value.trim().length >= 3;
+      if (saveResponseBtn) {
+        saveResponseBtn.disabled = !hasEnoughContent;
+      }
     });
+  }
 
-    // Update button state as user types
-    if (responseTextarea) {
-        responseTextarea.addEventListener('input', () => {
-            const hasEnoughContent = responseTextarea.value.trim().length >= 3;
-            if (saveResponseBtn) {
-                saveResponseBtn.disabled = !hasEnoughContent;
-            }
-        });
-    }
+  if (saveResponseBtn) {
+    saveResponseBtn.addEventListener('click', async () => {
+      const response = responseTextarea.value.trim();
+      if (response && response.length >= 3) {
+        await updatePhase(project.id, phase, project.phases[phase].prompt, response);
 
-    if (saveResponseBtn) {
-        saveResponseBtn.addEventListener('click', async () => {
-            const response = responseTextarea.value.trim();
-            if (response && response.length >= 3) {
-                await updatePhase(project.id, phase, project.phases[phase].prompt, response);
+        // Auto-advance to next phase if not on final phase
+        if (phase < 3) {
+          showToast('Response saved! Moving to next phase...', 'success');
+          // Re-fetch the updated project and advance - persist to storage
+          const updatedProject = await getProject(project.id);
+          updatedProject.phase = phase + 1;
+          await updateProject(project.id, { phase: phase + 1 });
+          updatePhaseTabStyles(phase + 1);
+          document.getElementById('phase-content').innerHTML = renderPhaseContent(updatedProject, phase + 1);
+          attachPhaseEventListeners(updatedProject, phase + 1);
+        } else {
+          // Phase 3 complete - stay on phase 3, extract and update project title if changed
+          const extractedTitle = extractTitleFromMarkdown(response);
+          if (extractedTitle && extractedTitle !== project.title) {
+            await updateProject(project.id, { title: extractedTitle, phase: 3 });
+            showToast(`Phase 3 complete! Title updated to "${extractedTitle}"`, 'success');
+          } else {
+            await updateProject(project.id, { phase: 3 });
+            showToast('Phase 3 complete! Your power statement is ready.', 'success');
+          }
+          // Re-render to show updated title and export button - will stay on phase 3
+          renderProjectView(project.id);
+        }
+      } else {
+        showToast('Please enter at least 3 characters', 'warning');
+      }
+    });
+  }
 
-                // Auto-advance to next phase if not on final phase
-                if (phase < 3) {
-                    showToast('Response saved! Moving to next phase...', 'success');
-                    // Re-fetch the updated project and advance - persist to storage
-                    const updatedProject = await getProject(project.id);
-                    updatedProject.phase = phase + 1;
-                    await updateProject(project.id, { phase: phase + 1 });
-                    updatePhaseTabStyles(phase + 1);
-                    document.getElementById('phase-content').innerHTML = renderPhaseContent(updatedProject, phase + 1);
-                    attachPhaseEventListeners(updatedProject, phase + 1);
-                } else {
-                    // Phase 3 complete - stay on phase 3, extract and update project title if changed
-                    const extractedTitle = extractTitleFromMarkdown(response);
-                    if (extractedTitle && extractedTitle !== project.title) {
-                        await updateProject(project.id, { title: extractedTitle, phase: 3 });
-                        showToast(`Phase 3 complete! Title updated to "${extractedTitle}"`, 'success');
-                    } else {
-                        await updateProject(project.id, { phase: 3 });
-                        showToast('Phase 3 complete! Your power statement is ready.', 'success');
-                    }
-                    // Re-render to show updated title and export button - will stay on phase 3
-                    renderProjectView(project.id);
-                }
-            } else {
-                showToast('Please enter at least 3 characters', 'warning');
-            }
-        });
-    }
+  // Wire up main "View Prompt" button (always visible)
+  const viewPromptBtn = document.getElementById('view-prompt-btn');
+  if (viewPromptBtn) {
+    viewPromptBtn.addEventListener('click', async () => {
+      const prompt = await generatePromptForPhase(project, phase);
+      const meta = getPhaseMetadata(phase);
+      showPromptModal(prompt, `Phase ${phase}: ${meta.title} Prompt`);
+    });
+  }
 
-    // Wire up main "View Prompt" button (always visible)
-    const viewPromptBtn = document.getElementById('view-prompt-btn');
-    if (viewPromptBtn) {
-        viewPromptBtn.addEventListener('click', async () => {
-            const prompt = await generatePromptForPhase(project, phase);
-            const meta = getPhaseMetadata(phase);
-            showPromptModal(prompt, `Phase ${phase}: ${meta.title} Prompt`);
-        });
-    }
+  // Wire up inline "View Full Prompt" link (shows after prompt is copied)
+  const viewFullPromptBtn = document.querySelector('.view-full-prompt-btn');
+  if (viewFullPromptBtn && project.phases[phase].prompt) {
+    viewFullPromptBtn.addEventListener('click', () => {
+      const meta = getPhaseMetadata(phase);
+      showPromptModal(project.phases[phase].prompt, `Phase ${phase}: ${meta.title} Prompt`);
+    });
+  }
 
-    // Wire up inline "View Full Prompt" link (shows after prompt is copied)
-    const viewFullPromptBtn = document.querySelector('.view-full-prompt-btn');
-    if (viewFullPromptBtn && project.phases[phase].prompt) {
-        viewFullPromptBtn.addEventListener('click', () => {
-            const meta = getPhaseMetadata(phase);
-            showPromptModal(project.phases[phase].prompt, `Phase ${phase}: ${meta.title} Prompt`);
-        });
-    }
+  // Wire up "Edit Details" button for Phase 1 (only shows when no response saved)
+  const editDetailsBtn = document.getElementById('edit-details-btn');
+  if (editDetailsBtn) {
+    editDetailsBtn.addEventListener('click', () => {
+      navigateTo('edit-project', project.id);
+    });
+  }
 
-    // Wire up "Edit Details" button for Phase 1 (only shows when no response saved)
-    const editDetailsBtn = document.getElementById('edit-details-btn');
-    if (editDetailsBtn) {
-        editDetailsBtn.addEventListener('click', () => {
-            navigateTo('edit-project', project.id);
-        });
-    }
+  // Wire up "Delete" button
+  const deleteProjectBtn = document.getElementById('delete-project-btn');
+  if (deleteProjectBtn) {
+    deleteProjectBtn.addEventListener('click', async () => {
+      if (await confirm(`Are you sure you want to delete "${project.title}"?`, 'Delete Project')) {
+        await deleteProject(project.id);
+        showToast('Project deleted', 'success');
+        navigateTo('home');
+      }
+    });
+  }
 
-    // Wire up "Delete" button
-    const deleteProjectBtn = document.getElementById('delete-project-btn');
-    if (deleteProjectBtn) {
-        deleteProjectBtn.addEventListener('click', async () => {
-            if (await confirm(`Are you sure you want to delete "${project.title}"?`, 'Delete Project')) {
-                await deleteProject(project.id);
-                showToast('Project deleted', 'success');
-                navigateTo('home');
-            }
-        });
-    }
+  // Wire up Phase 3 complete export button
+  const exportCompleteBtn = document.getElementById('export-complete-btn');
+  if (exportCompleteBtn) {
+    exportCompleteBtn.addEventListener('click', () => exportFinalDocument(project));
+  }
 
-    // Wire up Phase 3 complete export button
-    const exportCompleteBtn = document.getElementById('export-complete-btn');
-    if (exportCompleteBtn) {
-        exportCompleteBtn.addEventListener('click', () => exportFinalDocument(project));
-    }
+  if (prevPhaseBtn) {
+    prevPhaseBtn.addEventListener('click', () => {
+      project.phase = phase - 1;
+      updatePhaseTabStyles(phase - 1);
+      document.getElementById('phase-content').innerHTML = renderPhaseContent(project, phase - 1);
+      attachPhaseEventListeners(project, phase - 1);
+    });
+  }
 
-    if (prevPhaseBtn) {
-        prevPhaseBtn.addEventListener('click', () => {
-            project.phase = phase - 1;
-            updatePhaseTabStyles(phase - 1);
-            document.getElementById('phase-content').innerHTML = renderPhaseContent(project, phase - 1);
-            attachPhaseEventListeners(project, phase - 1);
-        });
-    }
-
-    if (nextPhaseBtn && project.phases[phase].completed) {
-        nextPhaseBtn.addEventListener('click', () => {
-            project.phase = phase + 1;
-            updatePhaseTabStyles(phase + 1);
-            document.getElementById('phase-content').innerHTML = renderPhaseContent(project, phase + 1);
-            attachPhaseEventListeners(project, phase + 1);
-        });
-    }
+  if (nextPhaseBtn && project.phases[phase].completed) {
+    nextPhaseBtn.addEventListener('click', () => {
+      project.phase = phase + 1;
+      updatePhaseTabStyles(phase + 1);
+      document.getElementById('phase-content').innerHTML = renderPhaseContent(project, phase + 1);
+      attachPhaseEventListeners(project, phase + 1);
+    });
+  }
 }
 

@@ -25,8 +25,8 @@ let mockModeEnabled = false;
 
 // Mock response templates for each phase
 const mockResponses = {
-    phase1: {
-        success: `# Phase 1: Initial Draft - Mock Response
+  phase1: {
+    success: `# Phase 1: Initial Draft - Mock Response
 
 This is a mock response for testing purposes.
 
@@ -48,11 +48,11 @@ Proceed to Phase 2 to continue testing the workflow.
 ---
 *This is a mock response generated for testing. Enable live mode to use real AI.*`,
 
-        error: 'Mock error: API rate limit exceeded (simulated for testing)'
-    },
+    error: 'Mock error: API rate limit exceeded (simulated for testing)'
+  },
 
-    phase2: {
-        success: `# Phase 2: Adversarial Critique - Mock Response
+  phase2: {
+    success: `# Phase 2: Adversarial Critique - Mock Response
 
 Building on the Phase 1 output, here's the mock response for Phase 2.
 
@@ -73,11 +73,11 @@ This mock response demonstrates the multi-phase workflow.
 ---
 *This is a mock response generated for testing. Enable live mode to use real AI.*`,
 
-        error: 'Mock error: Invalid API key (simulated for testing)'
-    },
+    error: 'Mock error: Invalid API key (simulated for testing)'
+  },
 
-    phase3: {
-        success: `# Phase 3: Final Synthesis - Mock Response
+  phase3: {
+    success: `# Phase 3: Final Synthesis - Mock Response
 
 Final phase mock response incorporating all previous phases.
 
@@ -98,8 +98,8 @@ The complete result based on all previous phases.
 ---
 *This is a mock response generated for testing. Enable live mode to use real AI.*`,
 
-        error: 'Mock error: Service temporarily unavailable (simulated for testing)'
-    }
+    error: 'Mock error: Service temporarily unavailable (simulated for testing)'
+  }
 };
 
 /**
@@ -107,13 +107,13 @@ The complete result based on all previous phases.
  * @param {boolean} enabled - Whether to enable mock mode
  */
 export function setMockMode(enabled) {
-    mockModeEnabled = enabled;
-    console.log(`[AI Mock] Mock mode ${enabled ? 'ENABLED' : 'DISABLED'}`);
+  mockModeEnabled = enabled;
+  console.log(`[AI Mock] Mock mode ${enabled ? 'ENABLED' : 'DISABLED'}`);
 
-    // Store preference
-    if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('aiMockMode', enabled ? 'true' : 'false');
-    }
+  // Store preference
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('aiMockMode', enabled ? 'true' : 'false');
+  }
 }
 
 /**
@@ -121,19 +121,19 @@ export function setMockMode(enabled) {
  * @returns {boolean} True if mock mode is enabled
  */
 export function isMockMode() {
-    return mockModeEnabled;
+  return mockModeEnabled;
 }
 
 /**
  * Initialize mock mode from stored preference
  */
 export function initMockMode() {
-    if (typeof localStorage !== 'undefined') {
-        const stored = localStorage.getItem('aiMockMode');
-        if (stored === 'true') {
-            setMockMode(true);
-        }
+  if (typeof localStorage !== 'undefined') {
+    const stored = localStorage.getItem('aiMockMode');
+    if (stored === 'true') {
+      setMockMode(true);
     }
+  }
 }
 
 /**
@@ -145,27 +145,27 @@ export function initMockMode() {
  * @returns {Promise<string>} Mock AI response
  */
 export async function getMockResponse(phaseNumber, options = {}) {
-    const { simulateError = false, delay = 1000 } = options;
+  const { simulateError = false, delay = 1000 } = options;
 
-    console.log(`[AI Mock] Generating mock response for phase ${phaseNumber}`);
+  console.log(`[AI Mock] Generating mock response for phase ${phaseNumber}`);
 
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, delay));
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, delay));
 
-    // Get phase key
-    const phaseKey = `phase${phaseNumber}`;
-    const phaseResponses = mockResponses[phaseKey];
+  // Get phase key
+  const phaseKey = `phase${phaseNumber}`;
+  const phaseResponses = mockResponses[phaseKey];
 
-    if (!phaseResponses) {
-        throw new Error(`No mock responses defined for phase ${phaseNumber}`);
-    }
+  if (!phaseResponses) {
+    throw new Error(`No mock responses defined for phase ${phaseNumber}`);
+  }
 
-    // Return error or success response
-    if (simulateError) {
-        throw new Error(phaseResponses.error);
-    }
+  // Return error or success response
+  if (simulateError) {
+    throw new Error(phaseResponses.error);
+  }
 
-    return phaseResponses.success;
+  return phaseResponses.success;
 }
 
 /**
@@ -176,14 +176,14 @@ export async function getMockResponse(phaseNumber, options = {}) {
  * @returns {Promise<string>} AI response (mock or real)
  */
 export async function callAI(prompt, phaseNumber, options = {}) {
-    if (mockModeEnabled) {
-        console.log('[AI Mock] Using mock response (mock mode enabled)');
-        return getMockResponse(phaseNumber, options);
-    }
+  if (mockModeEnabled) {
+    console.log('[AI Mock] Using mock response (mock mode enabled)');
+    return getMockResponse(phaseNumber, options);
+  }
 
-    // In real mode, this would call the actual API
-    // For now, throw error to indicate real API not implemented
-    throw new Error('Real AI API not implemented. Enable mock mode for testing.');
+  // In real mode, this would call the actual API
+  // For now, throw error to indicate real API not implemented
+  throw new Error('Real AI API not implemented. Enable mock mode for testing.');
 }
 
 /**
@@ -192,12 +192,12 @@ export async function callAI(prompt, phaseNumber, options = {}) {
  * @param {string} response - Custom mock response
  */
 export function addMockResponse(phaseNumber, response) {
-    const phaseKey = `phase${phaseNumber}`;
-    if (!mockResponses[phaseKey]) {
-        mockResponses[phaseKey] = {};
-    }
-    mockResponses[phaseKey].custom = response;
-    console.log(`[AI Mock] Added custom mock response for phase ${phaseNumber}`);
+  const phaseKey = `phase${phaseNumber}`;
+  if (!mockResponses[phaseKey]) {
+    mockResponses[phaseKey] = {};
+  }
+  mockResponses[phaseKey].custom = response;
+  console.log(`[AI Mock] Added custom mock response for phase ${phaseNumber}`);
 }
 
 // Export mock responses for testing
