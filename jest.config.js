@@ -34,10 +34,10 @@ export default {
   // - Mature projects: Aim for 60/45/60/60 or higher
   coverageThreshold: {
     global: {
-      statements: 19,
-      branches: 15,
-      functions: 22,
-      lines: 20
+      statements: 50,
+      branches: 50,
+      functions: 50,
+      lines: 50
     }
   },
 
