@@ -150,7 +150,10 @@ describe('UI Module', () => {
 
         test('should throw error when clipboard API fails', async () => {
             navigator.clipboard.writeText.mockRejectedValueOnce(new Error('Clipboard access denied'));
-            await expect(copyToClipboard('test text')).rejects.toThrow('Clipboard access denied');
+            // Also mock execCommand to fail (fallback)
+            document.execCommand = jest.fn().mockReturnValue(false);
+            // The function should throw an error when both methods fail
+            await expect(copyToClipboard('test text')).rejects.toThrow();
         });
 
         test('should not show any toast notifications', async () => {
