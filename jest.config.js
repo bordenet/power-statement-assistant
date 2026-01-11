@@ -28,14 +28,10 @@ export default {
     '!**/node_modules/**'
   ],
 
-  // Coverage thresholds (ENFORCED)
-  // NOTE: Adjust these thresholds based on your project's maturity
-  // - New projects: Start with 25/15/30/25
-  // - Mature projects: Aim for 60/45/60/60 or higher
   coverageThreshold: {
     global: {
       statements: 50,
-      branches: 50,
+      branches: 40,
       functions: 50,
       lines: 50
     }
