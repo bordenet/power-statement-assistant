@@ -6,27 +6,23 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:e2e": "echo 'No E2E tests configured'",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
-    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
-    "lint": "eslint js/**/*.js tests/**/*.js",
-    "lint:fix": "eslint js/**/*.js tests/**/*.js --fix",
-    "serve": "python3 -m http.server 8000",
-    "deploy": "./scripts/deploy-web.sh"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bordenet/power-statement-assistant.git"
   },
-  "devDependencies": {
-    "@babel/core": "^7.23.0",
-    "@babel/preset-env": "^7.23.0",
-    "@eslint/js": "^9.39.2",
-    "babel-jest": "^29.7.0",
-    "eslint": "^9.39.2",
-    "fake-indexeddb": "^6.2.5",
-    "globals": "^15.0.0",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0"
+  "scripts": {
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test:unit": "NODE_OPTIONS='--experimental-vm-modules' jest --testPathPattern=\\.test\\.js$",
+    "test:e2e": "playwright test",
+    "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
+    "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
+    "lint": "eslint js/**/*.js",
+    "lint:fix": "eslint js/**/*.js --fix",
+    "format": "eslint js/**/*.js --fix",
+    "quality": "npm run lint && npm run test:coverage",
+    "serve": "python3 -m http.server 8000",
+    "deploy": "./scripts/deploy-web.sh",
+    "prepare": "command -v pre-commit >/dev/null 2>&1 && pre-commit install || echo 'pre-commit not installed, skipping hook setup'"
   },
   "keywords": [
     "power-statement",
@@ -34,11 +30,17 @@
     "ai-assisted",
     "workflow"
   ],
-  "author": "bordenet",
+  "author": "Matt J Bordenet",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/bordenet/power-statement-assistant.git"
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@jest/globals": "^29.7.0",
+    "@playwright/test": "^1.57.0",
+    "eslint": "^9.39.2",
+    "fake-indexeddb": "^6.2.5",
+    "globals": "^17.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
   },
   "bugs": {
     "url": "https://github.com/bordenet/power-statement-assistant/issues"
