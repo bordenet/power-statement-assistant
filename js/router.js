@@ -10,7 +10,8 @@
 
 import { renderProjectsList, renderNewProjectForm, renderEditProjectForm } from './views.js';
 import { renderProjectView } from './project-view.js';
-import { updateStorageInfo } from './app.js';
+import storage from './storage.js';
+import { formatBytes } from './ui.js';
 
 const routes = {
   'home': renderProjectsList,
@@ -21,6 +22,25 @@ const routes = {
 
 let currentRoute = null;
 let currentParams = null;
+
+/**
+ * Update storage info in footer - called after every route render
+ */
+export async function updateStorageInfo() {
+  const estimate = await storage.getStorageEstimate();
+  const storageInfo = document.getElementById('storage-info');
+
+  if (!storageInfo) return;
+
+  if (estimate) {
+    const used = formatBytes(estimate.usage || 0);
+    const quota = formatBytes(estimate.quota || 0);
+    const percent = ((estimate.usage / estimate.quota) * 100).toFixed(1);
+    storageInfo.textContent = `Storage: ${used} / ${quota} (${percent}%)`;
+  } else {
+    storageInfo.textContent = 'Storage: Available';
+  }
+}
 
 /**
  * Navigate to a route
@@ -95,4 +115,3 @@ function handleHashChange() {
 export function getCurrentRoute() {
   return { route: currentRoute, params: currentParams };
 }
-

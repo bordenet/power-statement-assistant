@@ -7,10 +7,10 @@
  */
 
 import storage from './storage.js';
-import { initRouter } from './router.js';
+import { initRouter, updateStorageInfo } from './router.js';
 import { loadDefaultPrompts } from './workflow.js';
 import { exportAllProjects, importProjects } from './projects.js';
-import { showToast, showLoading, hideLoading, formatBytes } from './ui.js';
+import { showToast, showLoading, hideLoading } from './ui.js';
 
 /**
  * Initialize the application
@@ -172,24 +172,6 @@ function toggleTheme() {
 }
 
 /**
- * Update storage info in footer
- * Exported so router can call it after every route render
- */
-export async function updateStorageInfo() {
-  const estimate = await storage.getStorageEstimate();
-  const storageInfo = document.getElementById('storage-info');
-
-  if (estimate && storageInfo) {
-    const used = formatBytes(estimate.usage || 0);
-    const quota = formatBytes(estimate.quota || 0);
-    const percent = ((estimate.usage / estimate.quota) * 100).toFixed(1);
-    storageInfo.textContent = `Storage: ${used} / ${quota} (${percent}%)`;
-  } else if (storageInfo) {
-    storageInfo.textContent = 'Storage: Available';
-  }
-}
-
-/**
  * Show about modal
  */
 function showAboutModal() {
@@ -234,4 +216,3 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
-
