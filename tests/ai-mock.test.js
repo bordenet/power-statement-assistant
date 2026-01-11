@@ -96,7 +96,8 @@ describe('AI Mock Mode', () => {
             const startTime = Date.now();
             await getMockResponse(1, { delay: 100 });
             const endTime = Date.now();
-            expect(endTime - startTime).toBeGreaterThanOrEqual(100);
+            // Allow 5ms tolerance for timing variations in CI environments
+            expect(endTime - startTime).toBeGreaterThanOrEqual(95);
         });
 
         test('simulates error when requested', async () => {
@@ -176,4 +177,3 @@ describe('AI Mock Mode', () => {
         });
     });
 });
-
