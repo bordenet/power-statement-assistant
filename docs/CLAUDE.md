@@ -64,7 +64,30 @@
 **Recommendation**: Add Tailwind darkMode config to index-template.html.
 ```
 
-### 1. **ALWAYS Lint After Creating/Modifying Code**
+### 1. **MANDATORY: Manual Deployment After CI Passes**
+
+**ALL deployments MUST follow this 3-step process:**
+
+```bash
+# Step 1: Push changes to GitHub
+git add .
+git commit -m "feat: description of changes"
+git push origin main
+
+# Step 2: WAIT for CI to pass
+# Check: https://github.com/bordenet/power-statement-assistant/actions
+# ⚠️ DO NOT PROCEED until all checks are GREEN
+
+# Step 3: Deploy ONLY after CI passes
+./scripts/deploy-web.sh
+```
+
+**Why**:
+- CI runs comprehensive quality gates (lint, test, coverage)
+- Deploying before CI passes can ship broken code
+- CI is the single source of truth for code quality
+
+### 2. **ALWAYS Lint After Creating/Modifying Code**
 
 **MANDATE**: After creating or modifying ANY file, run linting:
 
@@ -75,7 +98,7 @@ npm run lint:fix    # Auto-fix issues
 
 **Why**: Linting catches bugs, enforces consistency, and prevents technical debt.
 
-### 2. **ALWAYS Test After Creating/Modifying Tests**
+### 3. **ALWAYS Test After Creating/Modifying Tests**
 
 **MANDATE**: After creating or modifying ANY test file, run tests:
 
@@ -86,7 +109,7 @@ NODE_OPTIONS=--experimental-vm-modules npm run test:coverage
 
 **Why**: Broken tests are worse than no tests. They create false confidence.
 
-### 3. **ALWAYS Communicate What's Left**
+### 4. **ALWAYS Communicate What's Left**
 
 **MANDATE**: After completing ANY task, proactively tell the user:
 
@@ -103,7 +126,7 @@ NODE_OPTIONS=--experimental-vm-modules npm run test:coverage
 
 **Why**: This prevents miscommunication and ensures nothing is forgotten.
 
-### 4. **NEVER Include Build Artifacts**
+### 5. **NEVER Include Build Artifacts**
 
 **MANDATE**: NEVER commit these directories/files:
 
