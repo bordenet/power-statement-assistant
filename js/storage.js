@@ -1,13 +1,21 @@
 /**
  * IndexedDB Storage Module
  * Handles all client-side data persistence for Power Statement Assistant
+ * @module storage
  */
 
+/** @type {string} */
 const DB_NAME = 'power-statement-assistant';
+
+/** @type {number} */
 const DB_VERSION = 1;
 
+/**
+ * Storage class for IndexedDB operations
+ */
 class Storage {
   constructor() {
+    /** @type {IDBDatabase | null} */
     this.db = null;
   }
 
@@ -279,4 +287,3 @@ class Storage {
 
 // Export singleton instance
 export default new Storage();
-

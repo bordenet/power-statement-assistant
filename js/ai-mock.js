@@ -1,20 +1,26 @@
 /**
  * AI Mock Mode for Testing
+ * @module ai-mock
  *
  * ⚠️ FOR TESTING ONLY ⚠️
  *
  * This module provides mock AI responses for testing the application
+ * @module ai-mock
  * without making actual API calls to OpenAI, Anthropic, or Google.
+ * @module ai-mock
  *
  * DO NOT USE IN PRODUCTION.
+ * @module ai-mock
  *
  * Purpose:
+ * @module ai-mock
  * - Enable end-to-end testing without API costs
  * - Provide consistent, predictable responses for testing
  * - Allow testing of error conditions
  * - Enable offline development and testing
  *
  * Usage:
+ * @module ai-mock
  * - Set MOCK_MODE = true in app configuration
  * - Mock responses will be returned instead of real API calls
  * - Toggle via UI (development only)
@@ -104,6 +110,7 @@ The complete result based on all previous phases.
 
 /**
  * Enable or disable mock mode
+ * @module ai-mock
  * @param {boolean} enabled - Whether to enable mock mode
  */
 export function setMockMode(enabled) {
@@ -118,6 +125,7 @@ export function setMockMode(enabled) {
 
 /**
  * Check if mock mode is enabled
+ * @module ai-mock
  * @returns {boolean} True if mock mode is enabled
  */
 export function isMockMode() {
@@ -126,6 +134,7 @@ export function isMockMode() {
 
 /**
  * Initialize mock mode from stored preference
+ * @module ai-mock
  */
 export function initMockMode() {
   if (typeof localStorage !== 'undefined') {
@@ -138,6 +147,7 @@ export function initMockMode() {
 
 /**
  * Get mock response for a phase
+ * @module ai-mock
  * @param {number} phaseNumber - Phase number (1, 2, 3, etc.)
  * @param {object} options - Options for mock response
  * @param {boolean} options.simulateError - Simulate an error response
@@ -170,6 +180,7 @@ export async function getMockResponse(phaseNumber, options = {}) {
 
 /**
  * Mock API call (replaces real API calls when mock mode is enabled)
+ * @module ai-mock
  * @param {string} prompt - The prompt to send
  * @param {number} phaseNumber - Current phase number
  * @param {object} options - API options
@@ -188,6 +199,7 @@ export async function callAI(prompt, phaseNumber, options = {}) {
 
 /**
  * Add custom mock response for a phase
+ * @module ai-mock
  * @param {number} phaseNumber - Phase number
  * @param {string} response - Custom mock response
  */
@@ -202,4 +214,3 @@ export function addMockResponse(phaseNumber, response) {
 
 // Export mock responses for testing
 export { mockResponses };
-

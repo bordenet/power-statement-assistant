@@ -1,8 +1,11 @@
 /**
  * UI Utilities Module
+ * @module ui
  * Handles common UI operations like toasts, modals, loading states
+ * @module ui
  *
  * Provides reusable UI components and utilities for:
+ * @module ui
  * - Toast notifications (success, error, warning, info)
  * - Loading overlays
  * - Confirmation dialogs
@@ -12,6 +15,7 @@
 
 /**
  * Show a toast notification
+ * @module ui
  * @param {string} message - Message to display
  * @param {string} type - Toast type: 'success', 'error', 'warning', 'info'
  * @param {number} duration - Duration in milliseconds (default: 3000)
@@ -56,6 +60,7 @@ export function showToast(message, type = 'info', duration = 3000) {
 
 /**
  * Show loading overlay
+ * @module ui
  * @param {string} text - Loading message (default: 'Loading...')
  */
 export function showLoading(text = 'Loading...') {
@@ -67,6 +72,7 @@ export function showLoading(text = 'Loading...') {
 
 /**
  * Hide loading overlay
+ * @module ui
  */
 export function hideLoading() {
   const overlay = document.getElementById('loading-overlay');
@@ -75,6 +81,7 @@ export function hideLoading() {
 
 /**
  * Show confirmation dialog
+ * @module ui
  * @param {string} message - Confirmation message
  * @param {string} title - Dialog title (default: 'Confirm')
  * @returns {Promise<boolean>} True if confirmed, false if cancelled
@@ -122,7 +129,9 @@ export function confirm(message, title = 'Confirm') {
 
 /**
  * Format date for display
+ * @module ui
  * Shows relative time for recent dates, absolute date for older ones
+ * @module ui
  * @param {string} isoString - ISO 8601 date string
  * @returns {string} Formatted date string
  */
@@ -148,6 +157,7 @@ export function formatDate(isoString) {
 
 /**
  * Format bytes for display
+ * @module ui
  * @param {number} bytes - Number of bytes
  * @returns {string} Formatted string (e.g., "1.5 MB")
  */
@@ -163,6 +173,7 @@ export function formatBytes(bytes) {
 
 /**
  * Escape HTML to prevent XSS
+ * @module ui
  * @param {string} text - Text to escape
  * @returns {string} HTML-escaped text
  */
@@ -174,8 +185,10 @@ export function escapeHtml(text) {
 
 /**
  * Copy text to clipboard
+ * @module ui
  *
  * Uses a fallback chain for maximum compatibility:
+ * @module ui
  * 1. Modern Clipboard API (navigator.clipboard.writeText)
  * 2. Legacy execCommand('copy') for older browsers and iPad/mobile
  *
@@ -224,7 +237,9 @@ export async function copyToClipboard(text) {
 
 /**
  * Show full prompt in a modal dialog
+ * @module ui
  * Displays the complete prompt with copy functionality
+ * @module ui
  * @param {string} prompt - Full prompt text to display
  * @param {string} title - Modal title (default: 'Full Prompt')
  * @param {Function} [onCopySuccess] - Optional callback to run after successful copy (enables workflow progression)
@@ -291,4 +306,3 @@ export function showPromptModal(prompt, title = 'Full Prompt', onCopySuccess = n
   };
   document.addEventListener('keydown', handleEscape);
 }
-
