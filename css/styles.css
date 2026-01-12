@@ -1,5 +1,5 @@
 /**
- * Custom Styles for {{PROJECT_TITLE}}
+ * Custom Styles for Power Statement Assistant
  * Tailwind CSS is loaded via CDN - this file contains custom overrides
  */
 
@@ -168,10 +168,9 @@ textarea:focus {
     .no-print {
         display: none !important;
     }
-    
+
     body {
         background: white;
         color: black;
     }
 }
-
