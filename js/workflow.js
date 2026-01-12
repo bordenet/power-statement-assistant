@@ -1,6 +1,7 @@
 /**
  * Workflow Module
  * Manages the 3-phase workflow for Power Statement Assistant
+ * @module workflow
  */
 
 import storage from './storage.js';
@@ -11,6 +12,7 @@ let defaultPrompts = {};
 
 /**
  * Load default prompts from markdown files
+ * @module workflow
  */
 export async function loadDefaultPrompts() {
   try {
@@ -32,6 +34,7 @@ export async function loadDefaultPrompts() {
 
 /**
  * Get phase metadata
+ * @module workflow
  */
 export function getPhaseMetadata(phase) {
   const metadata = {
@@ -63,6 +66,7 @@ export function getPhaseMetadata(phase) {
 
 /**
  * Generate prompt for a specific phase
+ * @module workflow
  */
 export async function generatePromptForPhase(project, phase) {
   const template = await storage.getPrompt(phase) || defaultPrompts[phase] || '';
@@ -96,6 +100,7 @@ export async function generatePromptForPhase(project, phase) {
 
 /**
  * Export final document as markdown
+ * @module workflow
  */
 export async function exportFinalDocument(project) {
   const finalResponse = project.phases?.[3]?.response || project.phases?.[2]?.response || project.phases?.[1]?.response;
@@ -118,6 +123,7 @@ export async function exportFinalDocument(project) {
 
 /**
  * Sanitize filename
+ * @module workflow
  */
 function sanitizeFilename(filename) {
   return filename
@@ -302,4 +308,3 @@ export class Workflow {
     return Math.round((this.currentPhase / WORKFLOW_CONFIG.phaseCount) * 100);
   }
 }
-

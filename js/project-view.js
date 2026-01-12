@@ -1,8 +1,11 @@
 /**
  * Project Detail View Module
+ * @module project-view
  * Handles rendering the project workflow view
+ * @module project-view
  *
  * This module provides the main workflow interface for a single project:
+ * @module project-view
  * - Phase tabs (Phase 1, 2, 3)
  * - Prompt generation and copying
  * - Response input and saving
@@ -17,6 +20,7 @@ import { navigateTo } from './router.js';
 
 /**
  * Extract title from markdown content (looks for # Title at the beginning)
+ * @module project-view
  * @param {string} markdown - The markdown content
  * @returns {string|null} - The extracted title or null if not found
  */
@@ -33,6 +37,7 @@ export function extractTitleFromMarkdown(markdown) {
 
 /**
  * Update phase tab styles to reflect the active phase
+ * @module project-view
  * @param {number} activePhase - The currently active phase number
  */
 function updatePhaseTabStyles(activePhase) {
@@ -50,6 +55,7 @@ function updatePhaseTabStyles(activePhase) {
 
 /**
  * Render the project detail view
+ * @module project-view
  * @param {string} projectId - Project ID to render
  */
 export async function renderProjectView(projectId) {
@@ -143,6 +149,7 @@ export async function renderProjectView(projectId) {
 
 /**
  * Render content for a specific phase
+ * @module project-view
  * @param {Object} project - Project object
  * @param {number} phase - Phase number (1-3)
  * @returns {string} HTML content for the phase
@@ -286,6 +293,7 @@ function renderPhaseContent(project, phase) {
 
 /**
  * Attach event listeners for phase interactions
+ * @module project-view
  * @param {Object} project - Project object
  * @param {number} phase - Phase number (1-3)
  */
@@ -448,4 +456,3 @@ function attachPhaseEventListeners(project, phase) {
     });
   }
 }
-

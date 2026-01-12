@@ -1,12 +1,16 @@
 /**
  * Views Module
+ * @module views
  * Handles rendering different views/screens
+ * @module views
  *
  * This module provides the main UI views:
+ * @module views
  * - Project list view (home)
  * - New project form
  *
  * Each view is rendered into the #app-container element
+ * @module views
  */
 
 import { getAllProjects, createProject, deleteProject, getProject, updateProject } from './projects.js';
@@ -15,7 +19,9 @@ import { navigateTo } from './router.js';
 
 /**
  * Render the projects list view
+ * @module views
  * Shows all projects with their status and progress
+ * @module views
  */
 export async function renderProjectsList() {
   const projects = await getAllProjects();
@@ -59,7 +65,7 @@ export async function renderProjectsList() {
                                     </svg>
                                 </button>
                             </div>
-                            
+
                             <div class="mb-4">
                                 <div class="flex items-center space-x-2 mb-2">
                                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Phase ${project.phase}/3</span>
@@ -73,11 +79,11 @@ export async function renderProjectsList() {
                                     `).join('')}
                                 </div>
                             </div>
-                            
+
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
                                 ${escapeHtml(project.problems)}
                             </p>
-                            
+
                             <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                                 <span>Updated ${formatDate(project.updatedAt)}</span>
                                 <span>${Object.values(project.phases).filter(p => p.completed).length}/3 complete</span>
@@ -122,7 +128,9 @@ export async function renderProjectsList() {
 
 /**
  * Render the new project form
+ * @module views
  * Collects all 7 required fields for power statement generation
+ * @module views
  */
 export function renderNewProjectForm() {
   const container = document.getElementById('app-container');
@@ -310,7 +318,9 @@ export function renderNewProjectForm() {
 
 /**
  * Render the edit project form
+ * @module views
  * Pre-populates form with existing project data
+ * @module views
  * @param {string} projectId - ID of the project to edit
  */
 export async function renderEditProjectForm(projectId) {
@@ -513,4 +523,3 @@ export async function renderEditProjectForm(projectId) {
     navigateTo('project', projectId);
   });
 }
-

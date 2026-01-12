@@ -1,8 +1,11 @@
 /**
  * Router Module
+ * @module router
  * Handles client-side routing for multi-project navigation
+ * @module router
  *
  * This module provides hash-based routing to navigate between:
+ * @module router
  * - Home view (project list)
  * - New project form
  * - Individual project workflow view
@@ -25,6 +28,7 @@ let currentParams = null;
 
 /**
  * Update storage info in footer - called after every route render
+ * @module router
  */
 export async function updateStorageInfo() {
   const estimate = await storage.getStorageEstimate();
@@ -44,6 +48,7 @@ export async function updateStorageInfo() {
 
 /**
  * Navigate to a route
+ * @module router
  * @param {string} route - Route name ('home', 'new-project', 'project')
  * @param {...any} params - Route parameters (e.g., project ID)
  */
@@ -76,7 +81,9 @@ export async function navigateTo(route, ...params) {
 
 /**
  * Initialize router
+ * @module router
  * Sets up hash change listener and handles initial route
+ * @module router
  */
 export function initRouter() {
   // Handle hash changes
@@ -88,7 +95,9 @@ export function initRouter() {
 
 /**
  * Handle hash change events
+ * @module router
  * Parses URL hash and navigates to appropriate route
+ * @module router
  */
 function handleHashChange() {
   const hash = window.location.hash.slice(1); // Remove #
@@ -110,6 +119,7 @@ function handleHashChange() {
 
 /**
  * Get current route information
+ * @module router
  * @returns {Object} Current route and parameters
  */
 export function getCurrentRoute() {

@@ -1,15 +1,20 @@
 /**
  * AI Mock Mode UI Component
+ * @module ai-mock-ui
  *
  * Provides UI controls for toggling AI mock mode on/off.
+ * @module ai-mock-ui
  * Only visible in development/testing environments.
+ * @module ai-mock-ui
  */
 
 import { setMockMode, isMockMode, initMockMode } from './ai-mock.js';
 
 /**
  * Initialize mock mode UI
+ * @module ai-mock-ui
  * Shows toggle control in development mode
+ * @module ai-mock-ui
  */
 export function initMockModeUI() {
   // Initialize mock mode from storage
@@ -30,6 +35,7 @@ export function initMockModeUI() {
 
 /**
  * Create mock mode toggle UI element
+ * @module ai-mock-ui
  */
 function createMockModeToggle() {
   // Check if already exists
@@ -79,6 +85,7 @@ function createMockModeToggle() {
 
 /**
  * Handle mock mode toggle
+ * @module ai-mock-ui
  * @param {Event} event - Change event
  */
 function handleMockModeToggle(event) {
@@ -97,6 +104,7 @@ function handleMockModeToggle(event) {
 
 /**
  * Update UI to reflect current mock mode state
+ * @module ai-mock-ui
  */
 function updateMockModeUI() {
   const checkbox = document.getElementById('mock-mode-checkbox');
@@ -110,6 +118,7 @@ function updateMockModeUI() {
 
 /**
  * Update page-level indicator of mock mode
+ * @module ai-mock-ui
  */
 function updatePageIndicator() {
   const existingIndicator = document.getElementById('mock-mode-indicator');
@@ -132,16 +141,17 @@ function updatePageIndicator() {
 
 /**
  * Show information modal about mock mode
+ * @module ai-mock-ui
  */
 function showMockModeInfo() {
   const message = `
     <div class="text-left">
       <h3 class="text-lg font-bold mb-2">AI Mock Mode</h3>
-      
+
       <p class="mb-3"><strong>⚠️ FOR TESTING ONLY ⚠️</strong></p>
-      
+
       <p class="mb-3">Mock mode provides simulated AI responses for testing without making real API calls.</p>
-      
+
       <h4 class="font-bold mb-1">When to use:</h4>
       <ul class="list-disc ml-5 mb-3">
         <li>Testing the application workflow</li>
@@ -149,14 +159,14 @@ function showMockModeInfo() {
         <li>Running automated tests</li>
         <li>Working offline</li>
       </ul>
-      
+
       <h4 class="font-bold mb-1">When NOT to use:</h4>
       <ul class="list-disc ml-5 mb-3">
         <li>Creating real documents</li>
         <li>Production use</li>
         <li>Evaluating AI quality</li>
       </ul>
-      
+
       <p class="text-sm text-gray-600 dark:text-gray-400 mt-3">
         Mock mode is automatically disabled in production environments.
       </p>
@@ -168,6 +178,7 @@ function showMockModeInfo() {
 
 /**
  * Show notification toast
+ * @module ai-mock-ui
  * @param {string} message - Notification message
  * @param {string} type - Notification type (success, warning, error)
  */
@@ -182,6 +193,7 @@ function showNotification(message, type = 'info') {
 
 /**
  * Show modal dialog
+ * @module ai-mock-ui
  * @param {string} title - Modal title
  * @param {string} content - Modal content (HTML)
  */
@@ -196,4 +208,3 @@ function showModal(title, content) {
 
 // Export for testing
 export { updateMockModeUI, handleMockModeToggle };
-

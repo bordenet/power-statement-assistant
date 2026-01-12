@@ -1,7 +1,9 @@
 /**
  * Main Application Entry Point
+ * @module app
  *
  * REFERENCE IMPLEMENTATION:
+ * @module app
  *     https://github.com/bordenet/product-requirements-assistant/blob/main/docs/js/app.js
  *     Study the reference implementation for proper patterns!
  */
@@ -14,6 +16,7 @@ import { showToast, showLoading, hideLoading } from './ui.js';
 
 /**
  * Initialize the application
+ * @module app
  */
 async function init() {
   try {
@@ -49,6 +52,7 @@ async function init() {
 
 /**
  * Setup global event listeners
+ * @module app
  */
 function setupGlobalEventListeners() {
   // Related projects dropdown
@@ -142,7 +146,9 @@ function setupGlobalEventListeners() {
 
 /**
  * Load saved theme
+ * @module app
  * CRITICAL: This must run BEFORE the app initializes to prevent flash of wrong theme
+ * @module app
  */
 function loadTheme() {
   // Use localStorage for immediate synchronous access
@@ -154,7 +160,9 @@ function loadTheme() {
 
 /**
  * Toggle dark/light theme
+ * @module app
  * CRITICAL: This function works with Tailwind's darkMode: 'class' configuration
+ * @module app
  */
 function toggleTheme() {
   const html = document.documentElement;
@@ -173,6 +181,7 @@ function toggleTheme() {
 
 /**
  * Show about modal
+ * @module app
  */
 function showAboutModal() {
   const modal = document.createElement('div');

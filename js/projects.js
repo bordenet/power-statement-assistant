@@ -1,6 +1,7 @@
 /**
  * Project Management Module
  * Handles project CRUD operations and business logic
+ * @module projects
  *
  * This module provides:
  * - Project creation with metadata
@@ -210,4 +211,3 @@ function sanitizeFilename(filename) {
     .toLowerCase()
     .substring(0, 50);
 }
-
