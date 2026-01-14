@@ -14,8 +14,8 @@
  */
 
 import { getProject, updatePhase, updateProject, deleteProject } from './projects.js';
-import { getPhaseMetadata, generatePromptForPhase, exportFinalDocument } from './workflow.js';
-import { escapeHtml, showToast, copyToClipboard, showPromptModal, confirm } from './ui.js';
+import { getPhaseMetadata, generatePromptForPhase, getFinalMarkdown, getExportFilename } from './workflow.js';
+import { escapeHtml, showToast, copyToClipboard, showPromptModal, showDocumentPreviewModal, confirm } from './ui.js';
 import { navigateTo } from './router.js';
 
 /**
@@ -131,7 +131,14 @@ export async function renderProjectView(projectId) {
 
   const exportBtn = document.getElementById('export-prd-btn');
   if (exportBtn) {
-    exportBtn.addEventListener('click', () => exportFinalDocument(project));
+    exportBtn.addEventListener('click', () => {
+      const markdown = getFinalMarkdown(project);
+      if (markdown) {
+        showDocumentPreviewModal(markdown, 'Your Power Statement is Ready', getExportFilename(project));
+      } else {
+        showToast('No power statement content to export', 'warning');
+      }
+    });
   }
 
   document.querySelectorAll('.phase-tab').forEach(tab => {
@@ -253,13 +260,30 @@ function renderPhaseContent(project, phase) {
                             <span class="mr-2">🎉</span> Your Power Statement is Complete!
                         </h4>
                         <p class="text-green-700 dark:text-green-400 mt-1">
-                            Download your finished power statement as a Markdown (.md) file.
+                            <strong>Next step:</strong> Copy this into Word or Google Docs so you can edit and share it.
                         </p>
                     </div>
                     <button id="export-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
-                        📄 Export as Markdown
+                        📄 Preview & Copy
                     </button>
                 </div>
+                <!-- Expandable Help Section -->
+                <details class="mt-4">
+                    <summary class="text-sm text-green-700 dark:text-green-400 cursor-pointer hover:text-green-800 dark:hover:text-green-300">
+                        Need help using your document?
+                    </summary>
+                    <div class="mt-3 p-4 bg-white dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300">
+                        <ol class="list-decimal list-inside space-y-2">
+                            <li>Click <strong>"Preview & Copy"</strong> above to see your formatted document</li>
+                            <li>Click <strong>"Copy Formatted Text"</strong> in the preview</li>
+                            <li>Open <strong>Microsoft Word</strong> or <strong>Google Docs</strong></li>
+                            <li>Paste (Ctrl+V / ⌘V) — your headings and bullets will appear automatically</li>
+                        </ol>
+                        <p class="mt-3 text-gray-500 dark:text-gray-400 text-xs">
+                            💡 You can also download the raw file (.md format) if needed. The file may look "coded" with symbols like # and * — that's normal formatting that becomes proper headings and bullets when you paste.
+                        </p>
+                    </div>
+                </details>
             </div>
             ` : ''}
 
@@ -437,10 +461,17 @@ function attachPhaseEventListeners(project, phase) {
     });
   }
 
-  // Wire up Phase 3 complete export button
-  const exportBtn = document.getElementById('export-btn');
-  if (exportBtn) {
-    exportBtn.addEventListener('click', () => exportFinalDocument(project));
+  // Wire up Phase 3 complete export button (Preview & Copy)
+  const phase3ExportBtn = document.getElementById('export-btn');
+  if (phase3ExportBtn) {
+    phase3ExportBtn.addEventListener('click', () => {
+      const markdown = getFinalMarkdown(project);
+      if (markdown) {
+        showDocumentPreviewModal(markdown, 'Your Power Statement is Ready', getExportFilename(project));
+      } else {
+        showToast('No power statement content to export', 'warning');
+      }
+    });
   }
 
   if (prevPhaseBtn) {
