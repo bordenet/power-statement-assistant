@@ -104,13 +104,15 @@ export async function generatePromptForPhase(project, phase) {
  */
 export async function exportFinalDocument(project) {
   const finalResponse = project.phases?.[3]?.response || project.phases?.[2]?.response || project.phases?.[1]?.response;
+  const attribution = '\n\n---\n\n*Generated with [Power Statement Assistant](https://bordenet.github.io/power-statement-assistant/)*';
 
   if (!finalResponse) {
     showToast('No power statement content to export', 'warning');
     return;
   }
 
-  const blob = new Blob([finalResponse], { type: 'text/markdown' });
+  const content = finalResponse + attribution;
+  const blob = new Blob([content], { type: 'text/markdown' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
