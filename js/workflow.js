@@ -6,6 +6,10 @@
 
 import storage from './storage.js';
 import { showToast } from './ui.js';
+import { WORKFLOW_CONFIG, generatePhase1Prompt, generatePhase2Prompt, generatePhase3Prompt } from './prompts.js';
+
+// Re-export WORKFLOW_CONFIG for backward compatibility
+export { WORKFLOW_CONFIG };
 
 // Default prompts (loaded from prompts/*.md files)
 let defaultPrompts = {};
@@ -65,37 +69,55 @@ export function getPhaseMetadata(phase) {
 }
 
 /**
+ * Helper to get phase data, handling both object and array formats
+ * @param {Object} project - Project object
+ * @param {number} phaseNum - 1-based phase number
+ * @returns {Object} Phase data object with prompt, response, completed
+ */
+function getPhaseData(project, phaseNum) {
+  const defaultPhase = { prompt: '', response: '', completed: false };
+  if (!project.phases) return defaultPhase;
+
+  // Array format first (legacy)
+  if (Array.isArray(project.phases) && project.phases[phaseNum - 1]) {
+    return project.phases[phaseNum - 1];
+  }
+  // Object format (canonical)
+  if (project.phases[phaseNum] && typeof project.phases[phaseNum] === 'object') {
+    return project.phases[phaseNum];
+  }
+  return defaultPhase;
+}
+
+/**
  * Generate prompt for a specific phase
+ * Uses prompts.js module for template loading and variable replacement
  * @module workflow
  */
 export async function generatePromptForPhase(project, phase) {
-  const template = await storage.getPrompt(phase) || defaultPrompts[phase] || '';
+  // Build formData from project fields
+  const formData = {
+    productName: project.productName || project.title || '',
+    customerType: project.customerType || '',
+    problem: project.problem || '',
+    outcome: project.outcome || '',
+    proofPoints: project.proofPoints || '',
+    differentiators: project.differentiators || '',
+    objections: project.objections || ''
+  };
 
-  if (!template) {
-    throw new Error(`Phase ${phase} prompt template not found. Please ensure prompts are loaded.`);
+  if (phase === 1) {
+    return generatePhase1Prompt(formData);
+  } else if (phase === 2) {
+    const phase1Output = getPhaseData(project, 1).response || '[No Phase 1 output yet]';
+    return generatePhase2Prompt(formData, phase1Output);
+  } else if (phase === 3) {
+    const phase1Output = getPhaseData(project, 1).response || '[No Phase 1 output yet]';
+    const phase2Output = getPhaseData(project, 2).response || '[No Phase 2 output yet]';
+    return generatePhase3Prompt(formData, phase1Output, phase2Output);
   }
 
-  let prompt = template;
-
-  // Replace project-specific variables
-  prompt = prompt.replace(/\{project_title\}/g, project.title || '');
-  prompt = prompt.replace(/\{product_name\}/g, project.productName || '');
-  prompt = prompt.replace(/\{customer_type\}/g, project.customerType || '');
-  prompt = prompt.replace(/\{problem\}/g, project.problem || '');
-  prompt = prompt.replace(/\{outcome\}/g, project.outcome || '');
-  prompt = prompt.replace(/\{proof_points\}/g, project.proofPoints || '');
-  prompt = prompt.replace(/\{differentiators\}/g, project.differentiators || '');
-  prompt = prompt.replace(/\{objections\}/g, project.objections || '');
-
-  // Replace phase outputs for phases 2 and 3
-  if (phase >= 2 && project.phases && project.phases[1]) {
-    prompt = prompt.replace(/\{phase1_output\}/g, project.phases[1].response || '');
-  }
-  if (phase >= 3 && project.phases && project.phases[2]) {
-    prompt = prompt.replace(/\{phase2_output\}/g, project.phases[2].response || '');
-  }
-
-  return prompt;
+  return '';
 }
 
 /**
@@ -158,32 +180,7 @@ export function getFinalMarkdown(project) {
   return project.phases?.[3]?.response || project.phases?.[2]?.response || project.phases?.[1]?.response || null;
 }
 
-export const WORKFLOW_CONFIG = {
-  phaseCount: 3,
-  phases: [
-    {
-      number: 1,
-      name: 'Initial Draft',
-      aiModel: 'Claude',
-      promptFile: 'prompts/phase1.md',
-      description: 'Create initial power statement draft'
-    },
-    {
-      number: 2,
-      name: 'Adversarial Critique',
-      aiModel: 'Gemini',
-      promptFile: 'prompts/phase2.md',
-      description: 'Provide critical feedback and improvements'
-    },
-    {
-      number: 3,
-      name: 'Final Synthesis',
-      aiModel: 'Claude',
-      promptFile: 'prompts/phase3.md',
-      description: 'Synthesize best elements from both versions'
-    }
-  ]
-};
+// WORKFLOW_CONFIG is imported from prompts.js and re-exported at the top of this file
 
 export class Workflow {
   constructor(project) {

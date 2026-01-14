@@ -4,27 +4,27 @@ You are a master sales messaging strategist tasked with creating the definitive 
 
 ## Original Requirements
 
-**Product/Service Name:** {product_name}
+**Product/Service Name:** {{PRODUCT_NAME}}
 
-**Customer Type:** {customer_type}
+**Customer Type:** {{CUSTOMER_TYPE}}
 
-**Problem Being Solved:** {problem}
+**Problem Being Solved:** {{PROBLEM}}
 
-**Desired Outcome:** {outcome}
+**Desired Outcome:** {{OUTCOME}}
 
-**Proof Points/Results:** {proof_points}
+**Proof Points/Results:** {{PROOF_POINTS}}
 
-**Key Differentiators:** {differentiators}
+**Key Differentiators:** {{DIFFERENTIATORS}}
 
-**Common Objections to Address:** {objections}
+**Common Objections to Address:** {{OBJECTIONS}}
 
 ## Phase 1 Output (Initial Draft)
 
-{phase1_output}
+{{PHASE1_OUTPUT}}
 
 ## Phase 2 Output (Critical Analysis & Improved Version)
 
-{phase2_output}
+{{PHASE2_OUTPUT}}
 
 ## Your Task
 
@@ -56,7 +56,7 @@ Before finalizing, ensure the power statement:
 ### Output Format
 
 ```markdown
-# Final Power Statement for {product_name}
+# Final Power Statement for {{PRODUCT_NAME}}
 
 ## Version A: Concise (30-Second Delivery)
 
@@ -108,4 +108,3 @@ Before finalizing, ensure the power statement:
 **Before you respond, ask 1-2 final clarifying questions** to ensure the power statement will work in real-world sales situations. For example:
 - "What's the typical first objection you hear from prospects?"
 - "What competitive alternatives do prospects usually consider?"
-

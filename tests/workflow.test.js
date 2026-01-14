@@ -8,12 +8,12 @@ import {
 } from '../js/workflow.js';
 import storage from '../js/storage.js';
 
-// Mock fetch for loading prompt templates
+// Mock fetch for loading prompt templates (uses {{VAR}} double-brace syntax)
 global.fetch = jest.fn(async (url) => {
     const templates = {
-        'prompts/phase1.md': 'Phase 1: Generate power statement for {project_title} about {product_name}',
-        'prompts/phase2.md': 'Phase 2: Review {phase1_response}',
-        'prompts/phase3.md': 'Phase 3: Final synthesis of {phase1_response} and {phase2_response}'
+        'prompts/phase1.md': 'Phase 1: Generate power statement for {{PRODUCT_NAME}} with {{CUSTOMER_TYPE}} problem {{PROBLEM}} outcome {{OUTCOME}} proof {{PROOF_POINTS}} diff {{DIFFERENTIATORS}} objections {{OBJECTIONS}}',
+        'prompts/phase2.md': 'Phase 2: Review {{PHASE1_OUTPUT}} for {{PRODUCT_NAME}} with {{CUSTOMER_TYPE}} problem {{PROBLEM}}',
+        'prompts/phase3.md': 'Phase 3: Final synthesis of {{PHASE1_OUTPUT}} and {{PHASE2_OUTPUT}} for {{PRODUCT_NAME}}'
     };
 
     return {
@@ -79,12 +79,7 @@ describe('Workflow Module', () => {
     });
 
     describe('generatePromptForPhase', () => {
-        beforeEach(async () => {
-            // Save prompts to storage for testing
-            await storage.savePrompt(1, 'Phase 1: {project_title} - {product_name}');
-            await storage.savePrompt(2, 'Phase 2: Review {phase1_output}');
-            await storage.savePrompt(3, 'Phase 3: {phase1_output} + {phase2_output}');
-        });
+        // Note: prompts.js caches templates, so we test behavior not storage
 
         test('should generate prompt with project data substituted', async () => {
             const project = {
@@ -101,8 +96,10 @@ describe('Workflow Module', () => {
 
             const prompt = await generatePromptForPhase(project, 1);
 
-            expect(prompt).toContain('Test Project');
+            // Should contain substituted values
             expect(prompt).toContain('Test Product');
+            expect(prompt).toContain('Enterprise');
+            expect(prompt).toContain('Test problem');
         });
 
         test('should include phase 1 response in phase 2 prompt', async () => {
@@ -232,4 +229,3 @@ describe('Workflow Module', () => {
         });
     });
 });
-
