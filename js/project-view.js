@@ -100,7 +100,7 @@ export async function renderProjectView(projectId) {
                 ${[1, 2, 3].map(phase => {
     const meta = getPhaseMetadata(phase);
     const isActive = project.phase === phase;
-    const isCompleted = project.phases[phase].completed;
+    const isCompleted = project.phases?.[phase]?.completed;
 
     return `
                         <button
@@ -163,7 +163,7 @@ export async function renderProjectView(projectId) {
  */
 function renderPhaseContent(project, phase) {
   const meta = getPhaseMetadata(phase);
-  const phaseData = project.phases[phase];
+  const phaseData = project.phases?.[phase] || { prompt: '', response: '', completed: false };
 
   // Determine AI URL based on phase
   const aiUrl = phase === 2 ? 'https://gemini.google.com' : 'https://claude.ai';
@@ -389,7 +389,7 @@ function attachPhaseEventListeners(project, phase) {
     saveResponseBtn.addEventListener('click', async () => {
       const response = responseTextarea.value.trim();
       if (response && response.length >= 3) {
-        await updatePhase(project.id, phase, project.phases[phase].prompt, response);
+        await updatePhase(project.id, phase, project.phases?.[phase]?.prompt || '', response);
 
         // Auto-advance to next phase if not on final phase
         if (phase < 3) {
@@ -434,7 +434,7 @@ function attachPhaseEventListeners(project, phase) {
   // Wire up inline "View Full Prompt" link (shows after prompt is copied)
   // Also passes callback in case user wants to re-copy
   const viewFullPromptBtn = document.querySelector('.view-full-prompt-btn');
-  if (viewFullPromptBtn && project.phases[phase].prompt) {
+  if (viewFullPromptBtn && project.phases?.[phase]?.prompt) {
     viewFullPromptBtn.addEventListener('click', () => {
       const meta = getPhaseMetadata(phase);
       showPromptModal(project.phases[phase].prompt, `Phase ${phase}: ${meta.title} Prompt`, enableWorkflowProgression);
@@ -483,7 +483,7 @@ function attachPhaseEventListeners(project, phase) {
     });
   }
 
-  if (nextPhaseBtn && project.phases[phase].completed) {
+  if (nextPhaseBtn && project.phases?.[phase]?.completed) {
     nextPhaseBtn.addEventListener('click', () => {
       project.phase = phase + 1;
       updatePhaseTabStyles(phase + 1);
