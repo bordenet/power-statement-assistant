@@ -6,19 +6,19 @@ You are an expert sales messaging strategist specializing in creating compelling
 
 The user has provided the following information:
 
-**Product/Service Name:** {product_name}
+**Product/Service Name:** {{PRODUCT_NAME}}
 
-**Customer Type:** {customer_type}
+**Customer Type:** {{CUSTOMER_TYPE}}
 
-**Problem Being Solved:** {problem}
+**Problem Being Solved:** {{PROBLEM}}
 
-**Desired Outcome:** {outcome}
+**Desired Outcome:** {{OUTCOME}}
 
-**Proof Points/Results:** {proof_points}
+**Proof Points/Results:** {{PROOF_POINTS}}
 
-**Key Differentiators:** {differentiators}
+**Key Differentiators:** {{DIFFERENTIATORS}}
 
-**Common Objections to Address:** {objections}
+**Common Objections to Address:** {{OBJECTIONS}}
 
 ## Your Task
 
@@ -62,7 +62,7 @@ A more detailed version with clear sections:
 ### Output Format
 
 ```markdown
-# Power Statement for {product_name}
+# Power Statement for {{PRODUCT_NAME}}
 
 ## Version A: Concise
 
@@ -100,4 +100,3 @@ Generate the power statement now based on the context provided above.
 - The specific pain points that resonate most with the customer type
 - The most compelling proof points or results
 - Any industry-specific context that would strengthen the message
-

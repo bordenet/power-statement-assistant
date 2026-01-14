@@ -12,11 +12,22 @@ import storage from '../js/storage.js';
 import fs from 'fs';
 import path from 'path';
 
+// Mock fetch for loading prompt templates (prompts.js uses fetch, not storage)
+global.fetch = jest.fn(async (url) => {
+    // Read from actual template files
+    const filePath = path.join(process.cwd(), url);
+    const content = fs.readFileSync(filePath, 'utf-8');
+    return {
+        ok: true,
+        text: async () => content
+    };
+});
+
 describe('Form-to-Prompt Integration Tests', () => {
     beforeEach(async () => {
         await storage.init();
 
-        // Load prompt templates into storage
+        // Load prompt templates into storage (for legacy tests that use storage)
         for (let phase = 1; phase <= 3; phase++) {
             const promptContent = fs.readFileSync(
                 path.join(process.cwd(), `prompts/phase${phase}.md`),
@@ -78,14 +89,15 @@ describe('Form-to-Prompt Integration Tests', () => {
     });
 
     describe('Prompt Template Variable Matching', () => {
+        // Using {{VAR_NAME}} syntax (double braces, SCREAMING_SNAKE_CASE)
         const requiredVariables = [
-            'product_name',
-            'customer_type',
-            'problem',
-            'outcome',
-            'proof_points',
-            'differentiators',
-            'objections'
+            'PRODUCT_NAME',
+            'CUSTOMER_TYPE',
+            'PROBLEM',
+            'OUTCOME',
+            'PROOF_POINTS',
+            'DIFFERENTIATORS',
+            'OBJECTIONS'
         ];
 
         it('should have all required variables in Phase 1 prompt template', () => {
@@ -95,7 +107,7 @@ describe('Form-to-Prompt Integration Tests', () => {
             );
 
             requiredVariables.forEach(variable => {
-                expect(phase1Template).toContain(`{${variable}}`);
+                expect(phase1Template).toContain(`{{${variable}}}`);
             });
         });
 
@@ -106,7 +118,7 @@ describe('Form-to-Prompt Integration Tests', () => {
             );
 
             requiredVariables.forEach(variable => {
-                expect(phase2Template).toContain(`{${variable}}`);
+                expect(phase2Template).toContain(`{{${variable}}}`);
             });
         });
 
@@ -117,7 +129,7 @@ describe('Form-to-Prompt Integration Tests', () => {
             );
 
             requiredVariables.forEach(variable => {
-                expect(phase3Template).toContain(`{${variable}}`);
+                expect(phase3Template).toContain(`{{${variable}}}`);
             });
         });
     });
@@ -209,16 +221,16 @@ describe('Form-to-Prompt Integration Tests', () => {
 
             const prompt = await generatePromptForPhase(project, 3);
 
-            // Verify no empty placeholders
-            expect(prompt).not.toContain('{product_name}');
-            expect(prompt).not.toContain('{customer_type}');
-            expect(prompt).not.toContain('{problem}');
-            expect(prompt).not.toContain('{outcome}');
-            expect(prompt).not.toContain('{proof_points}');
-            expect(prompt).not.toContain('{differentiators}');
-            expect(prompt).not.toContain('{objections}');
-            expect(prompt).not.toContain('{phase1_output}');
-            expect(prompt).not.toContain('{phase2_output}');
+            // Verify no empty placeholders (using {{VAR}} syntax)
+            expect(prompt).not.toContain('{{PRODUCT_NAME}}');
+            expect(prompt).not.toContain('{{CUSTOMER_TYPE}}');
+            expect(prompt).not.toContain('{{PROBLEM}}');
+            expect(prompt).not.toContain('{{OUTCOME}}');
+            expect(prompt).not.toContain('{{PROOF_POINTS}}');
+            expect(prompt).not.toContain('{{DIFFERENTIATORS}}');
+            expect(prompt).not.toContain('{{OBJECTIONS}}');
+            expect(prompt).not.toContain('{{PHASE1_OUTPUT}}');
+            expect(prompt).not.toContain('{{PHASE2_OUTPUT}}');
 
             // Verify actual data is present
             expect(prompt).toContain('Test Product');
@@ -235,7 +247,7 @@ describe('Form-to-Prompt Integration Tests', () => {
             );
 
             expect(phase1Template).toContain('```markdown');
-            expect(phase1Template).toContain('# Power Statement for {product_name}');
+            expect(phase1Template).toContain('# Power Statement for {{PRODUCT_NAME}}');
             expect(phase1Template).toContain('## Version A: Concise');
             expect(phase1Template).toContain('## Version B: Structured');
         });
@@ -259,7 +271,7 @@ describe('Form-to-Prompt Integration Tests', () => {
             );
 
             expect(phase3Template).toContain('```markdown');
-            expect(phase3Template).toContain('# Final Power Statement for {product_name}');
+            expect(phase3Template).toContain('# Final Power Statement for {{PRODUCT_NAME}}');
             expect(phase3Template).toContain('## Version A: Concise (30-Second Delivery)');
             expect(phase3Template).toContain('## Version B: Structured (Full Version)');
         });
@@ -524,4 +536,3 @@ describe('Form-to-Prompt Integration Tests', () => {
         });
     });
 });
-

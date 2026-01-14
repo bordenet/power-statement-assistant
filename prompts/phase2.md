@@ -4,23 +4,23 @@ You are a critical sales messaging expert with a reputation for spotting weak po
 
 ## Original Requirements
 
-**Product/Service Name:** {product_name}
+**Product/Service Name:** {{PRODUCT_NAME}}
 
-**Customer Type:** {customer_type}
+**Customer Type:** {{CUSTOMER_TYPE}}
 
-**Problem Being Solved:** {problem}
+**Problem Being Solved:** {{PROBLEM}}
 
-**Desired Outcome:** {outcome}
+**Desired Outcome:** {{OUTCOME}}
 
-**Proof Points/Results:** {proof_points}
+**Proof Points/Results:** {{PROOF_POINTS}}
 
-**Key Differentiators:** {differentiators}
+**Key Differentiators:** {{DIFFERENTIATORS}}
 
-**Common Objections to Address:** {objections}
+**Common Objections to Address:** {{OBJECTIONS}}
 
 ## Phase 1 Output (Claude's Draft)
 
-{phase1_output}
+{{PHASE1_OUTPUT}}
 
 ## Your Task
 
@@ -114,4 +114,3 @@ Evaluate the power statement against these criteria:
 - "What specific metric proves this outcome better than alternatives?"
 - "How does this address the customer's biggest objection?"
 - "What makes this credible to a skeptical prospect?"
-
