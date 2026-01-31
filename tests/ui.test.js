@@ -143,13 +143,14 @@ describe('UI Module', () => {
     });
 
     describe('copyToClipboard', () => {
-        test('should call clipboard API with text', async () => {
+        test('should call clipboard API using ClipboardItem pattern', async () => {
             await copyToClipboard('test text');
-            expect(navigator.clipboard.writeText).toHaveBeenCalledWith('test text');
+            // The new implementation uses clipboard.write with ClipboardItem
+            expect(navigator.clipboard.write).toHaveBeenCalledTimes(1);
         });
 
-        test('should throw error when clipboard API fails', async () => {
-            navigator.clipboard.writeText.mockRejectedValueOnce(new Error('Clipboard access denied'));
+        test('should throw error when clipboard API fails and fallback fails', async () => {
+            navigator.clipboard.write.mockRejectedValueOnce(new Error('Clipboard access denied'));
             // Also mock execCommand to fail (fallback)
             document.execCommand = jest.fn().mockReturnValue(false);
             // The function should throw an error when both methods fail
@@ -161,6 +162,17 @@ describe('UI Module', () => {
             const container = document.getElementById('toast-container');
             expect(container.children.length).toBe(0);
         });
+
+        test('should fallback to execCommand when Clipboard API unavailable', async () => {
+            // Remove clipboard API
+            Object.defineProperty(navigator, 'clipboard', {
+                value: undefined,
+                writable: true,
+            });
+            document.execCommand = jest.fn().mockReturnValue(true);
+
+            await copyToClipboard('test text');
+            expect(document.execCommand).toHaveBeenCalledWith('copy');
+        });
     });
 });
-
