@@ -143,21 +143,36 @@ describe('UI Module', () => {
     });
 
     describe('copyToClipboard', () => {
-        test('should call clipboard API using ClipboardItem pattern', async () => {
+        test('should copy text to clipboard using writeText first', async () => {
+            const writeTextMock = jest.fn().mockResolvedValue();
+            navigator.clipboard.writeText = writeTextMock;
+
             await copyToClipboard('test text');
-            // The new implementation uses clipboard.write with ClipboardItem
-            expect(navigator.clipboard.write).toHaveBeenCalledTimes(1);
+
+            // The new implementation tries writeText first (Safari MacOS compatible)
+            expect(writeTextMock).toHaveBeenCalledTimes(1);
+            expect(writeTextMock).toHaveBeenCalledWith('test text');
         });
 
-        test('should throw error when clipboard API fails and fallback fails', async () => {
-            navigator.clipboard.write.mockRejectedValueOnce(new Error('Clipboard access denied'));
-            // Also mock execCommand to fail (fallback)
+        test('should throw error if all clipboard methods fail', async () => {
+            const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+            // Mock writeText to fail
+            navigator.clipboard.writeText = jest.fn().mockRejectedValue(new Error('Not allowed'));
+            // Mock write (ClipboardItem) to also fail
+            navigator.clipboard.write = jest.fn().mockRejectedValue(new Error('Not allowed'));
+            // Mock execCommand to also fail
             document.execCommand = jest.fn().mockReturnValue(false);
-            // The function should throw an error when both methods fail
+
             await expect(copyToClipboard('test text')).rejects.toThrow();
+
+            consoleWarnSpy.mockRestore();
         });
 
         test('should not show any toast notifications', async () => {
+            const writeTextMock = jest.fn().mockResolvedValue();
+            navigator.clipboard.writeText = writeTextMock;
+
             await copyToClipboard('test text');
             const container = document.getElementById('toast-container');
             expect(container.children.length).toBe(0);
