@@ -15,7 +15,7 @@
 
 import { getProject, updatePhase, updateProject, deleteProject } from './projects.js';
 import { getPhaseMetadata, generatePromptForPhase, getFinalMarkdown, getExportFilename } from './workflow.js';
-import { escapeHtml, showToast, copyToClipboard, showPromptModal, showDocumentPreviewModal, confirm } from './ui.js';
+import { escapeHtml, showToast, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal, confirm } from './ui.js';
 import { navigateTo } from './router.js';
 import { preloadPromptTemplates } from './prompts.js';
 
@@ -376,20 +376,28 @@ function attachPhaseEventListeners(project, phase) {
     }
   };
 
-  copyPromptBtn.addEventListener('click', async () => {
-    try {
+  // CRITICAL: Safari transient activation fix - call copyToClipboardAsync synchronously
+  copyPromptBtn.addEventListener('click', () => {
+    let generatedPrompt = null;
+    const promptPromise = (async () => {
       const prompt = await generatePromptForPhase(project, phase);
-      await copyToClipboard(prompt);
-      showToast('Prompt copied to clipboard!', 'success');
+      generatedPrompt = prompt;
+      return prompt;
+    })();
 
-      // Save prompt but DON'T mark as completed - user is still working on this phase
-      await updatePhase(project.id, phase, prompt, project.phases[phase]?.response || '');
+    copyToClipboardAsync(promptPromise)
+      .then(async () => {
+        showToast('Prompt copied to clipboard!', 'success');
 
-      enableWorkflowProgression();
-    } catch (error) {
-      console.error('Failed to copy prompt:', error);
-      showToast('Failed to copy to clipboard. Please check browser permissions.', 'error');
-    }
+        // Save prompt but DON'T mark as completed - user is still working on this phase
+        await updatePhase(project.id, phase, generatedPrompt, project.phases[phase]?.response || '');
+
+        enableWorkflowProgression();
+      })
+      .catch((error) => {
+        console.error('Failed to copy prompt:', error);
+        showToast('Failed to copy to clipboard. Please check browser permissions.', 'error');
+      });
   });
 
   // Update button state as user types
