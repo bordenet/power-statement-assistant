@@ -17,6 +17,7 @@ import { getProject, updatePhase, updateProject, deleteProject } from './project
 import { getPhaseMetadata, generatePromptForPhase, getFinalMarkdown, getExportFilename } from './workflow.js';
 import { escapeHtml, showToast, copyToClipboard, showPromptModal, showDocumentPreviewModal, confirm } from './ui.js';
 import { navigateTo } from './router.js';
+import { preloadPromptTemplates } from './prompts.js';
 
 /**
  * Extract title from markdown content (looks for # Title at the beginning)
@@ -59,6 +60,10 @@ function updatePhaseTabStyles(activePhase) {
  * @param {string} projectId - Project ID to render
  */
 export async function renderProjectView(projectId) {
+  // Preload prompt templates to avoid network delay on first clipboard operation
+  // Fire-and-forget: don't await, let it run in parallel with project load
+  preloadPromptTemplates().catch(() => {});
+
   const project = await getProject(projectId);
 
   if (!project) {
