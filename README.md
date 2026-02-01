@@ -50,29 +50,29 @@ Write power statements with AI. Three phases: draft, review, refine.
 
 ### Setup
 
-\`\`\`bash
+```bash
 git clone https://github.com/bordenet/power-statement-assistant.git
 cd power-statement-assistant
 npm install
-\`\`\`
+```
 
 ### Testing
 
-\`\`\`bash
+```bash
 npm test        # Run all tests
 npm run lint    # Run linting
 npm run lint:fix # Fix lint issues
-\`\`\`
+```
 
 ### Local Development
 
-\`\`\`bash
+```bash
 npm run serve   # Start local server at http://localhost:8000
-\`\`\`
+```
 
 ## Project Structure
 
-\`\`\`
+```
 power-statement-assistant/
 ├── js/                    # JavaScript modules
 │   ├── app.js            # Main application entry
@@ -85,7 +85,7 @@ power-statement-assistant/
 │   ├── phase2.md
 │   └── phase3.md
 └── index.html            # Main HTML file
-\`\`\`
+```
 
 ## Part of Genesis Tools
 
