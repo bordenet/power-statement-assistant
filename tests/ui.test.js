@@ -1,5 +1,5 @@
-import { describe, test, expect, beforeEach, jest } from '@jest/globals';
-import { showToast, showLoading, hideLoading, confirm, formatDate, escapeHtml, copyToClipboard } from '../js/ui.js';
+import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { showToast, showLoading, hideLoading, confirm, formatDate, formatBytes, escapeHtml, copyToClipboard, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal } from '../js/ui.js';
 
 describe('UI Module', () => {
     beforeEach(() => {
@@ -107,6 +107,37 @@ describe('UI Module', () => {
             const result = await confirmPromise;
             expect(result).toBe(false);
         });
+
+        test('should resolve false when backdrop is clicked', async () => {
+            const confirmPromise = confirm('Are you sure?');
+
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeTruthy();
+
+            // Simulate backdrop click
+            const event = new MouseEvent('click', { bubbles: true });
+            Object.defineProperty(event, 'target', { value: modal, enumerable: true });
+            modal.dispatchEvent(event);
+
+            const result = await confirmPromise;
+            expect(result).toBe(false);
+        });
+
+        test('should display custom title and message', async () => {
+            const confirmPromise = confirm('Delete this item?', 'Confirm Delete');
+
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const modal = document.querySelector('.fixed');
+            expect(modal.innerHTML).toContain('Confirm Delete');
+            expect(modal.innerHTML).toContain('Delete this item?');
+
+            // Clean up
+            document.querySelector('#cancel-btn').click();
+            await confirmPromise;
+        });
     });
 
     describe('formatDate', () => {
@@ -128,6 +159,48 @@ describe('UI Module', () => {
         test('should return "X days ago" for dates within a week', () => {
             const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
             expect(formatDate(threeDaysAgo)).toBe('3 days ago');
+        });
+
+        test('should return formatted date for dates older than a week', () => {
+            const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString();
+            const result = formatDate(tenDaysAgo);
+            // Should return a localized date string like "Jan 22, 2026"
+            expect(result).toMatch(/[A-Za-z]{3} \d{1,2}, \d{4}/);
+        });
+
+        test('should handle singular minute/hour/day', () => {
+            const oneMinuteAgo = new Date(Date.now() - 1 * 60 * 1000).toISOString();
+            expect(formatDate(oneMinuteAgo)).toBe('1 minute ago');
+
+            const oneHourAgo = new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString();
+            expect(formatDate(oneHourAgo)).toBe('1 hour ago');
+
+            const oneDayAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString();
+            expect(formatDate(oneDayAgo)).toBe('1 day ago');
+        });
+    });
+
+    describe('formatBytes', () => {
+        test('should return "0 Bytes" for 0', () => {
+            expect(formatBytes(0)).toBe('0 Bytes');
+        });
+
+        test('should format bytes correctly', () => {
+            expect(formatBytes(512)).toBe('512 Bytes');
+        });
+
+        test('should format KB correctly', () => {
+            expect(formatBytes(1024)).toBe('1 KB');
+            expect(formatBytes(1536)).toBe('1.5 KB');
+        });
+
+        test('should format MB correctly', () => {
+            expect(formatBytes(1048576)).toBe('1 MB');
+            expect(formatBytes(1572864)).toBe('1.5 MB');
+        });
+
+        test('should format GB correctly', () => {
+            expect(formatBytes(1073741824)).toBe('1 GB');
         });
     });
 
@@ -187,6 +260,259 @@ describe('UI Module', () => {
 
             await copyToClipboard('test text');
             expect(document.execCommand).toHaveBeenCalledWith('copy');
+        });
+    });
+
+    describe('copyToClipboardAsync', () => {
+        beforeEach(() => {
+            // Ensure clipboard API is available
+            if (!navigator.clipboard) {
+                Object.defineProperty(navigator, 'clipboard', {
+                    value: {},
+                    writable: true,
+                    configurable: true
+                });
+            }
+        });
+
+        test('should copy text from a promise', async () => {
+            const writeMock = jest.fn().mockResolvedValue();
+            Object.defineProperty(navigator.clipboard, 'write', {
+                value: writeMock,
+                writable: true,
+                configurable: true
+            });
+
+            const textPromise = Promise.resolve('async text');
+            await copyToClipboardAsync(textPromise);
+
+            expect(writeMock).toHaveBeenCalledTimes(1);
+            expect(writeMock).toHaveBeenCalledWith(expect.any(Array));
+        });
+
+        test('should handle delayed promise resolution', async () => {
+            const writeMock = jest.fn().mockResolvedValue();
+            Object.defineProperty(navigator.clipboard, 'write', {
+                value: writeMock,
+                writable: true,
+                configurable: true
+            });
+
+            const delayedPromise = new Promise(resolve =>
+                setTimeout(() => resolve('delayed text'), 10)
+            );
+            await copyToClipboardAsync(delayedPromise);
+
+            expect(writeMock).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('showPromptModal', () => {
+        test('should display modal with prompt text', () => {
+            showPromptModal('Test prompt content', 'Test Title');
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeTruthy();
+            expect(modal.innerHTML).toContain('Test Title');
+            expect(modal.innerHTML).toContain('Test prompt content');
+
+            // Clean up
+            document.querySelector('#close-modal-btn').click();
+        });
+
+        test('should close modal when X button is clicked', () => {
+            showPromptModal('Test prompt', 'Title');
+
+            const closeBtn = document.querySelector('#close-prompt-modal');
+            expect(closeBtn).toBeTruthy();
+            closeBtn.click();
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeNull();
+        });
+
+        test('should close modal when Close button is clicked', () => {
+            showPromptModal('Test prompt', 'Title');
+
+            const closeBtn = document.querySelector('#close-modal-btn');
+            expect(closeBtn).toBeTruthy();
+            closeBtn.click();
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeNull();
+        });
+
+        test('should close modal when backdrop is clicked', () => {
+            showPromptModal('Test prompt', 'Title');
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeTruthy();
+
+            // Simulate backdrop click
+            const event = new MouseEvent('click', { bubbles: true });
+            Object.defineProperty(event, 'target', { value: modal, enumerable: true });
+            modal.dispatchEvent(event);
+
+            const modalAfter = document.querySelector('.fixed');
+            expect(modalAfter).toBeNull();
+        });
+
+        test('should close modal on Escape key', () => {
+            showPromptModal('Test prompt', 'Title');
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeTruthy();
+
+            // Simulate Escape key
+            const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+            document.dispatchEvent(escapeEvent);
+
+            const modalAfter = document.querySelector('.fixed');
+            expect(modalAfter).toBeNull();
+        });
+
+        test('should escape HTML in prompt text', () => {
+            showPromptModal('<script>alert("xss")</script>', 'Title');
+
+            const modal = document.querySelector('.fixed');
+            expect(modal.innerHTML).not.toContain('<script>');
+            expect(modal.innerHTML).toContain('&lt;script&gt;');
+
+            // Clean up
+            document.querySelector('#close-modal-btn').click();
+        });
+
+        test('should call onCopySuccess callback after copy', async () => {
+            // Ensure clipboard API is available
+            if (!navigator.clipboard) {
+                Object.defineProperty(navigator, 'clipboard', {
+                    value: {},
+                    writable: true,
+                    configurable: true
+                });
+            }
+            const writeMock = jest.fn().mockResolvedValue();
+            Object.defineProperty(navigator.clipboard, 'write', {
+                value: writeMock,
+                writable: true,
+                configurable: true
+            });
+
+            const onCopySuccess = jest.fn();
+            showPromptModal('Test prompt', 'Title', onCopySuccess);
+
+            const copyBtn = document.querySelector('#copy-modal-prompt');
+            expect(copyBtn).toBeTruthy();
+            copyBtn.click();
+
+            // Wait for async copy operation
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            expect(onCopySuccess).toHaveBeenCalledTimes(1);
+
+            // Clean up
+            document.querySelector('#close-modal-btn').click();
+        });
+    });
+
+    describe('showDocumentPreviewModal', () => {
+        test('should display modal with document content', () => {
+            showDocumentPreviewModal('# Test Document\n\nThis is content.', 'Preview', 'test.md');
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeTruthy();
+            expect(modal.innerHTML).toContain('Preview');
+
+            // Clean up
+            document.querySelector('#close-modal-btn').click();
+        });
+
+        test('should close modal when X button is clicked', () => {
+            showDocumentPreviewModal('Content', 'Title', 'doc.md');
+
+            const closeBtn = document.querySelector('#close-preview-modal');
+            expect(closeBtn).toBeTruthy();
+            closeBtn.click();
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeNull();
+        });
+
+        test('should close modal on Escape key', () => {
+            showDocumentPreviewModal('Content', 'Title', 'doc.md');
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeTruthy();
+
+            // Simulate Escape key
+            const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+            document.dispatchEvent(escapeEvent);
+
+            const modalAfter = document.querySelector('.fixed');
+            expect(modalAfter).toBeNull();
+        });
+
+        test('should close modal when backdrop is clicked', () => {
+            showDocumentPreviewModal('Content', 'Title', 'doc.md');
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeTruthy();
+
+            // Simulate backdrop click
+            const event = new MouseEvent('click', { bubbles: true });
+            Object.defineProperty(event, 'target', { value: modal, enumerable: true });
+            modal.dispatchEvent(event);
+
+            const modalAfter = document.querySelector('.fixed');
+            expect(modalAfter).toBeNull();
+        });
+
+        test('should have download button that creates file', () => {
+            // Mock URL and createElement for download
+            const mockUrl = 'blob:test';
+            URL.createObjectURL = jest.fn().mockReturnValue(mockUrl);
+            URL.revokeObjectURL = jest.fn();
+
+            showDocumentPreviewModal('Content', 'Title', 'doc.md');
+
+            const downloadBtn = document.querySelector('#download-md-btn');
+            expect(downloadBtn).toBeTruthy();
+            downloadBtn.click();
+
+            expect(URL.createObjectURL).toHaveBeenCalled();
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith(mockUrl);
+
+            // Clean up
+            document.querySelector('#close-modal-btn').click();
+        });
+
+        test('should call onDownload callback after download', () => {
+            URL.createObjectURL = jest.fn().mockReturnValue('blob:test');
+            URL.revokeObjectURL = jest.fn();
+
+            const onDownload = jest.fn();
+            showDocumentPreviewModal('Content', 'Title', 'doc.md', onDownload);
+
+            const downloadBtn = document.querySelector('#download-md-btn');
+            downloadBtn.click();
+
+            expect(onDownload).toHaveBeenCalledTimes(1);
+
+            // Clean up
+            document.querySelector('#close-modal-btn').click();
+        });
+
+        test('should handle missing marked library gracefully', () => {
+            // marked is not defined in test environment
+            showDocumentPreviewModal('<b>Bold</b> text', 'Title', 'doc.md');
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeTruthy();
+            // Should escape HTML when marked is unavailable
+            expect(modal.innerHTML).toContain('&lt;b&gt;');
+
+            // Clean up
+            document.querySelector('#close-modal-btn').click();
         });
     });
 });

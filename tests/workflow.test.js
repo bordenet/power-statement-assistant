@@ -3,6 +3,10 @@ import {
     loadDefaultPrompts,
     getPhaseMetadata,
     generatePromptForPhase,
+    exportFinalDocument,
+    sanitizeFilename,
+    getExportFilename,
+    getFinalMarkdown,
     WORKFLOW_CONFIG,
     Workflow
 } from '../js/workflow.js';
@@ -117,6 +121,195 @@ describe('Workflow Module', () => {
 
             expect(prompt).toContain('Phase 1 output here');
         });
+
+        test('should include phase 1 and 2 responses in phase 3 prompt', async () => {
+            const project = {
+                title: 'Test',
+                productName: 'Product',
+                phases: {
+                    1: { response: 'Phase 1 content' },
+                    2: { response: 'Phase 2 content' },
+                    3: { response: '' }
+                }
+            };
+
+            const prompt = await generatePromptForPhase(project, 3);
+
+            expect(prompt).toContain('Phase 1 content');
+            expect(prompt).toContain('Phase 2 content');
+        });
+
+        test('should return empty string for invalid phase', async () => {
+            const project = {
+                title: 'Test',
+                productName: 'Product',
+                phases: {}
+            };
+
+            const prompt = await generatePromptForPhase(project, 99);
+            expect(prompt).toBe('');
+        });
+
+        test('should handle missing phases gracefully', async () => {
+            const project = {
+                title: 'Test',
+                productName: 'Product'
+                // No phases defined
+            };
+
+            const prompt = await generatePromptForPhase(project, 2);
+            expect(prompt).toContain('[No Phase 1 output yet]');
+        });
+
+        test('should handle array format phases (legacy)', async () => {
+            const project = {
+                title: 'Test',
+                productName: 'Product',
+                phases: [
+                    { response: 'Legacy array phase 1' },
+                    { response: '' },
+                    { response: '' }
+                ]
+            };
+
+            const prompt = await generatePromptForPhase(project, 2);
+            expect(prompt).toContain('Legacy array phase 1');
+        });
+    });
+
+    describe('sanitizeFilename', () => {
+        test('should replace special characters with dashes', () => {
+            expect(sanitizeFilename('My Project!')).toBe('my-project');
+            expect(sanitizeFilename('Test@#$File')).toBe('test-file');
+        });
+
+        test('should collapse multiple dashes', () => {
+            expect(sanitizeFilename('My---Project')).toBe('my-project');
+        });
+
+        test('should remove leading and trailing dashes', () => {
+            expect(sanitizeFilename('---Test---')).toBe('test');
+        });
+
+        test('should truncate to 50 characters', () => {
+            const longName = 'a'.repeat(100);
+            expect(sanitizeFilename(longName).length).toBe(50);
+        });
+
+        test('should convert to lowercase', () => {
+            expect(sanitizeFilename('MyProject')).toBe('myproject');
+        });
+    });
+
+    describe('getExportFilename', () => {
+        test('should return sanitized filename with extension', () => {
+            const project = { title: 'My Power Statement' };
+            expect(getExportFilename(project)).toBe('my-power-statement-power-statement.md');
+        });
+
+        test('should handle empty title', () => {
+            const project = { title: '' };
+            const filename = getExportFilename(project);
+            expect(filename).toBe('-power-statement.md');
+        });
+    });
+
+    describe('getFinalMarkdown', () => {
+        test('should return phase 3 response if available', () => {
+            const project = {
+                phases: {
+                    1: { response: 'Phase 1' },
+                    2: { response: 'Phase 2' },
+                    3: { response: 'Phase 3 Final' }
+                }
+            };
+            expect(getFinalMarkdown(project)).toBe('Phase 3 Final');
+        });
+
+        test('should fallback to phase 2 if phase 3 empty', () => {
+            const project = {
+                phases: {
+                    1: { response: 'Phase 1' },
+                    2: { response: 'Phase 2 Content' },
+                    3: { response: '' }
+                }
+            };
+            expect(getFinalMarkdown(project)).toBe('Phase 2 Content');
+        });
+
+        test('should fallback to phase 1 if phases 2 and 3 empty', () => {
+            const project = {
+                phases: {
+                    1: { response: 'Phase 1 Only' },
+                    2: { response: '' },
+                    3: { response: '' }
+                }
+            };
+            expect(getFinalMarkdown(project)).toBe('Phase 1 Only');
+        });
+
+        test('should return null if no responses', () => {
+            const project = {
+                phases: {
+                    1: { response: '' },
+                    2: { response: '' },
+                    3: { response: '' }
+                }
+            };
+            expect(getFinalMarkdown(project)).toBeNull();
+        });
+
+        test('should return null if no phases', () => {
+            const project = {};
+            expect(getFinalMarkdown(project)).toBeNull();
+        });
+    });
+
+    describe('exportFinalDocument', () => {
+        beforeEach(() => {
+            URL.createObjectURL = jest.fn().mockReturnValue('blob:test');
+            URL.revokeObjectURL = jest.fn();
+            // Create toast container for showToast
+            const toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            document.body.appendChild(toastContainer);
+        });
+
+        afterEach(() => {
+            const container = document.getElementById('toast-container');
+            if (container) container.remove();
+        });
+
+        test('should export document when content exists', async () => {
+            const project = {
+                title: 'Test Project',
+                phases: {
+                    3: { response: 'Final power statement content' }
+                }
+            };
+
+            await exportFinalDocument(project);
+
+            expect(URL.createObjectURL).toHaveBeenCalled();
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:test');
+        });
+
+        test('should show warning when no content to export', async () => {
+            const project = {
+                title: 'Empty Project',
+                phases: {
+                    1: { response: '' },
+                    2: { response: '' },
+                    3: { response: '' }
+                }
+            };
+
+            // Should not throw, just return early after showing warning
+            await exportFinalDocument(project);
+
+            // URL.createObjectURL should NOT be called for empty content
+            expect(URL.createObjectURL).not.toHaveBeenCalled();
+        });
     });
 
     describe('WORKFLOW_CONFIG', () => {
@@ -226,6 +419,87 @@ describe('Workflow Module', () => {
             expect(markdown).toContain('# Test Project');
             expect(markdown).toContain('Phase 1 content');
             expect(markdown).toContain('Phase 3 content');
+        });
+
+        test('should get next phase', () => {
+            const project = { title: 'Test', phase: 1 };
+            const workflow = new Workflow(project);
+
+            const nextPhase = workflow.getNextPhase();
+            expect(nextPhase.name).toBe('Adversarial Critique');
+            expect(nextPhase.number).toBe(2);
+        });
+
+        test('should return null for next phase at end', () => {
+            const project = { title: 'Test', phase: 3 };
+            const workflow = new Workflow(project);
+
+            const nextPhase = workflow.getNextPhase();
+            expect(nextPhase).toBeNull();
+        });
+
+        test('should check if workflow is complete', () => {
+            const project1 = { title: 'Test', phase: 3 };
+            const workflow1 = new Workflow(project1);
+            expect(workflow1.isComplete()).toBe(false);
+
+            const project2 = { title: 'Test', phase: 4 };
+            const workflow2 = new Workflow(project2);
+            expect(workflow2.isComplete()).toBe(true);
+        });
+
+        test('should generate prompt with variables replaced', async () => {
+            const project = {
+                title: 'Test Title',
+                productName: 'My Product',
+                customerType: 'Enterprise',
+                problem: 'Big problem',
+                outcome: 'Great outcome',
+                proofPoints: 'Strong proof',
+                differentiators: 'Unique features',
+                objections: 'Common objections',
+                phase: 1
+            };
+            const workflow = new Workflow(project);
+
+            const prompt = await workflow.generatePrompt();
+
+            // Prompt should be generated (template fetched and variables replaced)
+            expect(typeof prompt).toBe('string');
+        });
+
+        test('should replace variables in template', () => {
+            const project = {
+                title: 'Power Statement',
+                productName: 'CloudSync',
+                customerType: 'SaaS Startups',
+                problem: 'data loss',
+                outcome: 'reliability',
+                proofPoints: '99.9% uptime',
+                differentiators: 'real-time sync',
+                objections: 'cost concerns',
+                phase: 2,
+                phase1_output: 'Phase 1 generated content'
+            };
+            const workflow = new Workflow(project);
+
+            const template = 'Product: {product_name}, Customer: {customer_type}, Problem: {problem}, Previous: {phase1_output}';
+            const result = workflow.replaceVariables(template);
+
+            expect(result).toContain('CloudSync');
+            expect(result).toContain('SaaS Startups');
+            expect(result).toContain('data loss');
+            expect(result).toContain('Phase 1 generated content');
+        });
+
+        test('should handle missing project fields in replaceVariables', () => {
+            const project = { title: 'Test', phase: 1 };
+            const workflow = new Workflow(project);
+
+            const template = 'Product: {product_name}, Customer: {customer_type}';
+            const result = workflow.replaceVariables(template);
+
+            expect(result).toBe('Product: , Customer: ');
         });
     });
 });

@@ -242,5 +242,131 @@ describe('Storage Module', () => {
             await expect(storage.importProject(json)).rejects.toThrow();
         });
     });
-});
 
+    describe('getSetting and saveSetting', () => {
+        test('saves and retrieves a setting', async () => {
+            await storage.saveSetting('testKey', 'testValue');
+            const value = await storage.getSetting('testKey');
+            expect(value).toBe('testValue');
+        });
+
+        test('returns null for non-existent setting', async () => {
+            const value = await storage.getSetting('nonExistentKey');
+            expect(value).toBeNull();
+        });
+
+        test('overwrites existing setting', async () => {
+            await storage.saveSetting('key1', 'value1');
+            await storage.saveSetting('key1', 'value2');
+            const value = await storage.getSetting('key1');
+            expect(value).toBe('value2');
+        });
+
+        test('saves complex object as setting', async () => {
+            const obj = { foo: 'bar', count: 42 };
+            await storage.saveSetting('objKey', obj);
+            const value = await storage.getSetting('objKey');
+            expect(value).toEqual(obj);
+        });
+    });
+
+    describe('getStorageInfo and getStorageEstimate', () => {
+        let originalNavigator;
+
+        beforeEach(() => {
+            originalNavigator = global.navigator;
+        });
+
+        afterEach(() => {
+            global.navigator = originalNavigator;
+        });
+
+        test('returns storage info when storage API available', async () => {
+            // Mock navigator.storage.estimate
+            const mockEstimate = { usage: 1000, quota: 10000 };
+            Object.defineProperty(global, 'navigator', {
+                value: {
+                    storage: {
+                        estimate: jest.fn().mockResolvedValue(mockEstimate)
+                    }
+                },
+                writable: true,
+                configurable: true
+            });
+
+            const info = await storage.getStorageInfo();
+            expect(info).toBeTruthy();
+            expect(info.usage).toBe(1000);
+            expect(info.quota).toBe(10000);
+            expect(info.percentage).toBe('10.00');
+        });
+
+        test('getStorageEstimate is alias for getStorageInfo', async () => {
+            const mockEstimate = { usage: 500, quota: 5000 };
+            Object.defineProperty(global, 'navigator', {
+                value: {
+                    storage: {
+                        estimate: jest.fn().mockResolvedValue(mockEstimate)
+                    }
+                },
+                writable: true,
+                configurable: true
+            });
+
+            const info = await storage.getStorageEstimate();
+            expect(info).toBeTruthy();
+            expect(info.usage).toBe(500);
+        });
+
+        test('returns null when storage API unavailable', async () => {
+            Object.defineProperty(global, 'navigator', {
+                value: {},
+                writable: true,
+                configurable: true
+            });
+            const info = await storage.getStorageInfo();
+            expect(info).toBeNull();
+        });
+    });
+
+    describe('exportAll and importAll', () => {
+        test('exports all projects', async () => {
+            const project1 = { id: 'exp-1', name: 'Export 1', created: Date.now(), modified: Date.now(), phases: [] };
+            const project2 = { id: 'exp-2', name: 'Export 2', created: Date.now(), modified: Date.now(), phases: [] };
+
+            await storage.saveProject(project1);
+            await storage.saveProject(project2);
+
+            const exported = await storage.exportAll();
+            expect(exported.projects.length).toBe(2);
+            expect(exported.projectCount).toBe(2);
+            expect(exported.exportDate).toBeDefined();
+            expect(exported.version).toBeDefined();
+        });
+
+        test('imports all projects from export data', async () => {
+            const project1 = { id: 'imp-1', name: 'Import 1', created: Date.now(), modified: Date.now(), phases: [] };
+            const project2 = { id: 'imp-2', name: 'Import 2', created: Date.now(), modified: Date.now(), phases: [] };
+
+            const importData = {
+                version: 1,
+                exportDate: new Date().toISOString(),
+                projectCount: 2,
+                projects: [project1, project2]
+            };
+
+            const count = await storage.importAll(importData);
+            expect(count).toBe(2);
+
+            const retrieved1 = await storage.getProject('imp-1');
+            const retrieved2 = await storage.getProject('imp-2');
+            expect(retrieved1).toBeTruthy();
+            expect(retrieved2).toBeTruthy();
+        });
+
+        test('importAll throws on invalid data', async () => {
+            await expect(storage.importAll({})).rejects.toThrow('Invalid import data');
+            await expect(storage.importAll({ projects: 'not-array' })).rejects.toThrow('Invalid import data');
+        });
+    });
+});
