@@ -37,35 +37,13 @@ export async function loadDefaultPrompts() {
 }
 
 /**
- * Get phase metadata
+ * Get phase metadata from WORKFLOW_CONFIG
  * @module workflow
+ * @param {number} phaseNumber - Phase number (1-3)
+ * @returns {Object|undefined} Phase metadata with number, name, description, etc.
  */
-export function getPhaseMetadata(phase) {
-  const metadata = {
-    1: {
-      title: 'Initial Draft',
-      ai: 'Claude',
-      description: 'Generate the first draft of your power statement using Claude',
-      color: 'blue',
-      icon: '📝'
-    },
-    2: {
-      title: 'Adversarial Critique',
-      ai: 'Gemini',
-      description: 'Get a different perspective and improvements from Gemini',
-      color: 'purple',
-      icon: '🔍'
-    },
-    3: {
-      title: 'Final Synthesis',
-      ai: 'Claude',
-      description: 'Combine the best elements into a polished final version',
-      color: 'green',
-      icon: '✨'
-    }
-  };
-
-  return metadata[phase] || {};
+export function getPhaseMetadata(phaseNumber) {
+  return WORKFLOW_CONFIG.phases.find(p => p.number === phaseNumber);
 }
 
 /**
@@ -121,19 +99,30 @@ export async function generatePromptForPhase(project, phase) {
 }
 
 /**
- * Export final document as markdown
+ * Export final document as markdown (returns the markdown string)
  * @module workflow
+ * @param {Object} project - Project object
+ * @returns {string} Markdown content
  */
-export async function exportFinalDocument(project) {
-  const finalResponse = project.phases?.[3]?.response || project.phases?.[2]?.response || project.phases?.[1]?.response;
+export function exportFinalDocument(project) {
+  const workflow = new Workflow(project);
+  return workflow.exportAsMarkdown();
+}
+
+/**
+ * Download project as markdown file (with DOM operations for UI)
+ * @module workflow
+ * @param {Object} project - Project object
+ */
+export async function downloadFinalDocument(project) {
+  const content = exportFinalDocument(project);
   const attribution = '\n\n---\n\n*Generated with [Power Statement Assistant](https://bordenet.github.io/power-statement-assistant/)*';
 
-  if (!finalResponse) {
+  if (!content) {
     showToast('No power statement content to export', 'warning');
     return;
   }
 
-  const content = finalResponse + attribution;
   const blob = new Blob([content], { type: 'text/markdown' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -185,7 +174,9 @@ export function getFinalMarkdown(project) {
 export class Workflow {
   constructor(project) {
     this.project = project;
-    this.currentPhase = project.phase || 1;
+    // Clamp phase to valid range (1 minimum)
+    const rawPhase = project.phase || 1;
+    this.currentPhase = Math.max(1, rawPhase);
   }
 
   /**

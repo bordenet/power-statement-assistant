@@ -424,16 +424,16 @@ describe('Form-to-Prompt Integration Tests', () => {
             const { getPhaseMetadata } = await import('../js/workflow.js');
 
             const phase1 = getPhaseMetadata(1);
-            expect(phase1.ai).toBe('Claude');
-            expect(phase1.title).toBe('Initial Draft');
+            expect(phase1.aiModel).toBe('Claude');
+            expect(phase1.name).toBe('Initial Draft');
 
             const phase2 = getPhaseMetadata(2);
-            expect(phase2.ai).toBe('Gemini');
-            expect(phase2.title).toBe('Adversarial Critique');
+            expect(phase2.aiModel).toBe('Gemini');
+            expect(phase2.name).toBe('Adversarial Critique');
 
             const phase3 = getPhaseMetadata(3);
-            expect(phase3.ai).toBe('Claude');
-            expect(phase3.title).toBe('Final Synthesis');
+            expect(phase3.aiModel).toBe('Claude');
+            expect(phase3.name).toBe('Final Synthesis');
         });
 
         it('should have icons for all phases', async () => {
@@ -453,8 +453,8 @@ describe('Form-to-Prompt Integration Tests', () => {
             expect(WORKFLOW_CONFIG.phaseCount).toBe(3);
 
             const phase3 = getPhaseMetadata(3);
-            expect(phase3.title).toBe('Final Synthesis');
-            expect(phase3.ai).toBe('Claude');
+            expect(phase3.name).toBe('Final Synthesis');
+            expect(phase3.aiModel).toBe('Claude');
         });
 
         it('should persist phase=3 when Phase 3 is saved', async () => {
