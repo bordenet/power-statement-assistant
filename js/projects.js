@@ -13,6 +13,49 @@
 import storage from './storage.js';
 
 /**
+ * Extract title from final document markdown content
+ * @param {string} markdown - Document markdown content
+ * @returns {string} Extracted title or empty string
+ */
+function extractTitleFromMarkdown(markdown) {
+  if (!markdown) return '';
+
+  // First try: H1 header (# Title)
+  const h1Match = markdown.match(/^#\s+(.+)$/m);
+  if (h1Match) {
+    const title = h1Match[1].trim();
+    // Skip generic headers like "PRESS RELEASE" or "Press Release"
+    if (!/^press\s+release$/i.test(title)) {
+      return title;
+    }
+  }
+
+  // Second try: Bold headline after "# PRESS RELEASE" or "## Press Release"
+  // Pattern: **Headline Text**
+  const prMatch = markdown.match(/^#\s*PRESS\s*RELEASE\s*$/im);
+  if (prMatch) {
+    const startIdx = markdown.indexOf(prMatch[0]) + prMatch[0].length;
+    const afterPR = markdown.slice(startIdx).trim();
+    const boldMatch = afterPR.match(/^\*\*(.+?)\*\*/);
+    if (boldMatch) {
+      return boldMatch[1].trim();
+    }
+  }
+
+  // Third try: First bold line in the document
+  const firstBoldMatch = markdown.match(/\*\*(.+?)\*\*/);
+  if (firstBoldMatch) {
+    const title = firstBoldMatch[1].trim();
+    // Only use if it looks like a headline (not too long, not a sentence)
+    if (title.length > 10 && title.length < 150 && !title.endsWith('.')) {
+      return title;
+    }
+  }
+
+  return '';
+}
+
+/**
  * Create a new project
  * @param {Object} projectData - Project data object
  * @param {string} projectData.title - Project title
@@ -87,6 +130,14 @@ export async function updatePhase(projectId, phase, prompt, response) {
 
   // Note: Auto-advance is now handled in project-view.js for better UX control
   // We don't auto-advance here anymore
+
+  // Phase 3: Extract title from final document and update project title
+  if (phase === 3 && response) {
+    const extractedTitle = extractTitleFromMarkdown(response);
+    if (extractedTitle) {
+      project.title = extractedTitle;
+    }
+  }
 
   project.updatedAt = new Date().toISOString();
   await storage.saveProject(project);
