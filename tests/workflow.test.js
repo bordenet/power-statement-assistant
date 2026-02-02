@@ -355,13 +355,22 @@ describe('Workflow Module', () => {
             expect(workflow.currentPhase).toBe(2);
         });
 
-        test('should not advance beyond phase 3', () => {
+        test('should advance from phase 3 to phase 4 (complete)', () => {
             const project = { title: 'Test', phase: 3 };
             const workflow = new Workflow(project);
 
             const result = workflow.advancePhase();
+            expect(result).toBe(true);
+            expect(workflow.currentPhase).toBe(4);
+        });
+
+        test('should not advance beyond phase 4', () => {
+            const project = { title: 'Test', phase: 4 };
+            const workflow = new Workflow(project);
+
+            const result = workflow.advancePhase();
             expect(result).toBe(false);
-            expect(workflow.currentPhase).toBe(3);
+            expect(workflow.currentPhase).toBe(4);
         });
 
         test('should go back to previous phase', () => {

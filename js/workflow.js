@@ -216,7 +216,8 @@ export class Workflow {
      * Advance to next phase
      */
   advancePhase() {
-    if (this.currentPhase < WORKFLOW_CONFIG.phaseCount) {
+    // Allow advancing up to phase 4 (complete state)
+    if (this.currentPhase <= WORKFLOW_CONFIG.phaseCount) {
       this.currentPhase++;
       this.project.phase = this.currentPhase;
       return true;
