@@ -406,8 +406,8 @@ function attachPhaseEventListeners(project, phase) {
       .then(async () => {
         showToast('Prompt copied to clipboard!', 'success');
 
-        // Save prompt but DON'T mark as completed - user is still working on this phase
-        await updatePhase(project.id, phase, generatedPrompt, project.phases[phase]?.response || '');
+        // Save prompt but DON'T advance - user is still working on this phase (skipAutoAdvance: true)
+        await updatePhase(project.id, phase, generatedPrompt, project.phases[phase]?.response || '', { skipAutoAdvance: true });
 
         enableWorkflowProgression();
       })
@@ -427,33 +427,31 @@ function attachPhaseEventListeners(project, phase) {
     });
   }
 
+  // Save Response - canonical pattern matching one-pager
   if (saveResponseBtn) {
     saveResponseBtn.addEventListener('click', async () => {
       const response = responseTextarea.value.trim();
       if (response && response.length >= 3) {
-        await updatePhase(project.id, phase, project.phases?.[phase]?.prompt || '', response);
+        // Re-fetch project to get fresh prompt data (not stale closure)
+        const freshProject = await getProject(project.id);
+        const currentPrompt = freshProject.phases?.[phase]?.prompt || '';
+
+        // Use canonical updatePhase - handles both saving AND auto-advance
+        await updatePhase(project.id, phase, currentPrompt, response);
 
         // Auto-advance to next phase if not on final phase
         if (phase < 3) {
           showToast('Response saved! Moving to next phase...', 'success');
-          // Re-fetch the updated project and advance - persist to storage
+          // Re-fetch the updated project (updatePhase already advanced the phase)
           const updatedProject = await getProject(project.id);
-          updatedProject.phase = phase + 1;
-          await updateProject(project.id, { phase: phase + 1 });
           updatePhaseTabStyles(phase + 1);
           document.getElementById('phase-content').innerHTML = renderPhaseContent(updatedProject, phase + 1);
           attachPhaseEventListeners(updatedProject, phase + 1);
         } else {
-          // Phase 3 complete - stay on phase 3, extract and update project title if changed
-          const extractedTitle = extractTitleFromMarkdown(response);
-          if (extractedTitle && extractedTitle !== project.title) {
-            await updateProject(project.id, { title: extractedTitle, phase: 3 });
-            showToast(`Phase 3 complete! Title updated to "${extractedTitle}"`, 'success');
-          } else {
-            await updateProject(project.id, { phase: 3 });
-            showToast('Phase 3 complete! Your power statement is ready.', 'success');
-          }
-          // Re-render to show updated title and export button - will stay on phase 3
+          // Phase 3 complete - set phase to 4 (complete state)
+          await updateProject(project.id, { phase: 4 });
+          showToast('Phase 3 complete! Your power statement is ready.', 'success');
+          // Re-render to show export button
           renderProjectView(project.id);
         }
       } else {

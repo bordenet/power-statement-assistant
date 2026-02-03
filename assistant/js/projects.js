@@ -111,16 +111,20 @@ export async function getProject(id) {
 }
 
 /**
- * Update project phase data
+ * Update project phase data (canonical pattern matching one-pager)
  * @param {string} projectId - Project ID
  * @param {number} phase - Phase number (1-3)
  * @param {string} prompt - Generated prompt
  * @param {string} response - AI response
+ * @param {Object} options - Options object
+ * @param {boolean} options.skipAutoAdvance - If true, don't auto-advance to next phase
  * @returns {Promise<Object>} Updated project object
  */
-export async function updatePhase(projectId, phase, prompt, response) {
+export async function updatePhase(projectId, phase, prompt, response, options = {}) {
   const project = await storage.getProject(projectId);
   if (!project) throw new Error('Project not found');
+
+  const { skipAutoAdvance = false } = options;
 
   project.phases[phase] = {
     prompt: prompt || '',
@@ -128,8 +132,10 @@ export async function updatePhase(projectId, phase, prompt, response) {
     completed: !!response
   };
 
-  // Note: Auto-advance is now handled in project-view.js for better UX control
-  // We don't auto-advance here anymore
+  // Auto-advance to next phase if current phase is completed (unless skipped)
+  if (response && phase < 3 && !skipAutoAdvance) {
+    project.phase = phase + 1;
+  }
 
   // Phase 3: Extract title from final document and update project title
   if (phase === 3 && response) {

@@ -179,7 +179,7 @@ describe('Projects Module', () => {
             expect(updated.phases[1].completed).toBe(true);
         });
 
-        test('should not auto-advance phase (handled in UI)', async () => {
+        test('should auto-advance phase when response is provided (canonical pattern)', async () => {
             const projectData = {
                 title: 'Test',
                 productName: 'Product',
@@ -194,7 +194,26 @@ describe('Projects Module', () => {
             const project = await createProject(projectData);
             const updated = await updatePhase(project.id, 1, 'Prompt', 'Response');
 
-            // Phase advancement is handled in project-view.js, not here
+            // Auto-advance to next phase when response is provided (matching one-pager baseline)
+            expect(updated.phase).toBe(2);
+        });
+
+        test('should not auto-advance when skipAutoAdvance is true', async () => {
+            const projectData = {
+                title: 'Test',
+                productName: 'Product',
+                customerType: 'SMB',
+                problem: 'Problem',
+                outcome: 'Outcome',
+                proofPoints: 'Proof',
+                differentiators: 'Diff',
+                objections: 'Obj'
+            };
+
+            const project = await createProject(projectData);
+            const updated = await updatePhase(project.id, 1, 'Prompt', 'Response', { skipAutoAdvance: true });
+
+            // Should NOT auto-advance when skipAutoAdvance is true
             expect(updated.phase).toBe(1);
         });
     });
