@@ -52,6 +52,9 @@ cd "${REPO_ROOT}"
 # shellcheck source=lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
 
+# shellcheck source=lib/symlinks.sh
+source "${SCRIPT_DIR}/lib/symlinks.sh"
+
 ################################################################################
 # Configuration
 ################################################################################
@@ -162,10 +165,10 @@ deploy_to_github() {
 
 verify_deployment() {
     log_step "Verifying GitHub Pages deployment"
-    
+
     log_info "Waiting for GitHub Pages to update (this may take 1-2 minutes)..."
     sleep 10
-    
+
     # Check if site is accessible
     if curl -s -o /dev/null -w "%{http_code}" "$GITHUB_PAGES_URL" | grep -q "200"; then
         log_step_done "Deployment verified"
@@ -180,7 +183,7 @@ verify_deployment() {
 
 main() {
     log_header "Deploying $PROJECT_NAME to GitHub Pages"
-    
+
     # Parse arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -216,8 +219,17 @@ main() {
     run_tests || exit 1
     check_coverage || exit 1
 
-    # Deploy
+    # Replace symlinks with real files for GitHub Pages
+    replace_symlinks_with_real_files || exit 1
+
+    # Deploy (with trap to restore symlinks on failure)
+    trap 'restore_symlinks' EXIT
     deploy_to_github || exit 1
+
+    # Restore symlinks for local development
+    restore_symlinks
+    trap - EXIT
+
     verify_deployment
 
     # Success
@@ -235,4 +247,3 @@ main() {
 }
 
 main "$@"
-
