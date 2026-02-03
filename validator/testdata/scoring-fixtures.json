@@ -1,0 +1,38 @@
+{
+  "weak": {
+    "content": "Was responsible for helping with various projects and assisting the team with stuff.",
+    "expectedMinScore": 0,
+    "expectedMaxScore": 45,
+    "description": "Very weak power statement - no action verbs, no metrics, vague"
+  },
+  "excellent": {
+    "content": "Led cross-functional team of 12 engineers to deliver enterprise platform 3 months ahead of schedule, reducing customer onboarding time by 75% and generating $2.4M in new revenue within 6 months.",
+    "expectedMinScore": 75,
+    "expectedMaxScore": 100,
+    "description": "Excellent power statement - strong action verb, quantified impact, clear context"
+  },
+  "needsMetrics": {
+    "content": "Developed new features for the product and improved team productivity.",
+    "expectedMinScore": 15,
+    "expectedMaxScore": 75,
+    "description": "Has action verb but lacks specific metrics and impact"
+  },
+  "hasMetricsNoContext": {
+    "content": "Reduced processing time by 50% and increased throughput by 200%.",
+    "expectedMinScore": 35,
+    "expectedMaxScore": 70,
+    "description": "Has metrics but lacks context about scope and business impact"
+  },
+  "goodButVerbose": {
+    "content": "Basically, I was essentially responsible for leading a very large team that worked on developing a cutting-edge, best-in-class solution that helped to somewhat improve the overall customer experience and resulted in some revenue improvements.",
+    "expectedMinScore": 10,
+    "expectedMaxScore": 50,
+    "description": "Has structure but too many filler words and jargon, weak opening"
+  },
+  "strongAction": {
+    "content": "Architected scalable microservices infrastructure supporting 10M daily active users across 15 global regions.",
+    "expectedMinScore": 45,
+    "expectedMaxScore": 80,
+    "description": "Strong action verb, good specifics, but could use more impact metrics"
+  }
+}
