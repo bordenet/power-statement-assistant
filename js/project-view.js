@@ -15,7 +15,7 @@
 
 import { getProject, updatePhase, updateProject, deleteProject } from './projects.js';
 import { getPhaseMetadata, generatePromptForPhase, getFinalMarkdown, getExportFilename } from './workflow.js';
-import { escapeHtml, showToast, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal, confirm } from './ui.js';
+import { escapeHtml, showToast, copyToClipboard, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal, confirm } from './ui.js';
 import { navigateTo } from './router.js';
 import { preloadPromptTemplates } from './prompts.js';
 
@@ -210,10 +210,9 @@ function renderPhaseContent(project, phase) {
                     <button id="export-complete-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-lg">
                         📄 Preview & Copy
                     </button>
-                    <span class="text-gray-500 dark:text-gray-400">then</span>
-                    <a href="https://bordenet.github.io/power-statement-assistant/validator/" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline font-medium text-lg">
-                        Validate & Score ↗
-                    </a>
+                    <button id="validate-score-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg">
+                        📋 Copy & Validate ↗
+                    </button>
                 </div>
             </div>
             <!-- Expandable Help Section -->
@@ -512,6 +511,24 @@ function attachPhaseEventListeners(project, phase) {
       }
     });
   }
+
+  // Validate & Score button - copies final draft and opens validator
+  document.getElementById('validate-score-btn')?.addEventListener('click', async () => {
+    const markdown = getFinalMarkdown(project);
+    if (markdown) {
+      try {
+        await copyToClipboard(markdown);
+        showToast('Document copied! Opening validator...', 'success');
+        setTimeout(() => {
+          window.open('https://bordenet.github.io/power-statement-assistant/validator/', '_blank', 'noopener,noreferrer');
+        }, 500);
+      } catch {
+        showToast('Failed to copy. Please try again.', 'error');
+      }
+    } else {
+      showToast('No content to copy', 'warning');
+    }
+  });
 
   // Previous phase button - re-fetch project to ensure fresh data
   if (prevPhaseBtn) {
