@@ -111,7 +111,7 @@ export async function getProject(id) {
 }
 
 /**
- * Update project phase data (canonical pattern matching one-pager)
+ * Update project phase data (canonical pattern)
  * @param {string} projectId - Project ID
  * @param {number} phase - Phase number (1-3)
  * @param {string} prompt - Generated prompt
@@ -131,6 +131,12 @@ export async function updatePhase(projectId, phase, prompt, response, options = 
     response: response || '',
     completed: !!response
   };
+
+  // Keep legacy flat field for backward compatibility (e.g., phase1_output)
+  if (response) {
+    const phaseKey = `phase${phase}_output`;
+    project[phaseKey] = response;
+  }
 
   // Auto-advance to next phase if current phase is completed (unless skipped)
   if (response && phase < 3 && !skipAutoAdvance) {

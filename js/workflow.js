@@ -11,6 +11,30 @@ import { WORKFLOW_CONFIG, generatePhase1Prompt, generatePhase2Prompt, generatePh
 // Re-export WORKFLOW_CONFIG for backward compatibility
 export { WORKFLOW_CONFIG };
 
+/**
+ * Helper to get phase output, handling both flat and nested formats
+ * @param {Object} project - Project object
+ * @param {number} phaseNum - 1-based phase number
+ * @returns {string} Phase output content
+ */
+function getPhaseOutputInternal(project, phaseNum) {
+  // Flat format (canonical) - check first
+  const flatKey = `phase${phaseNum}_output`;
+  if (project[flatKey]) {
+    return project[flatKey];
+  }
+  // Nested format (legacy) - fallback
+  if (project.phases) {
+    if (Array.isArray(project.phases) && project.phases[phaseNum - 1]) {
+      return project.phases[phaseNum - 1].response || '';
+    }
+    if (project.phases[phaseNum] && typeof project.phases[phaseNum] === 'object') {
+      return project.phases[phaseNum].response || '';
+    }
+  }
+  return '';
+}
+
 // Default prompts (loaded from prompts/*.md files)
 let defaultPrompts = {};
 
@@ -283,8 +307,7 @@ export class Workflow {
      * Get phase output
      */
   getPhaseOutput(phaseNumber) {
-    const phaseKey = `phase${phaseNumber}_output`;
-    return this.project[phaseKey] || '';
+    return getPhaseOutputInternal(this.project, phaseNumber);
   }
 
   /**
