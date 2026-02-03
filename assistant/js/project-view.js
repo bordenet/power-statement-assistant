@@ -189,6 +189,9 @@ function renderPhaseContent(project, phase) {
   // Determine AI URL based on phase
   const aiUrl = phase === 2 ? 'https://gemini.google.com' : 'https://claude.ai';
   const aiName = phase === 2 ? 'Gemini' : 'Claude';
+  // Color mapping for phases (canonical WORKFLOW_CONFIG doesn't include colors)
+  const colorMap = { 1: 'blue', 2: 'green', 3: 'purple' };
+  const color = colorMap[phase] || 'blue';
 
   // Determine if textarea should be enabled (has existing content OR prompt was copied)
   const hasExistingResponse = phaseData.response && phaseData.response.trim().length > 0;
@@ -242,14 +245,14 @@ function renderPhaseContent(project, phase) {
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="mb-6">
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    ${meta.icon} ${meta.title}
+                    ${meta.icon} ${meta.name}
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400 mb-2">
                     ${meta.description}
                 </p>
-                <div class="inline-flex items-center px-3 py-1 bg-${meta.color}-100 dark:bg-${meta.color}-900/20 text-${meta.color}-800 dark:text-${meta.color}-300 rounded-full text-sm">
+                <div class="inline-flex items-center px-3 py-1 bg-${color}-100 dark:bg-${color}-900/20 text-${color}-800 dark:text-${color}-300 rounded-full text-sm">
                     <span class="mr-2">🤖</span>
-                    Use with ${meta.ai}
+                    Use with ${meta.aiModel}
                 </div>
             </div>
 
@@ -466,7 +469,7 @@ function attachPhaseEventListeners(project, phase) {
     viewPromptBtn.addEventListener('click', async () => {
       const prompt = await generatePromptForPhase(project, phase);
       const meta = getPhaseMetadata(phase);
-      showPromptModal(prompt, `Phase ${phase}: ${meta.title} Prompt`, enableWorkflowProgression);
+      showPromptModal(prompt, `Phase ${phase}: ${meta.name} Prompt`, enableWorkflowProgression);
     });
   }
 
@@ -476,7 +479,7 @@ function attachPhaseEventListeners(project, phase) {
   if (viewFullPromptBtn && project.phases?.[phase]?.prompt) {
     viewFullPromptBtn.addEventListener('click', () => {
       const meta = getPhaseMetadata(phase);
-      showPromptModal(project.phases[phase].prompt, `Phase ${phase}: ${meta.title} Prompt`, enableWorkflowProgression);
+      showPromptModal(project.phases[phase].prompt, `Phase ${phase}: ${meta.name} Prompt`, enableWorkflowProgression);
     });
   }
 
