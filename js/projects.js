@@ -128,6 +128,12 @@ export async function updatePhase(projectId, phase, prompt, response) {
     completed: !!response
   };
 
+  // Keep legacy flat field for backward compatibility (e.g., phase1_output)
+  if (response) {
+    const phaseKey = `phase${phase}_output`;
+    project[phaseKey] = response;
+  }
+
   // Note: Auto-advance is now handled in project-view.js for better UX control
   // We don't auto-advance here anymore
 
