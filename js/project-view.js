@@ -14,10 +14,11 @@
  */
 
 import { getProject, updatePhase, updateProject, deleteProject } from './projects.js';
-import { getPhaseMetadata, generatePromptForPhase, getFinalMarkdown, getExportFilename } from './workflow.js';
-import { escapeHtml, showToast, copyToClipboard, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal, confirm } from './ui.js';
+import { getPhaseMetadata, generatePromptForPhase, getFinalMarkdown, getExportFilename, Workflow } from './workflow.js';
+import { escapeHtml, showToast, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal, confirm } from './ui.js';
 import { navigateTo } from './router.js';
 import { preloadPromptTemplates } from './prompts.js';
+import { computeWordDiff, renderDiffHtml, getDiffStats } from './diff-view.js';
 
 /**
  * Extract title from markdown content (looks for # Title at the beginning)
@@ -189,6 +190,9 @@ function renderPhaseContent(project, phase) {
   // Determine AI URL based on phase
   const aiUrl = phase === 2 ? 'https://gemini.google.com' : 'https://claude.ai';
   const aiName = phase === 2 ? 'Gemini' : 'Claude';
+  // Color mapping for phases (canonical WORKFLOW_CONFIG doesn't include colors)
+  const colorMap = { 1: 'blue', 2: 'green', 3: 'purple' };
+  const color = colorMap[phase] || 'blue';
 
   // Determine if textarea should be enabled (has existing content OR prompt was copied)
   const hasExistingResponse = phaseData.response && phaseData.response.trim().length > 0;
@@ -210,9 +214,12 @@ function renderPhaseContent(project, phase) {
                     <button id="export-complete-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-lg">
                         📄 Preview & Copy
                     </button>
-                    <button id="validate-score-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg">
-                        📋 Copy & Validate ↗
+                    <button id="compare-phases-btn" class="px-4 py-2 border border-purple-600 text-purple-600 dark:border-purple-400 dark:text-purple-400 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors font-medium">
+                        🔄 Compare Phases
                     </button>
+                    <a href="https://bordenet.github.io/power-statement-assistant/validator/" target="_blank" rel="noopener noreferrer" class="px-4 py-2 border border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors font-medium">
+                        Full Validation ↗
+                    </a>
                 </div>
             </div>
             <!-- Expandable Help Section -->
@@ -241,14 +248,14 @@ function renderPhaseContent(project, phase) {
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="mb-6">
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    ${meta.icon} ${meta.title}
+                    ${meta.icon} ${meta.name}
                 </h3>
                 <p class="text-gray-600 dark:text-gray-400 mb-2">
                     ${meta.description}
                 </p>
-                <div class="inline-flex items-center px-3 py-1 bg-${meta.color}-100 dark:bg-${meta.color}-900/20 text-${meta.color}-800 dark:text-${meta.color}-300 rounded-full text-sm">
+                <div class="inline-flex items-center px-3 py-1 bg-${color}-100 dark:bg-${color}-900/20 text-${color}-800 dark:text-${color}-300 rounded-full text-sm">
                     <span class="mr-2">🤖</span>
-                    Use with ${meta.ai}
+                    Use with ${meta.aiModel}
                 </div>
             </div>
 
@@ -402,8 +409,8 @@ function attachPhaseEventListeners(project, phase) {
       .then(async () => {
         showToast('Prompt copied to clipboard!', 'success');
 
-        // Save prompt but DON'T mark as completed - user is still working on this phase
-        await updatePhase(project.id, phase, generatedPrompt, project.phases[phase]?.response || '');
+        // Save prompt but DON'T advance - user is still working on this phase (skipAutoAdvance: true)
+        await updatePhase(project.id, phase, generatedPrompt, project.phases[phase]?.response || '', { skipAutoAdvance: true });
 
         enableWorkflowProgression();
       })
@@ -423,33 +430,31 @@ function attachPhaseEventListeners(project, phase) {
     });
   }
 
+  // Save Response - canonical pattern matching one-pager
   if (saveResponseBtn) {
     saveResponseBtn.addEventListener('click', async () => {
       const response = responseTextarea.value.trim();
       if (response && response.length >= 3) {
-        await updatePhase(project.id, phase, project.phases?.[phase]?.prompt || '', response);
+        // Re-fetch project to get fresh prompt data (not stale closure)
+        const freshProject = await getProject(project.id);
+        const currentPrompt = freshProject.phases?.[phase]?.prompt || '';
+
+        // Use canonical updatePhase - handles both saving AND auto-advance
+        await updatePhase(project.id, phase, currentPrompt, response);
 
         // Auto-advance to next phase if not on final phase
         if (phase < 3) {
           showToast('Response saved! Moving to next phase...', 'success');
-          // Re-fetch the updated project and advance - persist to storage
+          // Re-fetch the updated project (updatePhase already advanced the phase)
           const updatedProject = await getProject(project.id);
-          updatedProject.phase = phase + 1;
-          await updateProject(project.id, { phase: phase + 1 });
           updatePhaseTabStyles(phase + 1);
           document.getElementById('phase-content').innerHTML = renderPhaseContent(updatedProject, phase + 1);
           attachPhaseEventListeners(updatedProject, phase + 1);
         } else {
-          // Phase 3 complete - stay on phase 3, extract and update project title if changed
-          const extractedTitle = extractTitleFromMarkdown(response);
-          if (extractedTitle && extractedTitle !== project.title) {
-            await updateProject(project.id, { title: extractedTitle, phase: 3 });
-            showToast(`Phase 3 complete! Title updated to "${extractedTitle}"`, 'success');
-          } else {
-            await updateProject(project.id, { phase: 3 });
-            showToast('Phase 3 complete! Your power statement is ready.', 'success');
-          }
-          // Re-render to show updated title and export button - will stay on phase 3
+          // Phase 3 complete - set phase to 4 (complete state)
+          await updateProject(project.id, { phase: 4 });
+          showToast('Phase 3 complete! Your power statement is ready.', 'success');
+          // Re-render to show export button
           renderProjectView(project.id);
         }
       } else {
@@ -465,7 +470,7 @@ function attachPhaseEventListeners(project, phase) {
     viewPromptBtn.addEventListener('click', async () => {
       const prompt = await generatePromptForPhase(project, phase);
       const meta = getPhaseMetadata(phase);
-      showPromptModal(prompt, `Phase ${phase}: ${meta.title} Prompt`, enableWorkflowProgression);
+      showPromptModal(prompt, `Phase ${phase}: ${meta.name} Prompt`, enableWorkflowProgression);
     });
   }
 
@@ -475,7 +480,7 @@ function attachPhaseEventListeners(project, phase) {
   if (viewFullPromptBtn && project.phases?.[phase]?.prompt) {
     viewFullPromptBtn.addEventListener('click', () => {
       const meta = getPhaseMetadata(phase);
-      showPromptModal(project.phases[phase].prompt, `Phase ${phase}: ${meta.title} Prompt`, enableWorkflowProgression);
+      showPromptModal(project.phases[phase].prompt, `Phase ${phase}: ${meta.name} Prompt`, enableWorkflowProgression);
     });
   }
 
@@ -512,23 +517,20 @@ function attachPhaseEventListeners(project, phase) {
     });
   }
 
-  // Validate & Score button - copies final draft and opens validator
-  document.getElementById('validate-score-btn')?.addEventListener('click', async () => {
-    const markdown = getFinalMarkdown(project);
-    if (markdown) {
-      try {
-        await copyToClipboard(markdown);
-        showToast('Document copied! Opening validator...', 'success');
-        setTimeout(() => {
-          window.open('https://bordenet.github.io/power-statement-assistant/validator/', '_blank', 'noopener,noreferrer');
-        }, 500);
-      } catch {
-        showToast('Failed to copy. Please try again.', 'error');
+  // Compare phases button handler (shows diff between Phase 1 and Phase 2)
+  const comparePhasesBtn = document.getElementById('compare-phases-btn');
+  if (comparePhasesBtn) {
+    comparePhasesBtn.addEventListener('click', () => {
+      const workflow = new Workflow(project);
+      const phase1Output = workflow.getPhaseOutput(1);
+      const phase2Output = workflow.getPhaseOutput(2);
+      if (!phase1Output || !phase2Output) {
+        showToast('Both Phase 1 and Phase 2 must be completed to compare', 'warning');
+        return;
       }
-    } else {
-      showToast('No content to copy', 'warning');
-    }
-  });
+      showDiffModal(phase1Output, phase2Output);
+    });
+  }
 
   // Previous phase button - re-fetch project to ensure fresh data
   if (prevPhaseBtn) {
@@ -560,4 +562,72 @@ function attachPhaseEventListeners(project, phase) {
       attachPhaseEventListeners(freshProject, nextPhase);
     });
   }
+}
+
+/**
+ * Show diff modal comparing Phase 1 and Phase 2 outputs
+ * @param {string} phase1 - Phase 1 output
+ * @param {string} phase2 - Phase 2 output
+ */
+function showDiffModal(phase1, phase2) {
+  const diff = computeWordDiff(phase1, phase2);
+  const stats = getDiffStats(diff);
+  const diffHtml = renderDiffHtml(diff);
+
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+  modal.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+            🔄 Phase Comparison: Draft → Review
+          </h3>
+          <div class="flex gap-4 mt-2 text-sm">
+            <span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded">
+              +${stats.additions} added
+            </span>
+            <span class="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded">
+              -${stats.deletions} removed
+            </span>
+            <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">
+              ${stats.unchanged} unchanged
+            </span>
+          </div>
+        </div>
+        <button id="close-diff-modal-btn" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+          <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="p-4 overflow-y-auto flex-1">
+        <div class="prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
+          ${diffHtml}
+        </div>
+      </div>
+      <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          <span class="bg-green-200 dark:bg-green-900/50 px-1">Green text</span> = added in review |
+          <span class="bg-red-200 dark:bg-red-900/50 px-1 line-through">Red strikethrough</span> = removed from draft
+        </p>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const closeModal = () => modal.remove();
+  modal.querySelector('#close-diff-modal-btn').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
 }
