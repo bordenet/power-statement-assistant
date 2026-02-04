@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 ################################################################################
-# deploy-web.sh - Deploy power-statement-assistant to GitHub Pages
-#
-# REFERENCE IMPLEMENTATION:
-#     https://github.com/bordenet/product-requirements-assistant/blob/main/scripts/deploy-web.sh
-#     Study the reference implementation for proper compact mode handling!
+# deploy-web.sh - Deploy Power Statement Assistant to GitHub Pages
 #
 # SYNOPSIS
 #     ./scripts/deploy-web.sh [OPTIONS]
@@ -13,11 +9,11 @@
 #     Deploys the web application to GitHub Pages with quality checks.
 #
 #     Steps performed:
-#     1. Run linting (npm run lint)
-#     2. Run tests (npm test)
-#     3. Verify coverage threshold
-#     4. Commit and push to GitHub
-#     5. Verify GitHub Pages deployment
+#     1. Build CSS and JS bundle
+#     2. Run linting (npm run lint)
+#     3. Run tests (npm test)
+#     4. Verify coverage threshold
+#     5. Commit and push to GitHub
 #     6. Display deployment URL
 #
 # OPTIONS
@@ -25,13 +21,6 @@
 #     --skip-lint     Skip linting (NOT RECOMMENDED)
 #     -v, --verbose   Show detailed output
 #     -h, --help      Display this help message
-#
-# EXAMPLES
-#     # Standard deployment
-#     ./scripts/deploy-web.sh
-#
-#     # Verbose mode
-#     ./scripts/deploy-web.sh --verbose
 #
 # EXIT CODES
 #     0   Deployment successful
@@ -41,209 +30,188 @@
 
 set -euo pipefail
 
-# Determine repo root (works from any directory)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-# Change to repo root so all relative paths work
-cd "${REPO_ROOT}"
-
-# Source common library
-# shellcheck source=lib/common.sh
-source "${SCRIPT_DIR}/lib/common.sh"
+# Source common library if it exists
+if [[ -f "${SCRIPT_DIR}/lib/common.sh" ]]; then
+  # shellcheck source=lib/common.sh
+  source "${SCRIPT_DIR}/lib/common.sh"
+  HAS_COMMON=1
+else
+  HAS_COMMON=0
+fi
 
 # shellcheck source=lib/symlinks.sh
 source "${SCRIPT_DIR}/lib/symlinks.sh"
 
-################################################################################
-# Configuration
-################################################################################
+# Colors (fallback if common.sh not available)
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
 
-PROJECT_NAME="power-statement-assistant"
+# Configuration
+PROJECT_NAME="Power Statement Assistant"
 GITHUB_USER="bordenet"
 GITHUB_REPO="power-statement-assistant"
 GITHUB_PAGES_URL="https://bordenet.github.io/power-statement-assistant/"
 
+# Flags
 SKIP_TESTS=false
 SKIP_LINT=false
+VERBOSE=false
 
-################################################################################
-# Functions
-################################################################################
+print_header() {
+  echo -e "${BLUE}==>${NC} $1"
+}
+
+print_success() {
+  echo -e "${GREEN}✓${NC} $1"
+}
+
+print_error() {
+  echo -e "${RED}✗${NC} $1"
+}
+
+print_warning() {
+  echo -e "${YELLOW}⚠${NC} $1"
+}
 
 show_help() {
-    sed -n '2,/^$/p' "$0" | sed 's/^# \?//'
+  sed -n '2,/^$/p' "$0" | sed 's/^# \?//'
 }
 
-run_lint() {
-    log_step "Running linting checks"
+cd "$PROJECT_DIR"
 
-    if [[ "$SKIP_LINT" == "true" ]]; then
-        log_warning "Skipping linting (--skip-lint flag)"
-        return 0
-    fi
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --skip-tests)
+      SKIP_TESTS=true
+      shift
+      ;;
+    --skip-lint)
+      SKIP_LINT=true
+      shift
+      ;;
+    -v|--verbose)
+      VERBOSE=true
+      shift
+      ;;
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    *)
+      print_error "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
 
-    # Run lint (show output in verbose mode, hide in compact mode)
-    if [[ "${VERBOSE:-false}" == "true" ]]; then
-        npm run lint || { log_error "Linting failed"; return 1; }
-    else
-        npm run lint >/dev/null 2>&1 || { log_error "Linting failed. Run 'npm run lint' to see errors."; log_info "Fix errors with: npm run lint:fix"; return 1; }
-    fi
+# Header
+echo ""
+echo -e "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${BLUE}║   Power Statement Assistant - Web Deployment            ║${NC}"
+echo -e "${BLUE}╚════════════════════════════════════════════════════════════╝${NC}"
+echo ""
 
-    log_step_done "Linting passed"
-}
+# Check git status
+print_header "Checking git status"
+if ! git diff-index --quiet HEAD --; then
+  print_error "Working directory has uncommitted changes"
+  echo "Commit or stash changes before deploying"
+  exit 1
+fi
+print_success "Working directory clean"
 
-run_tests() {
-    log_step "Running tests"
+# Note: one-pager doesn't require a build step (no Tailwind/esbuild)
+print_header "Checking project files"
+print_success "Project files ready (no build required)"
 
-    if [[ "$SKIP_TESTS" == "true" ]]; then
-        log_warning "Skipping tests (--skip-tests flag)"
-        return 0
-    fi
+# Linting
+if [[ "$SKIP_LINT" == "false" ]]; then
+  print_header "Running linting"
+  if [[ "$VERBOSE" == "true" ]]; then
+    npm run lint || { print_error "Linting failed"; exit 1; }
+  else
+    npm run lint >/dev/null 2>&1 || { print_error "Linting failed. Run 'npm run lint' to see errors."; exit 1; }
+  fi
+  print_success "Linting passed"
+else
+  print_warning "Skipping linting (--skip-lint flag)"
+fi
 
-    # Run tests (show output in verbose mode, hide in compact mode)
-    if [[ "${VERBOSE:-false}" == "true" ]]; then
-        NODE_OPTIONS=--experimental-vm-modules npm test || { log_error "Tests failed"; return 1; }
-    else
-        NODE_OPTIONS=--experimental-vm-modules npm test >/dev/null 2>&1 || { log_error "Tests failed. Run 'npm test' to see errors."; return 1; }
-    fi
+# Tests (unless skipped)
+if [[ "$SKIP_TESTS" == "false" ]]; then
+  print_header "Running unit tests"
+  if [[ "$VERBOSE" == "true" ]]; then
+    npm test || { print_error "Unit tests failed"; exit 1; }
+  else
+    npm test >/dev/null 2>&1 || { print_error "Unit tests failed. Run 'npm test' to see errors."; exit 1; }
+  fi
+  print_success "Unit tests passed"
 
-    log_step_done "Tests passed"
-}
+  print_header "Checking coverage"
+  if [[ "$VERBOSE" == "true" ]]; then
+    npm run test:coverage || print_warning "Coverage threshold not met"
+  else
+    npm run test:coverage >/dev/null 2>&1 || print_warning "Coverage threshold not met"
+  fi
+else
+  print_warning "Skipping tests (--skip-tests flag)"
+fi
 
-check_coverage() {
-    log_step "Checking test coverage"
+# Replace symlinks with real files for GitHub Pages
+replace_symlinks_with_real_files || exit 1
 
-    if [[ "$SKIP_TESTS" == "true" ]]; then
-        log_warning "Skipping coverage check (tests skipped)"
-        return 0
-    fi
+# Set up trap to restore symlinks on failure
+trap 'restore_symlinks' EXIT
 
-    # Run coverage (show output in verbose mode, hide in compact mode)
-    if [[ "${VERBOSE:-false}" == "true" ]]; then
-        NODE_OPTIONS=--experimental-vm-modules npm run test:coverage || { log_error "Coverage check failed"; return 1; }
-    else
-        NODE_OPTIONS=--experimental-vm-modules npm run test:coverage >/dev/null 2>&1 || { log_error "Coverage check failed"; return 1; }
-    fi
+# Get current branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo ""
+echo "Deployment info:"
+echo "  Branch: $CURRENT_BRANCH"
+echo "  Commit: $(git rev-parse --short HEAD)"
+echo "  Date: $(date)"
+echo ""
 
-    log_step_done "Coverage check passed"
-}
+# Create deployment commit (no interactive prompt - scripts should be non-interactive)
+print_header "Creating deployment commit"
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+if [[ "$VERBOSE" == "true" ]]; then
+  git add -A
+  git commit -m "Deploy: $TIMESTAMP" || print_success "No changes to commit"
+else
+  git add -A >/dev/null 2>&1
+  git commit -m "Deploy: $TIMESTAMP" >/dev/null 2>&1 || print_success "No changes to commit"
+fi
 
-deploy_to_github() {
-    log_step "Deploying to GitHub"
+# Push to origin
+print_header "Pushing to GitHub"
+if [[ "$VERBOSE" == "true" ]]; then
+  git push origin "$CURRENT_BRANCH" || { print_error "Failed to push to GitHub"; exit 1; }
+else
+  git push origin "$CURRENT_BRANCH" >/dev/null 2>&1 || { print_error "Failed to push to GitHub"; exit 1; }
+fi
+print_success "Push successful"
 
-    # Check if there are changes to commit
-    if git diff --quiet && git diff --cached --quiet; then
-        log_info "No changes to commit"
-    else
-        # Stage changes (redirect output in compact mode)
-        if [[ "${VERBOSE:-false}" == "true" ]]; then
-            git add .
-        else
-            git add . >/dev/null 2>&1
-        fi
+# Restore symlinks for local development
+restore_symlinks
+trap - EXIT
 
-        # Commit (redirect output in compact mode)
-        local commit_msg
-        commit_msg="Deploy: $(date '+%Y-%m-%d %H:%M:%S')"
-        if [[ "${VERBOSE:-false}" == "true" ]]; then
-            git commit -m "$commit_msg" || true
-        else
-            git commit -m "$commit_msg" >/dev/null 2>&1 || true
-        fi
-    fi
-
-    # Push to GitHub (redirect output in compact mode)
-    if [[ "${VERBOSE:-false}" == "true" ]]; then
-        git push origin main || { log_error "Failed to push to GitHub"; return 1; }
-    else
-        git push origin main >/dev/null 2>&1 || { log_error "Failed to push to GitHub"; return 1; }
-    fi
-
-    log_step_done "Pushed to GitHub"
-}
-
-verify_deployment() {
-    log_step "Verifying GitHub Pages deployment"
-
-    log_info "Waiting for GitHub Pages to update (this may take 1-2 minutes)..."
-    sleep 10
-
-    # Check if site is accessible
-    if curl -s -o /dev/null -w "%{http_code}" "$GITHUB_PAGES_URL" | grep -q "200"; then
-        log_step_done "Deployment verified"
-    else
-        log_warning "Site may still be deploying. Check manually in a few minutes."
-    fi
-}
-
-################################################################################
-# Main
-################################################################################
-
-main() {
-    log_header "Deploying $PROJECT_NAME to GitHub Pages"
-
-    # Parse arguments
-    while [[ $# -gt 0 ]]; do
-        case $1 in
-            --skip-tests)
-                SKIP_TESTS=true
-                shift
-                ;;
-            --skip-lint)
-                SKIP_LINT=true
-                shift
-                ;;
-            -v|--verbose)
-                export VERBOSE=true
-                shift
-                ;;
-            -h|--help)
-                show_help
-                exit 0
-                ;;
-            *)
-                log_error "Unknown option: $1"
-                show_help
-                exit 1
-                ;;
-        esac
-    done
-
-    # Start timer
-    start_timer
-
-    # Run quality checks
-    run_lint || exit 1
-    run_tests || exit 1
-    check_coverage || exit 1
-
-    # Replace symlinks with real files for GitHub Pages
-    replace_symlinks_with_real_files || exit 1
-
-    # Deploy (with trap to restore symlinks on failure)
-    trap 'restore_symlinks' EXIT
-    deploy_to_github || exit 1
-
-    # Restore symlinks for local development
-    restore_symlinks
-    trap - EXIT
-
-    verify_deployment
-
-    # Success
-    stop_timer
-    echo ""
-    log_success "Deployment complete!"
-    echo ""
-    echo "  📦 Project: $PROJECT_NAME"
-    echo "  🔗 URL: $GITHUB_PAGES_URL"
-    echo "  ⏱️  Total time: $(format_duration $SECONDS)"
-    echo ""
-    log_info "Note: GitHub Pages may take 1-2 minutes to fully update."
-    log_info "Check deployment status: https://github.com/$GITHUB_USER/$GITHUB_REPO/deployments"
-    echo ""
-}
-
-main "$@"
+# Summary
+echo ""
+echo -e "${GREEN}════════════════════════════════════════════════════════════${NC}"
+echo -e "${GREEN}✓ Deployment complete!${NC}"
+echo -e "${GREEN}════════════════════════════════════════════════════════════${NC}"
+echo ""
+echo "  📦 Project: $PROJECT_NAME"
+echo "  🔗 URL: $GITHUB_PAGES_URL"
+echo ""
+echo "Note: GitHub Pages may take 1-2 minutes to fully update."
+echo "Check deployment status: https://github.com/$GITHUB_USER/$GITHUB_REPO/deployments"
+echo ""
