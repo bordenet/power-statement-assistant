@@ -96,6 +96,30 @@ Before finalizing, ensure the power statement:
 {Explain what you took from Phase 1, what you took from Phase 2, and what new elements you added}
 ```
 
+## ⚠️ FINAL AI Slop Sweep
+
+Before finalizing, eliminate ALL remaining slop:
+
+### Zero Tolerance Patterns
+
+**These MUST NOT appear in final output:**
+
+| Category | Banned Examples |
+|----------|-----------------|
+| Vague metrics | "improve", "enhance", "optimize" (without numbers) |
+| Filler phrases | "It's worth noting", "Let's talk about" |
+| Buzzwords | "leverage", "cutting-edge", "revolutionary", "game-changing" |
+| Superlatives | "industry-leading", "best-in-class" (without citations) |
+
+### Required Patterns
+
+**These MUST appear in final output:**
+- All results: **Specific numbers (e.g., "48% appointment setting rate")**
+- All claims: **Proof points from the original requirements**
+- All outcomes: **Quantified impact, not vague benefits**
+
+---
+
 ## Important Notes
 
 - This is the final version - make it count
@@ -104,6 +128,7 @@ Before finalizing, ensure the power statement:
 - Maintain credibility - no exaggeration
 - Use flowing paragraphs, NOT bullet points (except in Usage Guidance section)
 - Make it ready to use in real sales conversations
+- **Zero AI Slop**: No vague terms, filler, or buzzwords in final output
 
 **Before you respond, ask 1-2 final clarifying questions** to ensure the power statement will work in real-world sales situations. For example:
 - "What's the typical first objection you hear from prospects?"

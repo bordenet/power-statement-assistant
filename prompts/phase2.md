@@ -39,9 +39,30 @@ Evaluate the power statement against these criteria:
 7. **Language** - Is it conversational and jargon-free?
 8. **Conciseness** - Is every word necessary?
 
+## ⚠️ CRITICAL: AI Slop Detection Checklist
+
+**Flag these issues in the Phase 1 draft:**
+
+### Vague Language (deduct points)
+- [ ] "helps", "improves", "enhances" without specific metrics
+- [ ] "better results" without baseline → target
+- [ ] "significant" without exact numbers
+
+### Filler Phrases (recommend deletion)
+- [ ] "It's worth noting..."
+- [ ] "In today's competitive landscape..."
+- [ ] "Let's talk about..."
+
+### Buzzwords (require plain language)
+- [ ] leverage, utilize, synergy
+- [ ] cutting-edge, game-changing, revolutionary
+- [ ] industry-leading (without citations)
+
+---
+
 ### What to Look For
 
-**Red Flags:**
+**Red Flags (AI Slop Indicators):**
 - Vague language ("helps," "improves," "enhances")
 - Feature-focused instead of outcome-focused
 - Missing or weak proof points

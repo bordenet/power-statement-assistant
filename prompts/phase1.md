@@ -49,6 +49,41 @@ A more detailed version with clear sections:
 - Proven Results & Immediate ROI
 - Why It Works
 
+## ⚠️ CRITICAL: AI Slop Prevention Rules
+
+### Banned Vague Language
+
+❌ **NEVER use these without specific quantification:**
+
+| Banned Term | Replace With |
+|-------------|--------------|
+| "improve" | "increase from X to Y" |
+| "enhance" | specific capability added |
+| "optimize" | exact metric and improvement amount |
+| "better results" | specific baseline → target |
+| "significant" | exact percentage or number |
+
+### Banned Filler Phrases
+
+❌ **DELETE these entirely:**
+- "It's worth noting that..."
+- "In today's competitive landscape..."
+- "Let's talk about..."
+- "The reality is..."
+
+### Banned Buzzwords
+
+❌ **Replace with plain language:**
+- leverage → use
+- utilize → use
+- synergy → combined benefit
+- cutting-edge → (name the specific technology)
+- game-changing → (quantify the change)
+- revolutionary → (describe specific innovation)
+- industry-leading → (cite specific ranking)
+
+---
+
 ### Guidelines
 
 1. **Focus on outcomes, not features** - Talk about what customers achieve, not what your product does
@@ -58,6 +93,7 @@ A more detailed version with clear sections:
 5. **Keep it conversational** - Write how people actually talk
 6. **Avoid hyperbole** - No "revolutionary," "game-changing," or "incredible"
 7. **NO BULLET POINTS** - Use flowing paragraphs and natural language
+8. **Zero AI Slop** - No vague terms, filler phrases, or buzzwords
 
 ### Output Format
 
