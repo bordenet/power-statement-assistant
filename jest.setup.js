@@ -123,21 +123,6 @@ Object.defineProperty(window, 'isSecureContext', {
 // Mock document.execCommand for fallback clipboard operations
 document.execCommand = jest.fn(() => true);
 
-// Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
-
 // Reset mocks before each test
 beforeEach(() => {
   localStorage.clear();

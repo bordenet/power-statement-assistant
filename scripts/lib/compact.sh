@@ -109,16 +109,16 @@ compact_progress() {
     local current="$1"
     local total="$2"
     local message="${3:-Processing}"
-    
+
     if [[ "${VERBOSE:-false}" == "true" ]]; then
         echo -e "${COLOR_BLUE:-}[INFO]${COLOR_RESET:-} $message ($current/$total)"
         return
     fi
-    
+
     local percent=$((current * 100 / total))
     local filled=$((percent / 5))
     local empty=$((20 - filled))
-    
+
     local bar=""
     for ((i=0; i<filled; i++)); do bar+="█"; done
     for ((i=0; i<empty; i++)); do bar+="░"; done
@@ -139,12 +139,12 @@ SPINNER_FRAMES=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
 
 compact_spinner_start() {
     local message="$1"
-    
+
     if [[ "${VERBOSE:-false}" == "true" ]]; then
         echo -e "${COLOR_BLUE:-}[INFO]${COLOR_RESET:-} $message"
         return
     fi
-    
+
     (
         local i=0
         while true; do
@@ -164,4 +164,3 @@ compact_spinner_stop() {
         echo -ne "\r\033[2K"
     fi
 }
-
