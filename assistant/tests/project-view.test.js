@@ -64,13 +64,13 @@ describe('Project View Module', () => {
       expect(container.innerHTML).toContain('Copy Prompt');
     });
 
-    test('should render delete button', async () => {
+    test('should render overflow menu button for secondary actions', async () => {
       const project = await createProject(createTestProjectData());
 
       await renderProjectView(project.id);
 
       const container = document.getElementById('app-container');
-      expect(container.innerHTML).toContain('Delete');
+      expect(container.innerHTML).toContain('more-actions-btn');
     });
 
     test('should render phase content area', async () => {
