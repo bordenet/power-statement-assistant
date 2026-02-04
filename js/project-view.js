@@ -14,7 +14,7 @@
  */
 
 import { getProject, updatePhase, updateProject, deleteProject } from './projects.js';
-import { getPhaseMetadata, generatePromptForPhase, getFinalMarkdown, getExportFilename, Workflow } from './workflow.js';
+import { getPhaseMetadata, generatePromptForPhase, getFinalMarkdown, getExportFilename, Workflow, detectPromptPaste } from './workflow.js';
 import { escapeHtml, showToast, copyToClipboard, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal, confirm, createActionMenu } from './ui.js';
 import { navigateTo } from './router.js';
 import { preloadPromptTemplates } from './prompts.js';
@@ -399,6 +399,13 @@ function attachPhaseEventListeners(project, phase) {
     saveResponseBtn.addEventListener('click', async () => {
       const response = responseTextarea.value.trim();
       if (response && response.length >= 3) {
+        // Check if user accidentally pasted the prompt instead of the AI response
+        const promptCheck = detectPromptPaste(response);
+        if (promptCheck.isPrompt) {
+          showToast(promptCheck.reason, 'error');
+          return;
+        }
+
         // Re-fetch project to get fresh prompt data (not stale closure)
         const freshProject = await getProject(project.id);
         const currentPrompt = freshProject.phases?.[phase]?.prompt || '';
