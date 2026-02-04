@@ -4,7 +4,7 @@ Write power statements with AI. Three phases: draft, review, refine.
 
 [![Star this repo](https://img.shields.io/github/stars/bordenet/power-statement-assistant?style=social)](https://github.com/bordenet/power-statement-assistant)
 
-**Try it**: [bordenet.github.io/power-statement-assistant](https://bordenet.github.io/power-statement-assistant/)
+**Try it**: [Assistant](https://bordenet.github.io/power-statement-assistant/) · [Validator](https://bordenet.github.io/power-statement-assistant/validator/)
 
 > **What is a Power Statement?** A power statement is a concise accomplishment description following the formula: *Action + Context + Result*. Used in resumes and interviews, it quantifies impact with specific metrics. Example: "Reduced API latency by 40% by implementing Redis caching, saving $50K/month in compute costs."
 
