@@ -287,11 +287,11 @@ ${this.getGeminiPersonalityTemplate()}
 
 ## Your Task
 
-Scrutinize the Power Statement document below against the template structure and best practices. Work with the user question-by-question to generate a superior rendition from your perspective.
+Scrutinize the {{DOCUMENT_TYPE}} document below against the template structure and best practices. Work with the user question-by-question to generate a superior rendition from your perspective.
 
 ## Template Reference
 
-A high-quality Power Statement should include:
+A high-quality {{DOCUMENT_TYPE}} should include:
 
 1. **Project/Feature Name**: Clear, descriptive title
 2. **Problem Statement**: Specific customer or business problem, quantified if possible
@@ -319,7 +319,7 @@ Evaluate the document on:
 3. **Ask Clarifying Questions**: Work with the user to fill gaps and strengthen weak areas
 4. **Suggest Improvements**: Recommend specific changes to structure, wording, or content
 5. **Iterate**: Continue refining until you have a superior version
-6. **Final Output**: Provide the improved Power Statement as markdown
+6. **Final Output**: Provide the improved {{DOCUMENT_TYPE}} as markdown
 
 ## Output Format
 
@@ -356,7 +356,7 @@ When ready, provide your improved version in this format:
 
 ---
 
-## Original Power Statement Document
+## Original {{DOCUMENT_TYPE}} Document
 
 {phase1Output}
 
