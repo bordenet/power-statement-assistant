@@ -13,4 +13,3 @@ export default {
     timeout: 120000
   }
 };
-

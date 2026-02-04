@@ -4,13 +4,13 @@ test.describe("Power Statement Assistant", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate first, then clear storage
     await page.goto("/");
-    
+
     // Clear storage before each test
     await page.evaluate(() => {
       localStorage.clear();
       indexedDB.deleteDatabase("power-statement-assistant");
     });
-    
+
     // Reload to apply cleared storage
     await page.reload();
   });
@@ -28,11 +28,11 @@ test.describe("Power Statement Assistant", () => {
   test("should have close button for privacy notice", async ({ page }) => {
     const privacyNotice = await page.locator("#privacy-notice");
     await expect(privacyNotice).toBeVisible();
-    
+
     // Verify close button exists and is visible
     const closeBtn = await page.locator("#close-privacy-notice");
     await expect(closeBtn).toBeVisible();
-    
+
     // Verify it's a button element
     const btnType = await closeBtn.getAttribute("type");
     expect(btnType).toBe("button");
@@ -56,7 +56,7 @@ test.describe("Power Statement Assistant", () => {
 
   test("should toggle dark mode", async ({ page }) => {
     await page.waitForLoadState("networkidle");
-    
+
     const themeToggle = await page.locator("[id*='theme']").first();
     const htmlElement = await page.locator("html");
 
@@ -66,10 +66,10 @@ test.describe("Power Statement Assistant", () => {
 
     // Click the theme toggle button
     await themeToggle.click();
-    
+
     // Wait for state change
     await page.waitForTimeout(100);
-    
+
     // Get updated dark mode state
     let updatedClasses = await htmlElement.getAttribute("class") || "";
     const updatedDark = updatedClasses.includes("dark");
@@ -106,7 +106,7 @@ test.describe("Power Statement Assistant", () => {
 
     await relatedBtn.click();
     await page.waitForTimeout(100);
-    
+
     const menu = await page.locator("#related-projects-menu");
     const isVisible = await menu.isVisible();
     expect(typeof isVisible).toBe('boolean');
@@ -149,4 +149,3 @@ test.describe("Power Statement Assistant", () => {
     await context.close();
   });
 });
-
