@@ -150,11 +150,11 @@ function scoreSpecificity(text) {
 }
 
 /**
- * Validate a power statement
- * @param {string} text - Power statement content
+ * Validate a document
+ * @param {string} text - Document content
  * @returns {Object} Validation results
  */
-export function validatePowerStatement(text) {
+export function validateDocument(text) {
   if (!text || typeof text !== 'string' || text.trim().length < 10) {
     return {
       totalScore: 0,
