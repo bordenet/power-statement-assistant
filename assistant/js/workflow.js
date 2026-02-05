@@ -98,9 +98,11 @@ function getPhaseData(project, phaseNum) {
 /**
  * Generate prompt for a specific phase
  * Uses prompts.js module for template loading and variable replacement
- * @module workflow
+ * @param {import('./types.js').Project} project
+ * @param {number} phaseNumber
+ * @returns {Promise<string>}
  */
-export async function generatePromptForPhase(project, phase) {
+export async function generatePromptForPhase(project, phaseNumber) {
   // Build formData from project fields
   const formData = {
     productName: project.productName || project.title || '',
@@ -112,12 +114,12 @@ export async function generatePromptForPhase(project, phase) {
     objections: project.objections || ''
   };
 
-  if (phase === 1) {
+  if (phaseNumber === 1) {
     return generatePhase1Prompt(formData);
-  } else if (phase === 2) {
+  } else if (phaseNumber === 2) {
     const phase1Output = getPhaseData(project, 1).response || '[No Phase 1 output yet]';
     return generatePhase2Prompt(formData, phase1Output);
-  } else if (phase === 3) {
+  } else if (phaseNumber === 3) {
     const phase1Output = getPhaseData(project, 1).response || '[No Phase 1 output yet]';
     const phase2Output = getPhaseData(project, 2).response || '[No Phase 2 output yet]';
     return generatePhase3Prompt(formData, phase1Output, phase2Output);

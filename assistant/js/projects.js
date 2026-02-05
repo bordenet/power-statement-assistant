@@ -57,28 +57,28 @@ function extractTitleFromMarkdown(markdown) {
 
 /**
  * Create a new project
- * @param {Object} projectData - Project data object
- * @param {string} projectData.title - Project title
- * @param {string} projectData.productName - Product/service name
- * @param {string} projectData.customerType - Customer type
- * @param {string} projectData.problem - Problem being solved
- * @param {string} projectData.outcome - Desired outcome
- * @param {string} projectData.proofPoints - Proof points/results
- * @param {string} projectData.differentiators - Key differentiators
- * @param {string} projectData.objections - Common objections
+ * @param {Object} formData - Project data object
+ * @param {string} formData.title - Project title
+ * @param {string} formData.productName - Product/service name
+ * @param {string} formData.customerType - Customer type
+ * @param {string} formData.problem - Problem being solved
+ * @param {string} formData.outcome - Desired outcome
+ * @param {string} formData.proofPoints - Proof points/results
+ * @param {string} formData.differentiators - Key differentiators
+ * @param {string} formData.objections - Common objections
  * @returns {Promise<Object>} Created project object
  */
-export async function createProject(projectData) {
+export async function createProject(formData) {
   const project = {
     id: crypto.randomUUID(),
-    title: projectData.title.trim(),
-    productName: projectData.productName.trim(),
-    customerType: projectData.customerType.trim(),
-    problem: projectData.problem.trim(),
-    outcome: projectData.outcome.trim(),
-    proofPoints: projectData.proofPoints.trim(),
-    differentiators: projectData.differentiators.trim(),
-    objections: projectData.objections.trim(),
+    title: formData.title.trim(),
+    productName: formData.productName.trim(),
+    customerType: formData.customerType.trim(),
+    problem: formData.problem.trim(),
+    outcome: formData.outcome.trim(),
+    proofPoints: formData.proofPoints.trim(),
+    differentiators: formData.differentiators.trim(),
+    objections: formData.objections.trim(),
     phase: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

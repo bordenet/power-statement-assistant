@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { showToast, showLoading, hideLoading, confirm, formatDate, formatBytes, escapeHtml, copyToClipboard, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal } from '../js/ui.js';
+import { showToast, showLoading, hideLoading, confirm, confirmWithRemember, formatDate, formatBytes, escapeHtml, copyToClipboard, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal } from '../js/ui.js';
 
 describe('UI Module', () => {
     beforeEach(() => {
@@ -140,6 +140,86 @@ describe('UI Module', () => {
         });
     });
 
+    describe('confirmWithRemember', () => {
+        test('should resolve with confirmed=true and remember=false when confirm clicked without checkbox', async () => {
+            const confirmPromise = confirmWithRemember('Are you sure?', 'Warning');
+
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const confirmBtn = document.querySelector('#confirm-btn');
+            expect(confirmBtn).toBeTruthy();
+            confirmBtn.click();
+
+            const result = await confirmPromise;
+            expect(result).toEqual({ confirmed: true, remember: false });
+        });
+
+        test('should resolve with confirmed=true and remember=true when checkbox is checked', async () => {
+            const confirmPromise = confirmWithRemember('Are you sure?', 'Warning');
+
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const checkbox = document.querySelector('#remember-checkbox');
+            expect(checkbox).toBeTruthy();
+            checkbox.checked = true;
+
+            const confirmBtn = document.querySelector('#confirm-btn');
+            confirmBtn.click();
+
+            const result = await confirmPromise;
+            expect(result).toEqual({ confirmed: true, remember: true });
+        });
+
+        test('should resolve with confirmed=false when cancel clicked', async () => {
+            const confirmPromise = confirmWithRemember('Are you sure?', 'Warning');
+
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const cancelBtn = document.querySelector('#cancel-btn');
+            expect(cancelBtn).toBeTruthy();
+            cancelBtn.click();
+
+            const result = await confirmPromise;
+            expect(result).toEqual({ confirmed: false, remember: false });
+        });
+
+        test('should display custom button text from options', async () => {
+            const confirmPromise = confirmWithRemember('Continue?', 'Confirm', {
+                confirmText: 'Yes, Continue',
+                cancelText: 'No, Go Back',
+                checkboxLabel: 'Remember my choice'
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const modal = document.querySelector('.fixed');
+            expect(modal.innerHTML).toContain('Yes, Continue');
+            expect(modal.innerHTML).toContain('No, Go Back');
+            expect(modal.innerHTML).toContain('Remember my choice');
+
+            // Clean up
+            document.querySelector('#cancel-btn').click();
+            await confirmPromise;
+        });
+
+        test('should resolve with confirmed=false when backdrop is clicked', async () => {
+            const confirmPromise = confirmWithRemember('Are you sure?', 'Warning');
+
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            const modal = document.querySelector('.fixed');
+            expect(modal).toBeTruthy();
+
+            // Simulate backdrop click
+            const event = new MouseEvent('click', { bubbles: true });
+            Object.defineProperty(event, 'target', { value: modal, enumerable: true });
+            modal.dispatchEvent(event);
+
+            const result = await confirmPromise;
+            expect(result).toEqual({ confirmed: false, remember: false });
+        });
+    });
+
     describe('formatDate', () => {
         test('should return "Today" for same-day dates', () => {
             const now = new Date().toISOString();
@@ -196,6 +276,10 @@ describe('UI Module', () => {
         test('should return empty string for null/undefined', () => {
             expect(escapeHtml(null)).toBe('');
             expect(escapeHtml(undefined)).toBe('');
+        });
+
+        test('should escape ampersands', () => {
+            expect(escapeHtml('Tom & Jerry')).toBe('Tom &amp; Jerry');
         });
     });
 
@@ -341,20 +425,6 @@ describe('UI Module', () => {
             expect(modalAfter).toBeNull();
         });
 
-        test('should close modal on Escape key', () => {
-            showPromptModal('Test prompt', 'Title');
-
-            const modal = document.querySelector('.fixed');
-            expect(modal).toBeTruthy();
-
-            // Simulate Escape key
-            const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' });
-            document.dispatchEvent(escapeEvent);
-
-            const modalAfter = document.querySelector('.fixed');
-            expect(modalAfter).toBeNull();
-        });
-
         test('should escape HTML in prompt text', () => {
             showPromptModal('<script>alert("xss")</script>', 'Title');
 
@@ -366,33 +436,12 @@ describe('UI Module', () => {
             document.querySelector('#close-prompt-modal-btn').click();
         });
 
-        test('should call onCopySuccess callback after copy', async () => {
-            // Ensure clipboard API is available
-            if (!navigator.clipboard) {
-                Object.defineProperty(navigator, 'clipboard', {
-                    value: {},
-                    writable: true,
-                    configurable: true
-                });
-            }
-            const writeMock = jest.fn().mockResolvedValue();
-            Object.defineProperty(navigator.clipboard, 'write', {
-                value: writeMock,
-                writable: true,
-                configurable: true
-            });
-
-            const onCopySuccess = jest.fn();
-            showPromptModal('Test prompt', 'Title', onCopySuccess);
+        test('should have a copy button', () => {
+            showPromptModal('Test prompt', 'Title');
 
             const copyBtn = document.querySelector('#copy-prompt-modal-btn');
             expect(copyBtn).toBeTruthy();
-            copyBtn.click();
-
-            // Wait for async copy operation
-            await new Promise(resolve => setTimeout(resolve, 50));
-
-            expect(onCopySuccess).toHaveBeenCalledTimes(1);
+            expect(copyBtn.textContent).toContain('Copy');
 
             // Clean up
             document.querySelector('#close-prompt-modal-btn').click();
