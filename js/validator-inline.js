@@ -10,6 +10,11 @@
  * 4. Specificity (25 pts) - Includes specific details, numbers, and context
  */
 
+import { getSlopPenalty, calculateSlopScore } from './slop-detection.js';
+
+// Re-export for direct access
+export { calculateSlopScore };
+
 // Strong action verbs (subset for inline validation)
 const STRONG_VERBS = [
   'achieved', 'accelerated', 'built', 'created', 'delivered', 'developed',
@@ -170,9 +175,30 @@ export function validateDocument(text) {
   const action = scoreAction(text);
   const specificity = scoreSpecificity(text);
 
+  // AI slop detection
+  const slopPenalty = getSlopPenalty(text);
+  let slopDeduction = 0;
+  const slopIssues = [];
+
+  if (slopPenalty.penalty > 0) {
+    slopDeduction = Math.min(5, Math.floor(slopPenalty.penalty * 0.6));
+    if (slopPenalty.issues.length > 0) {
+      slopIssues.push(...slopPenalty.issues.slice(0, 2));
+    }
+  }
+
+  const totalScore = Math.max(0,
+    clarity.score + impact.score + action.score + specificity.score - slopDeduction
+  );
+
   return {
-    totalScore: clarity.score + impact.score + action.score + specificity.score,
-    clarity, impact, action, specificity
+    totalScore,
+    clarity, impact, action, specificity,
+    slopDetection: {
+      ...slopPenalty,
+      deduction: slopDeduction,
+      issues: slopIssues
+    }
   };
 }
 
