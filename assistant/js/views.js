@@ -17,6 +17,7 @@ import { getAllProjects, createProject, deleteProject, getProject, updateProject
 import { formatDate, escapeHtml, confirm, showToast, showDocumentPreviewModal } from './ui.js';
 import { navigateTo } from './router.js';
 import { getFinalMarkdown, getExportFilename } from './workflow.js';
+import { getAllTemplates, getTemplate } from './document-specific-templates.js';
 
 /**
  * Render the projects list view
@@ -189,6 +190,24 @@ export function renderNewProjectForm() {
                     Fill in the details below to generate a compelling power statement. All fields marked with <span class="text-red-500">*</span> are required.
                 </p>
 
+                <!-- Template Selector -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                        Choose a Template
+                    </label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3" id="template-selector">
+                        ${getAllTemplates().map(t => `
+                            <button type="button"
+                                class="template-btn p-3 border-2 rounded-lg text-center transition-all hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${t.id === 'blank' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600'}"
+                                data-template-id="${t.id}">
+                                <span class="text-2xl block mb-1">${t.icon}</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white block">${t.name}</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">${t.description}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
                 <form id="new-project-form" class="space-y-6">
                     <div>
                         <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -348,6 +367,33 @@ export function renderNewProjectForm() {
     const project = await createProject(projectData);
     showToast('Power Statement created! Starting Phase 1...', 'success');
     navigateTo('project', project.id);
+  });
+
+  // Template selector click handlers
+  document.querySelectorAll('.template-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const templateId = btn.dataset.templateId;
+      const template = getTemplate(templateId);
+
+      if (template) {
+        // Update selection UI
+        document.querySelectorAll('.template-btn').forEach(b => {
+          b.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+          b.classList.add('border-gray-200', 'dark:border-gray-600');
+        });
+        btn.classList.remove('border-gray-200', 'dark:border-gray-600');
+        btn.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+
+        // Populate form fields with template content
+        const fields = ['productName', 'customerType', 'problem', 'outcome', 'proofPoints', 'differentiators', 'objections'];
+        fields.forEach(field => {
+          const el = document.getElementById(field);
+          if (el && template[field] !== undefined) {
+            el.value = template[field];
+          }
+        });
+      }
+    });
   });
 }
 
