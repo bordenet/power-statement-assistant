@@ -598,8 +598,17 @@ export function validatePowerStatement(text) {
     }
   }
 
+  // Include slop deduction in specificity category so categories sum to total
+  const adjustedSpecificity = {
+    ...specificity,
+    score: Math.max(0, specificity.score - slopDeduction),
+    issues: slopDeduction > 0
+      ? [...specificity.issues, `AI patterns detected (-${slopDeduction})`]
+      : specificity.issues
+  };
+
   const totalScore = Math.max(0,
-    clarity.score + impact.score + action.score + specificity.score - slopDeduction
+    clarity.score + impact.score + action.score + adjustedSpecificity.score
   );
 
   return {
@@ -607,7 +616,7 @@ export function validatePowerStatement(text) {
     clarity,
     impact,
     action,
-    specificity,
+    specificity: adjustedSpecificity,
     slopDetection: {
       ...slopPenalty,
       deduction: slopDeduction,
