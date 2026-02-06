@@ -591,8 +591,8 @@ export function validatePowerStatement(text) {
   const slopIssues = [];
 
   if (slopPenalty.penalty > 0) {
-    // Apply penalty to total score (max 8 points - power statements are very sensitive to slop)
-    slopDeduction = Math.min(8, slopPenalty.penalty);
+    // Apply penalty to total score (aligned with inline validator)
+    slopDeduction = Math.min(5, Math.floor(slopPenalty.penalty * 0.6));
     if (slopPenalty.issues.length > 0) {
       slopIssues.push(...slopPenalty.issues.slice(0, 2));
     }
