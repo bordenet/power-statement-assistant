@@ -9,8 +9,8 @@ import {
     exportProject,
     exportAllProjects,
     importProjects
-} from '../js/projects.js';
-import storage from '../js/storage.js';
+} from '../../shared/js/projects.js';
+import storage from '../../shared/js/storage.js';
 
 describe('Projects Module', () => {
     beforeEach(async () => {

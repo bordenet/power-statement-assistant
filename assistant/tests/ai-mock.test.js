@@ -12,7 +12,7 @@ import {
     callAI,
     addMockResponse,
     mockResponses
-} from '../js/ai-mock.js';
+} from '../../shared/js/ai-mock.js';
 
 describe('AI Mock Mode', () => {
     beforeEach(() => {

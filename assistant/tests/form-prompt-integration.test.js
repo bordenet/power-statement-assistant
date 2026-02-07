@@ -6,9 +6,9 @@
  */
 
 import { describe, it, expect, beforeEach } from '@jest/globals';
-import { createProject } from '../js/projects.js';
-import { generatePromptForPhase } from '../js/workflow.js';
-import storage from '../js/storage.js';
+import { createProject } from '../../shared/js/projects.js';
+import { generatePromptForPhase } from '../../shared/js/workflow.js';
+import storage from '../../shared/js/storage.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -280,7 +280,7 @@ describe('Form-to-Prompt Integration Tests', () => {
     describe('Edit Project Functionality', () => {
         it('should update project fields via updateProject', async () => {
             // Import updateProject
-            const { updateProject, getProject } = await import('../js/projects.js');
+            const { updateProject, getProject } = await import('../../shared/js/projects.js');
 
             // Create initial project
             const initialData = {
@@ -316,7 +316,7 @@ describe('Form-to-Prompt Integration Tests', () => {
         });
 
         it('should allow clearing Phase 1 prompt after edit', async () => {
-            const { updateProject, getProject, updatePhase } = await import('../js/projects.js');
+            const { updateProject, getProject, updatePhase } = await import('../../shared/js/projects.js');
 
             // Create project
             const project = await createProject({
@@ -356,7 +356,7 @@ describe('Form-to-Prompt Integration Tests', () => {
         });
 
         it('should regenerate different prompt after field update', async () => {
-            const { getProject, updateProject } = await import('../js/projects.js');
+            const { getProject, updateProject } = await import('../../shared/js/projects.js');
 
             // Create project
             const project = await createProject({
@@ -387,7 +387,7 @@ describe('Form-to-Prompt Integration Tests', () => {
         });
 
         it('should preserve Phase 2 and 3 when editing in Phase 1', async () => {
-            const { getProject, updateProject, updatePhase } = await import('../js/projects.js');
+            const { getProject, updateProject, updatePhase } = await import('../../shared/js/projects.js');
 
             // Create project
             const project = await createProject({
@@ -421,7 +421,7 @@ describe('Form-to-Prompt Integration Tests', () => {
 
     describe('Phase Metadata', () => {
         it('should return correct AI names for each phase', async () => {
-            const { getPhaseMetadata } = await import('../js/workflow.js');
+            const { getPhaseMetadata } = await import('../../shared/js/workflow.js');
 
             const phase1 = getPhaseMetadata(1);
             expect(phase1.aiModel).toBe('Claude');
@@ -437,7 +437,7 @@ describe('Form-to-Prompt Integration Tests', () => {
         });
 
         it('should have icons for all phases', async () => {
-            const { getPhaseMetadata } = await import('../js/workflow.js');
+            const { getPhaseMetadata } = await import('../../shared/js/workflow.js');
 
             expect(getPhaseMetadata(1).icon).toBe('📝');
             expect(getPhaseMetadata(2).icon).toBe('🔍');
@@ -447,7 +447,7 @@ describe('Form-to-Prompt Integration Tests', () => {
 
     describe('Phase 3 Completion UX', () => {
         it('should have Phase 3 as the final phase in workflow config', async () => {
-            const { getPhaseMetadata, WORKFLOW_CONFIG } = await import('../js/workflow.js');
+            const { getPhaseMetadata, WORKFLOW_CONFIG } = await import('../../shared/js/workflow.js');
 
             // Phase 3 is the final phase
             expect(WORKFLOW_CONFIG.phaseCount).toBe(3);
@@ -458,7 +458,7 @@ describe('Form-to-Prompt Integration Tests', () => {
         });
 
         it('should persist phase=3 when Phase 3 is saved', async () => {
-            const { createProject, updatePhase, updateProject, getProject } = await import('../js/projects.js');
+            const { createProject, updatePhase, updateProject, getProject } = await import('../../shared/js/projects.js');
 
             // Create project
             const project = await createProject({
@@ -487,7 +487,7 @@ describe('Form-to-Prompt Integration Tests', () => {
         });
 
         it('should mark all phases as completed after full workflow', async () => {
-            const { createProject, updatePhase, getProject } = await import('../js/projects.js');
+            const { createProject, updatePhase, getProject } = await import('../../shared/js/projects.js');
 
             const project = await createProject({
                 title: 'Complete Workflow Test',
@@ -512,7 +512,7 @@ describe('Form-to-Prompt Integration Tests', () => {
         });
 
         it('should not auto-advance past Phase 3', async () => {
-            const { createProject, updatePhase, updateProject, getProject } = await import('../js/projects.js');
+            const { createProject, updatePhase, updateProject, getProject } = await import('../../shared/js/projects.js');
 
             const project = await createProject({
                 title: 'No Auto-Advance Test',

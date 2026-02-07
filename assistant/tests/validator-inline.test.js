@@ -2,7 +2,7 @@
  * Tests for validator-inline.js
  * Power Statement inline validation
  */
-import { validateDocument, getScoreColor, getScoreLabel } from '../js/validator-inline.js';
+import { validateDocument, getScoreColor, getScoreLabel } from '../../shared/js/validator-inline.js';
 
 describe('Inline Power Statement Validator', () => {
   describe('validateDocument', () => {
