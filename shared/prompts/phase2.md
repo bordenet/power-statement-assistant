@@ -80,48 +80,32 @@ Evaluate the power statement against these criteria:
 
 ### Output Format
 
-```markdown
-# Phase 2: Critical Analysis & Improved Version
+<output_rules>
+CRITICAL - Your critique and improved version must be COPY-PASTE READY:
+- Start IMMEDIATELY with "# Phase 2: Critical Analysis & Improved Version" (no preamble like "Here's my analysis...")
+- End after the "Key Changes Made" section (no sign-off like "Let me know if...")
+- NO markdown code fences (```markdown) wrapping the output
+- NO explanations of what you did or why
+- The user will paste your ENTIRE response directly into the tool
+</output_rules>
 
-## Critical Feedback
+### Required Sections
 
-### What Works Well
-{List 2-3 specific strengths of the Phase 1 version}
-
-### What Needs Improvement
-{List 3-5 specific weaknesses with examples}
-
-### Specific Recommendations
-{Provide 3-5 actionable suggestions for improvement}
-
-## Improved Power Statement
-
-### Version A: Concise
-
-{Your improved concise version - tighter, more specific, more compelling}
-
-### Version B: Structured
-
-#### The Challenge You're Facing
-
-{Improved problem description with more specificity}
-
-#### The Solution
-
-{Clearer explanation of what you provide}
-
-#### Proven Results & Immediate ROI
-
-{Stronger proof points with better framing}
-
-#### Why It Works
-
-{Better differentiation and objection handling}
-
-## Key Changes Made
-
-{Explain the 3-5 most important changes you made and why}
-```
+| Section | Content | Format |
+|---------|---------|--------|
+| # Phase 2: Critical Analysis & Improved Version | Title | H1 header |
+| ## Critical Feedback | Analysis of Phase 1 | Section header |
+| ### What Works Well | 2-3 specific strengths | Paragraphs |
+| ### What Needs Improvement | 3-5 specific weaknesses with examples | Paragraphs |
+| ### Specific Recommendations | 3-5 actionable suggestions | Paragraphs |
+| ## Improved Power Statement | Revised version | Section header |
+| ### Version A: Concise | Tighter, more specific, more compelling | Paragraph |
+| ### Version B: Structured | Multi-section version | Subsections |
+| #### The Challenge You're Facing | Improved problem description | Paragraph |
+| #### The Solution | Clearer explanation | Paragraph |
+| #### Proven Results & Immediate ROI | Stronger proof points | Paragraph |
+| #### Why It Works | Better differentiation | Paragraph |
+| ## Key Changes Made | 3-5 most important changes and why | Paragraphs |
 
 ## Important Notes
 

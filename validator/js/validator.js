@@ -608,6 +608,11 @@ export function validatePowerStatement(text) {
     impact,
     action,
     specificity,
+    // Dimension mappings for app.js compatibility
+    dimension1: clarity,
+    dimension2: impact,
+    dimension3: action,
+    dimension4: specificity,
     slopDetection: {
       ...slopPenalty,
       deduction: slopDeduction,

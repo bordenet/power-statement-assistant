@@ -55,46 +55,31 @@ Before finalizing, ensure the power statement:
 
 ### Output Format
 
-```markdown
-# Final Power Statement for {{PRODUCT_NAME}}
+<output_rules>
+CRITICAL - Your final power statement must be COPY-PASTE READY:
+- Start IMMEDIATELY with "# Final Power Statement for {{PRODUCT_NAME}}" (no preamble like "Here's the final version...")
+- End after the "Synthesis Notes" section (no sign-off like "Let me know if...")
+- NO markdown code fences (```markdown) wrapping the output
+- NO explanations of what you did or why
+- The user will paste your ENTIRE response directly into the tool
+</output_rules>
 
-## Version A: Concise (30-Second Delivery)
+### Required Sections
 
-{Your final concise version - the absolute best 3-5 sentence power statement}
-
-## Version B: Structured (Full Version)
-
-### The Challenge You're Facing
-
-{Final problem description - specific, relatable, urgent}
-
-### The Solution
-
-{Final solution description - clear, credible, differentiated}
-
-### Proven Results & Immediate ROI
-
-{Final proof points - specific numbers, real results, compelling evidence}
-
-### Why It Works
-
-{Final differentiation - addresses objections, builds confidence}
-
-## Usage Guidance
-
-### When to Use Version A
-{Explain the best contexts for the concise version - e.g., cold calls, LinkedIn messages, elevator pitches}
-
-### When to Use Version B
-{Explain the best contexts for the structured version - e.g., discovery calls, presentations, proposals}
-
-### Key Talking Points
-{List 3-5 critical points to emphasize when delivering this power statement}
-
-## Synthesis Notes
-
-{Explain what you took from Phase 1, what you took from Phase 2, and what new elements you added}
-```
+| Section | Content | Format |
+|---------|---------|--------|
+| # Final Power Statement for {{PRODUCT_NAME}} | Title | H1 header |
+| ## Version A: Concise (30-Second Delivery) | Best 3-5 sentence power statement | Paragraph |
+| ## Version B: Structured (Full Version) | Multi-section version | Section header |
+| ### The Challenge You're Facing | Specific, relatable, urgent problem | Paragraph |
+| ### The Solution | Clear, credible, differentiated | Paragraph |
+| ### Proven Results & Immediate ROI | Specific numbers, real results | Paragraph |
+| ### Why It Works | Addresses objections, builds confidence | Paragraph |
+| ## Usage Guidance | When to use each version | Section header |
+| ### When to Use Version A | Cold calls, LinkedIn, elevator pitches | Paragraph |
+| ### When to Use Version B | Discovery calls, presentations, proposals | Paragraph |
+| ### Key Talking Points | 3-5 critical points to emphasize | Paragraphs |
+| ## Synthesis Notes | What came from Phase 1, Phase 2, and new elements | Paragraph |
 
 ## ⚠️ FINAL AI Slop Sweep
 

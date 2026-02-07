@@ -97,31 +97,26 @@ A more detailed version with clear sections:
 
 ### Output Format
 
-```markdown
-# Power Statement for {{PRODUCT_NAME}}
+<output_rules>
+CRITICAL - Your power statement must be COPY-PASTE READY:
+- Start IMMEDIATELY with "# Power Statement for {{PRODUCT_NAME}}" (no preamble like "Here's the power statement...")
+- End after the "Why It Works" section (no sign-off like "Let me know if...")
+- NO markdown code fences (```markdown) wrapping the output
+- NO explanations of what you did or why
+- The user will paste your ENTIRE response directly into the tool
+</output_rules>
 
-## Version A: Concise
+### Required Sections
 
-{Your concise power statement here - 3-5 sentences in a single flowing paragraph}
-
-## Version B: Structured
-
-### The Challenge You're Facing
-
-{Describe the problem in terms the customer recognizes - 2-3 sentences}
-
-### The Solution
-
-{Explain what you provide and how it works - 2-3 sentences}
-
-### Proven Results & Immediate ROI
-
-{Share specific results and proof points - 2-4 sentences with numbers}
-
-### Why It Works
-
-{Explain the key differentiators and address objections - 2-3 sentences}
-```
+| Section | Content | Format |
+|---------|---------|--------|
+| # Power Statement for {{PRODUCT_NAME}} | Title | H1 header |
+| ## Version A: Concise | 3-5 sentences in a single flowing paragraph | Paragraph |
+| ## Version B: Structured | Multi-section version | Subsections |
+| ### The Challenge You're Facing | Problem in terms the customer recognizes (2-3 sentences) | Paragraph |
+| ### The Solution | What you provide and how it works (2-3 sentences) | Paragraph |
+| ### Proven Results & Immediate ROI | Specific results and proof points (2-4 sentences with numbers) | Paragraph |
+| ### Why It Works | Key differentiators and objection handling (2-3 sentences) | Paragraph |
 
 ## Important Notes
 
