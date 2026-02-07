@@ -106,7 +106,7 @@ export async function renderProjectsList() {
                             <!-- Completed: Show quality score -->
                             <div class="mb-3">
                                 <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs text-gray-500 dark:text-gray-400">Quality Score</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">Quality Score</span>
                                     <span class="text-xs font-medium text-${scoreData.color}-600 dark:text-${scoreData.color}-400">${scoreData.score}% · ${scoreData.label}</span>
                                 </div>
                                 <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
@@ -125,7 +125,7 @@ export async function renderProjectsList() {
     return `<div class="flex-1 h-1.5 rounded ${colorClass}"></div>`;
   }).join('')}
                                 </div>
-                                <span class="text-xs text-gray-500 dark:text-gray-400">${completedPhases}/3</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">${completedPhases}/3</span>
                             </div>
                             `}
 
@@ -133,7 +133,7 @@ export async function renderProjectsList() {
                                 ${escapeHtml(project.productName || project.problem || '')}
                             </p>
 
-                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                            <div class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
                                 Updated ${formatDate(project.updatedAt)}
                             </div>
                         </div>
@@ -228,20 +228,20 @@ export function renderNewProjectForm() {
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" id="template-selector">
                         ${getAllTemplates().map(t => `
                             <button type="button"
-                                class="template-btn p-3 border-2 rounded-lg text-center transition-all hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${t.id === 'blank' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600'}"
+                                class="template-btn p-2 border-2 rounded-lg text-center transition-all hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${t.id === 'blank' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600'}"
                                 data-template-id="${t.id}">
-                                <span class="text-2xl block mb-1">${t.icon}</span>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white block">${t.name}</span>
-                                <span class="text-xs text-gray-500 dark:text-gray-400">${t.description}</span>
+                                <span class="text-lg block mb-0.5">${t.icon}</span>
+                                <span class="text-xs font-medium text-gray-900 dark:text-white block line-clamp-1">${t.name}</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">${t.description}</span>
                             </button>
                         `).join('')}
                         <!-- Import Existing Document tile -->
                         <button type="button"
                             id="import-doc-btn"
-                            class="p-3 border-2 border-dashed rounded-lg text-center transition-all hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 border-gray-300 dark:border-gray-600">
-                            <span class="text-2xl block mb-1">📥</span>
-                            <span class="text-sm font-medium text-gray-900 dark:text-white block">Import</span>
-                            <span class="text-xs text-gray-500 dark:text-gray-400">Paste from Word/Docs</span>
+                            class="p-2 border-2 border-dashed rounded-lg text-center transition-all hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 border-gray-300 dark:border-gray-600">
+                            <span class="text-lg block mb-0.5">📥</span>
+                            <span class="text-xs font-medium text-gray-900 dark:text-white block line-clamp-1">Import</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">Paste from Word/Docs</span>
                         </button>
                     </div>
                 </div>
@@ -259,7 +259,7 @@ export function renderNewProjectForm() {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Cari AI Receptionist Power Statement"
                         >
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">A descriptive name for this project</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">A descriptive name for this project</p>
                     </div>
 
                     <div>
@@ -274,7 +274,7 @@ export function renderNewProjectForm() {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Cari AI Receptionist"
                         >
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The name of your product or service</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">The name of your product or service</p>
                     </div>
 
                     <div>
@@ -289,7 +289,7 @@ export function renderNewProjectForm() {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Small business owners with 5-50 employees"
                         >
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Be specific about who you serve</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">Be specific about who you serve</p>
                     </div>
 
                     <div>
@@ -304,7 +304,7 @@ export function renderNewProjectForm() {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Missing calls leads to lost revenue and frustrated customers"
                         ></textarea>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The pain point your customers recognize and feel</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">The pain point your customers recognize and feel</p>
                     </div>
 
                     <div>
@@ -319,7 +319,7 @@ export function renderNewProjectForm() {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Never miss a call, capture every lead, and book more appointments"
                         ></textarea>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The results customers want to achieve</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">The results customers want to achieve</p>
                     </div>
 
                     <div>
@@ -334,7 +334,7 @@ export function renderNewProjectForm() {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., 48% appointment setting rate, 95% call answer rate, customers see ROI in first month"
                         ></textarea>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Specific, quantified results and proof points</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">Specific, quantified results and proof points</p>
                     </div>
 
                     <div>
@@ -349,7 +349,7 @@ export function renderNewProjectForm() {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Works with existing phone system, no complex training required, sounds completely human"
                         ></textarea>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">What makes your solution unique</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">What makes your solution unique</p>
                     </div>
 
                     <div>
@@ -364,7 +364,7 @@ export function renderNewProjectForm() {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., 'AI sounds robotic' - Our AI is trained on real conversations and sounds completely natural"
                         ></textarea>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Common concerns and how you address them</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">Common concerns and how you address them</p>
                     </div>
 
                     <div class="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
@@ -491,7 +491,7 @@ export async function renderEditProjectForm(projectId) {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Cari AI Receptionist Power Statement"
                         >
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">A descriptive name for this project</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">A descriptive name for this project</p>
                     </div>
 
                     <div>
@@ -507,7 +507,7 @@ export async function renderEditProjectForm(projectId) {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Cari AI Receptionist"
                         >
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The name of your product or service</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">The name of your product or service</p>
                     </div>
 
                     <div>
@@ -523,7 +523,7 @@ export async function renderEditProjectForm(projectId) {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Small business owners with 5-50 employees"
                         >
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Be specific about who you serve</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">Be specific about who you serve</p>
                     </div>
 
                     <div>
@@ -538,7 +538,7 @@ export async function renderEditProjectForm(projectId) {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Missing calls leads to lost revenue and frustrated customers"
                         >${escapeHtml(project.problem)}</textarea>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The pain point your customers recognize and feel</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">The pain point your customers recognize and feel</p>
                     </div>
 
                     <div>
@@ -553,7 +553,7 @@ export async function renderEditProjectForm(projectId) {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Never miss a call, capture every lead, and book more appointments"
                         >${escapeHtml(project.outcome)}</textarea>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The results customers want to achieve</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">The results customers want to achieve</p>
                     </div>
 
                     <div>
@@ -568,7 +568,7 @@ export async function renderEditProjectForm(projectId) {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., 48% appointment setting rate, 95% call answer rate, customers see ROI in first month"
                         >${escapeHtml(project.proofPoints)}</textarea>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Specific, quantified results and proof points</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">Specific, quantified results and proof points</p>
                     </div>
 
                     <div>
@@ -583,7 +583,7 @@ export async function renderEditProjectForm(projectId) {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., Works with existing phone system, no complex training required, sounds completely human"
                         >${escapeHtml(project.differentiators)}</textarea>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">What makes your solution unique</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">What makes your solution unique</p>
                     </div>
 
                     <div>
@@ -598,7 +598,7 @@ export async function renderEditProjectForm(projectId) {
                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="e.g., 'AI sounds robotic' - Our AI is trained on real conversations and sounds completely natural"
                         >${escapeHtml(project.objections)}</textarea>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Common concerns and how you address them</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-1">Common concerns and how you address them</p>
                     </div>
 
                     <div class="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
