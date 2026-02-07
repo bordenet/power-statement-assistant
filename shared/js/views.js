@@ -130,7 +130,7 @@ export async function renderProjectsList() {
                             `}
 
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                                ${escapeHtml(project.problems)}
+                                ${escapeHtml(project.productName || project.problem || '')}
                             </p>
 
                             <div class="text-xs text-gray-500 dark:text-gray-400">
