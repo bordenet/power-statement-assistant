@@ -30,7 +30,7 @@ describe('Form-to-Prompt Integration Tests', () => {
         // Load prompt templates into storage (for legacy tests that use storage)
         for (let phase = 1; phase <= 3; phase++) {
             const promptContent = fs.readFileSync(
-                path.join(process.cwd(), `prompts/phase${phase}.md`),
+                path.join(process.cwd(), `shared/prompts/phase${phase}.md`),
                 'utf-8'
             );
             await storage.savePrompt(phase, promptContent);
@@ -102,7 +102,7 @@ describe('Form-to-Prompt Integration Tests', () => {
 
         it('should have all required variables in Phase 1 prompt template', () => {
             const phase1Template = fs.readFileSync(
-                path.join(process.cwd(), 'prompts/phase1.md'),
+                path.join(process.cwd(), 'shared/prompts/phase1.md'),
                 'utf-8'
             );
 
@@ -113,7 +113,7 @@ describe('Form-to-Prompt Integration Tests', () => {
 
         it('should have all required variables in Phase 2 prompt template', () => {
             const phase2Template = fs.readFileSync(
-                path.join(process.cwd(), 'prompts/phase2.md'),
+                path.join(process.cwd(), 'shared/prompts/phase2.md'),
                 'utf-8'
             );
 
@@ -124,7 +124,7 @@ describe('Form-to-Prompt Integration Tests', () => {
 
         it('should have all required variables in Phase 3 prompt template', () => {
             const phase3Template = fs.readFileSync(
-                path.join(process.cwd(), 'prompts/phase3.md'),
+                path.join(process.cwd(), 'shared/prompts/phase3.md'),
                 'utf-8'
             );
 
@@ -242,7 +242,7 @@ describe('Form-to-Prompt Integration Tests', () => {
     describe('Markdown Output Validation', () => {
         it('should verify Phase 1 prompt mandates markdown output', () => {
             const phase1Template = fs.readFileSync(
-                path.join(process.cwd(), 'prompts/phase1.md'),
+                path.join(process.cwd(), 'shared/prompts/phase1.md'),
                 'utf-8'
             );
 
@@ -254,7 +254,7 @@ describe('Form-to-Prompt Integration Tests', () => {
 
         it('should verify Phase 2 prompt mandates markdown output', () => {
             const phase2Template = fs.readFileSync(
-                path.join(process.cwd(), 'prompts/phase2.md'),
+                path.join(process.cwd(), 'shared/prompts/phase2.md'),
                 'utf-8'
             );
 
@@ -266,7 +266,7 @@ describe('Form-to-Prompt Integration Tests', () => {
 
         it('should verify Phase 3 prompt mandates markdown output', () => {
             const phase3Template = fs.readFileSync(
-                path.join(process.cwd(), 'prompts/phase3.md'),
+                path.join(process.cwd(), 'shared/prompts/phase3.md'),
                 'utf-8'
             );
 
