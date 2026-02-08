@@ -47,7 +47,8 @@ const STRONG_ACTION_VERBS = [
   'finalized', 'fixed', 'focused', 'forecasted', 'forged', 'formalized',
   'formed', 'formulated', 'fortified', 'fostered', 'founded', 'fulfilled',
   'gained', 'gathered', 'generated', 'governed', 'grew', 'guided', 'halved',
-  'handled', 'headed', 'heightened', 'helped', 'hired', 'hosted', 'identified',
+  // NOTE: 'helped' removed - it's in WEAK_VERBS per phase1.md/prompts.js
+  'handled', 'headed', 'heightened', 'hired', 'hosted', 'identified',
   'illustrated', 'implemented', 'improved', 'improvised', 'inaugurated', 'increased',
   'incubated', 'influenced', 'informed', 'initiated', 'innovated', 'inspected',
   'inspired', 'installed', 'instituted', 'instructed', 'integrated', 'intensified',
@@ -108,8 +109,17 @@ const FILLER_PATTERNS = [
   /\b(basically|essentially|actually|literally|virtually)\b/gi,
   /\b(in order to|due to the fact that|for the purpose of)\b/gi,
   /\b(a lot of|lots of|tons of|bunch of)\b/gi,
-  /\b(thing|stuff|something|somehow)\b/gi
+  /\b(thing|stuff|something|somehow)\b/gi,
+  // Phase1.md banned filler phrases
+  /it'?s worth noting( that)?/gi,
+  /in today'?s (competitive )?landscape/gi,
+  /let'?s talk about/gi,
+  /the reality is/gi
 ];
+
+// Phase1.md banned vague improvement terms (must be quantified)
+// These are NOT allowed without specific numbers: "improve" → "increase from X to Y"
+const VAGUE_IMPROVEMENT_PATTERNS = /\b(improve|improved|improving|enhance|enhanced|enhancing|optimize|optimized|optimizing|better results?|significant|significantly)\b/gi;
 
 // Jargon and buzzwords to flag
 const JARGON_PATTERNS = [
@@ -309,13 +319,18 @@ export function detectClarity(text) {
   const isTooShort = wordCount < 30; // Too short for sales messaging
   const isTooLong = wordCount > 200; // Verbose for sales messaging
 
-  // Check for passive voice indicators
-  const passiveMatches = text.match(/\b(was|were|been|being)\s+\w+ed\b/gi) || [];
+  // Check for passive voice indicators (expanded to catch irregular verbs)
+  const passiveMatches = text.match(/\b(am|are|is|was|were|been|being)\s+(\w+ed|achieved|led|built|won|made|done|given|taken|shown)\b/gi) || [];
   const hasPassiveVoice = passiveMatches.length > 0;
 
   // SALES DOMAIN: Detect bullet points (should be paragraphs, not bullets)
-  const bulletMatches = text.match(/^\s*[-*+]\s+/gm) || [];
+  // Expanded to catch Unicode bullets and numbered lists
+  const bulletMatches = text.match(/^\s*[-*+•◆✓✅→►▶|]\s+|^\s*\d+[.)]\s+/gm) || [];
   const hasBulletPoints = bulletMatches.length > 2;
+
+  // Phase1.md: Detect vague improvement terms without quantification
+  const vagueImprovementMatches = text.match(VAGUE_IMPROVEMENT_PATTERNS) || [];
+  const hasVagueImprovement = vagueImprovementMatches.length > 0;
 
   return {
     hasFillers: fillerCount > 0,
@@ -332,18 +347,23 @@ export function detectClarity(text) {
     passiveCount: passiveMatches.length,
     hasBulletPoints,
     bulletCount: bulletMatches.length,
+    hasVagueImprovement,
+    vagueImprovementCount: vagueImprovementMatches.length,
+    vagueImprovementFound: [...new Set(vagueImprovementMatches)],
     indicators: [
       fillerCount === 0 && 'No filler words',
       jargonCount === 0 && 'No jargon/buzzwords',
       isConcise && 'Good length for sales messaging',
       !hasPassiveVoice && 'Active voice',
       !hasBulletPoints && 'Uses flowing paragraphs',
+      !hasVagueImprovement && 'No vague improvement terms',
       fillerCount > 0 && `${fillerCount} filler words detected`,
       jargonCount > 0 && `${jargonCount} jargon terms detected`,
       isTooLong && 'Statement too verbose',
       isTooShort && 'Statement too brief for sales messaging',
       hasPassiveVoice && 'Passive voice detected',
-      hasBulletPoints && 'Uses bullet points instead of paragraphs'
+      hasBulletPoints && 'Uses bullet points instead of paragraphs',
+      hasVagueImprovement && `Vague terms: ${vagueImprovementMatches.slice(0, 3).join(', ')}`
     ].filter(Boolean)
   };
 }
@@ -416,8 +436,16 @@ export function scoreClarity(text) {
     issues.push('Use flowing paragraphs instead of bullet points for sales messaging');
   }
 
+  // Phase1.md: Penalize vague improvement terms (-3 pts per term, max -9)
+  // "improve" → "increase from X to Y", "enhance" → specific capability, etc.
+  if (clarityDetection.hasVagueImprovement) {
+    const penalty = Math.min(9, clarityDetection.vagueImprovementCount * 3);
+    score -= penalty;
+    issues.push(`Replace vague terms with specifics: ${clarityDetection.vagueImprovementFound.slice(0, 3).join(', ')} (-${penalty} pts)`);
+  }
+
   return {
-    score: Math.min(score, maxScore),
+    score: Math.max(0, Math.min(score, maxScore)),
     maxScore,
     issues,
     strengths
@@ -545,23 +573,27 @@ export function scoreSpecificity(text) {
 
   const specificityDetection = detectSpecificity(text);
 
-  // Has quantified metrics (0-10 pts)
-  const metricCount = specificityDetection.percentageCount +
-                      specificityDetection.dollarCount +
-                      specificityDetection.timeCount +
-                      specificityDetection.quantityCount;
+  // Has quantified IMPACT metrics (0-10 pts)
+  // Phase1.md requires outcome metrics (%, $), not just any numbers
+  const impactMetricCount = specificityDetection.percentageCount + specificityDetection.dollarCount;
+  const totalMetricCount = impactMetricCount +
+                           specificityDetection.timeCount +
+                           specificityDetection.quantityCount;
 
-  if (metricCount >= 2) {
+  if (impactMetricCount >= 1 && totalMetricCount >= 2) {
     score += 10;
-    strengths.push(`${metricCount} specific metrics included`);
-  } else if (metricCount === 1) {
-    score += 6;
-    issues.push('Add more specific metrics - aim for 2+ quantified results');
+    strengths.push(`${totalMetricCount} specific metrics including impact metrics (%, $)`);
+  } else if (impactMetricCount >= 1) {
+    score += 7;
+    issues.push('Add more metrics - aim for 2+ quantified results');
+  } else if (totalMetricCount >= 2) {
+    score += 5;
+    issues.push('Include impact metrics (%, $) not just quantities');
   } else if (specificityDetection.hasNumbers) {
     score += 3;
-    issues.push('Convert numbers to meaningful metrics (%, $, time saved, etc.)');
+    issues.push('Convert numbers to impact metrics (%, $, time saved)');
   } else {
-    issues.push('Add specific numbers and metrics');
+    issues.push('Add specific impact metrics (%, $, time saved)');
   }
 
   // Has context (0-8 pts)
@@ -659,14 +691,19 @@ export function validatePowerStatement(text) {
   const specificity = scoreSpecificity(text);
 
   // SALES DOMAIN: Detect Version A/B format
+  // Phase1.md requires: Version A (concise) + Version B with 4 sections
   const versionDetection = detectVersions(text);
   let versionBonus = 0;
   const versionStrengths = [];
   const versionIssues = [];
 
-  if (versionDetection.hasBothVersions) {
-    versionBonus = 5; // Bonus for having both versions
-    versionStrengths.push('Both Version A and Version B present (+5 bonus)');
+  // Full bonus requires BOTH versions AND structured content (3+ of 4 sections)
+  if (versionDetection.hasBothVersions && versionDetection.hasStructuredContent) {
+    versionBonus = 5; // Full bonus for complete format
+    versionStrengths.push('Both Version A and Version B with structured sections (+5 bonus)');
+  } else if (versionDetection.hasBothVersions) {
+    versionBonus = 3; // Partial: has headers but missing sections
+    versionIssues.push(`Version B needs structured sections (${versionDetection.structuredSectionCount}/4 found)`);
   } else if (versionDetection.hasVersionA || versionDetection.hasVersionB) {
     versionBonus = 2;
     versionIssues.push('Include both Version A (concise) and Version B (structured)');
