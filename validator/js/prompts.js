@@ -8,43 +8,43 @@
  * @returns {string} Complete prompt for LLM scoring
  */
 export function generateLLMScoringPrompt(powerStatementContent) {
-  return `You are an expert resume coach and career advisor evaluating a Power Statement.
+  return `You are an expert sales messaging strategist evaluating a Power Statement.
 
-Power statements are achievement-focused bullet points that follow the format:
-"Action verb + accomplishment + measurable result"
+Power statements are sales messaging documents that clearly communicate value to prospects.
+They follow a structure with Version A (concise paragraph) and Version B (structured sections).
 
 Score this Power Statement using the following rubric (0-100 points total):
 
 ## SCORING RUBRIC
 
 ### 1. Clarity (25 points)
-- **No Filler Words (8 pts)**: Clean, direct language without "very", "really", "basically"
-- **No Jargon (7 pts)**: Avoids buzzwords like "synergy", "leverage", "paradigm shift"
-- **Concise Length (5 pts)**: 15-30 words ideal, not too long or too short
-- **Active Voice (5 pts)**: Uses active voice, not passive ("was done by")
+- **No Filler Phrases (8 pts)**: Clean, direct language without "It's worth noting...", "In today's landscape..."
+- **No Jargon (7 pts)**: Avoids buzzwords like "synergy", "leverage", "cutting-edge" unless defined
+- **Plain Language (5 pts)**: Uses words prospects actually use, not internal terminology
+- **Conversational Tone (5 pts)**: Sounds like human speech, not marketing copy
 
 ### 2. Impact (25 points)
-- **Business/Customer Impact (10 pts)**: States clear outcome for business or customers
+- **Customer Outcome Focus (10 pts)**: States what customers achieve, not product features
 - **Quantified Results (10 pts)**: Includes specific numbers, percentages, or dollar amounts
-- **Scale/Scope (5 pts)**: Indicates the scope (team size, company-wide, etc.)
+- **Proof Points (5 pts)**: Includes credible evidence (case studies, specific results)
 
 ### 3. Action (25 points)
-- **Strong Opening Verb (15 pts)**: Starts with powerful action verb (Led, Achieved, Drove)
-- **Strong Verbs Throughout (5 pts)**: Uses multiple strong verbs
-- **No Weak Verbs (5 pts)**: Avoids "helped", "assisted", "was responsible for"
+- **Problem Clarity (10 pts)**: Names the problem in terms prospects recognize
+- **Solution Specificity (10 pts)**: Clearly explains what you provide and how
+- **Differentiation (5 pts)**: Explains why this is different/better than alternatives
 
 ### 4. Specificity (25 points)
 - **Quantified Metrics (10 pts)**: At least 2 specific metrics (%, $, time, quantity)
-- **Context Provided (8 pts)**: Clear setting (company, team size, scope)
-- **Timeframe (7 pts)**: Includes when this happened or duration
+- **Customer Type Clarity (8 pts)**: Specific about who you serve (not "businesses")
+- **Objection Handling (7 pts)**: Addresses common concerns preemptively
 
 ## CALIBRATION GUIDANCE
 - Be HARSH. Most power statements score 30-50. Only exceptional ones score 80+.
-- A score of 70+ means resume-ready.
-- Deduct heavily for weak opening verbs ("Helped", "Was responsible for").
-- Deduct for vague claims without numbers.
-- Reward specific, quantified achievements.
-- The best power statements tell a complete story in one sentence.
+- A score of 70+ means ready for prospect conversations.
+- Deduct heavily for vague claims like "helps improve" or "better results".
+- Deduct for feature-focused language instead of outcome-focused.
+- Reward specific, quantified proof points.
+- The best power statements are specific, credible, and conversational.
 
 ## POWER STATEMENT TO EVALUATE
 
@@ -95,7 +95,7 @@ export function generateCritiquePrompt(powerStatementContent, currentResult) {
     ...(currentResult.specificity?.issues || [])
   ].slice(0, 5).map(i => `- ${i}`).join('\n');
 
-  return `You are an expert resume coach providing detailed feedback on a Power Statement.
+  return `You are an expert sales messaging strategist providing detailed feedback on a Power Statement.
 
 ## CURRENT VALIDATION RESULTS
 Total Score: ${currentResult.totalScore}/100
@@ -123,7 +123,7 @@ Provide:
    - Specific suggestions with examples
 3. **Rewritten Power Statement** - The improved version
 
-Be specific. Show exact rewrites. Keep it to ONE impactful sentence.`;
+Be specific. Show exact rewrites. Focus on clarity, credibility, and customer outcomes.`;
 }
 
 /**
@@ -133,7 +133,7 @@ Be specific. Show exact rewrites. Keep it to ONE impactful sentence.`;
  * @returns {string} Complete prompt for rewrite
  */
 export function generateRewritePrompt(powerStatementContent, currentResult) {
-  return `You are an expert resume coach rewriting a Power Statement to achieve a score of 85+.
+  return `You are an expert sales messaging strategist rewriting a Power Statement to achieve a score of 85+.
 
 ## CURRENT SCORE: ${currentResult.totalScore}/100
 
@@ -145,16 +145,16 @@ ${powerStatementContent}
 
 ## REWRITE REQUIREMENTS
 
-Create a powerful, resume-ready statement that:
-1. Starts with a strong action verb (Led, Drove, Achieved, Delivered, etc.)
-2. Is 15-30 words (concise but complete)
-3. Includes 2+ specific metrics (%, $, time, quantity)
-4. States clear business or customer impact
-5. Provides context (scope, team size, company)
-6. Includes timeframe when relevant
-7. Uses active voice throughout
-8. Avoids filler words, jargon, and weak verbs
-9. Tells a complete story in one sentence
+Create a powerful, prospect-ready power statement that:
+1. Includes Version A (3-5 sentence paragraph) and Version B (structured sections)
+2. Names the specific customer type being served
+3. States the problem in terms prospects actually recognize
+4. Focuses on outcomes and results, not features
+5. Includes 2+ specific metrics (%, $, time, quantity)
+6. Provides credible proof points
+7. Addresses common objections preemptively
+8. Uses conversational language, not marketing jargon
+9. Is concise - every word counts
 
 Output ONLY the rewritten Power Statement. No commentary.`;
 }

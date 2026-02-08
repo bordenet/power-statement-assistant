@@ -1,14 +1,14 @@
 /**
  * Power Statement Validator - Scoring Logic
  *
- * Power statements are impactful achievement statements that follow the format:
- * "Action verb + accomplishment + measurable result"
+ * Power statements are sales messaging documents that communicate value to prospects.
+ * They include Version A (concise paragraph) and Version B (structured sections).
  *
  * Scoring Dimensions:
- * 1. Clarity (25 pts) - Clear, concise language without jargon or filler
- * 2. Impact (25 pts) - Demonstrates measurable business/customer impact
- * 3. Action (25 pts) - Uses strong action verbs, active voice
- * 4. Specificity (25 pts) - Includes specific details, numbers, and context
+ * 1. Clarity (25 pts) - Plain language, conversational tone, no jargon or filler
+ * 2. Impact (25 pts) - Customer outcomes, quantified results, credible proof points
+ * 3. Action (25 pts) - Problem clarity, solution specificity, differentiation
+ * 4. Specificity (25 pts) - Metrics, customer type clarity, objection handling
  */
 
 import { calculateSlopScore, getSlopPenalty } from './slop-detection.js';

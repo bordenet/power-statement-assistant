@@ -98,8 +98,8 @@ describe('prompts.js', () => {
     test('should include rewrite requirements', () => {
       const prompt = generateRewritePrompt(samplePowerStatement, mockResult);
       expect(prompt).toContain('REWRITE REQUIREMENTS');
-      expect(prompt).toContain('strong action verb');
-      expect(prompt).toContain('15-30 words');
+      expect(prompt).toContain('prospect-ready power statement');
+      expect(prompt).toContain('Version A');
     });
   });
 
