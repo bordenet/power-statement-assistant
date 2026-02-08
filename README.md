@@ -87,11 +87,15 @@ The scoring system addresses common power statement failures:
 
 | Gaming Attempt | Why It Fails |
 |----------------|--------------|
-| Using bullet points | Paragraph format is required; bullets deduct from Clarity |
+| Using bullet points | Paragraph format required; Unicode bullets (•◆✓✅→►▶) also detected |
 | Vague impact claims | Impact requires quantified results with specific numbers |
 | Weak verb hedging | "Helped", "assisted", "was responsible for" incur -10 penalty |
-| Metric-free statements | Specificity requires 2+ metrics minimum |
+| Metric-free statements | Specificity requires 2+ metrics with at least one impact metric (%, $) |
 | Missing timeframes | When-based specificity is separately scored |
+| Vague improvement terms | "improve"/"enhance"/"optimize" without quantification: -3 pts each (max -9) |
+| Version B header forgery | Requires 3+/4 structured sections for full +5 bonus |
+| Filler phrase bypass | Phase1.md banned phrases now detected: "It's worth noting...", etc. |
+| Passive voice obfuscation | Expanded regex catches irregular verbs: "was achieved", "were led", etc. |
 
 ### Calibration Notes
 
