@@ -763,6 +763,19 @@ export function validateDocument(text) {
 }
 
 /**
+ * Get letter grade from numeric score
+ * @param {number} score - Numeric score 0-100
+ * @returns {string} Letter grade
+ */
+export function getGrade(score) {
+  if (score >= 90) return 'A';
+  if (score >= 80) return 'B';
+  if (score >= 70) return 'C';
+  if (score >= 60) return 'D';
+  return 'F';
+}
+
+/**
  * Get color for score display
  * @param {number} score - Score value (0-100)
  * @returns {string} Color name for the score
