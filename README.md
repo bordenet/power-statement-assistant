@@ -40,68 +40,16 @@ Write power statements with AI. Three phases: draft, review, refine.
 
 ## Scoring Methodology
 
-The validator scores power statements on a 100-point scale across four dimensions. This scoring system is calibrated for sales-oriented accomplishment writing—flowing paragraphs that sell outcomes, not resume bullet points.
+The validator scores power statements on a **100-point scale** across four equally-weighted dimensions:
 
-### Scoring Taxonomy
+| Dimension | Points |
+|-----------|--------|
+| Clarity | 25 |
+| Impact | 25 |
+| Action | 25 |
+| Specificity | 25 |
 
-| Category | Weight | Rationale |
-|----------|--------|-----------|
-| **Clarity** | 25 pts | Validates clean prose without filler, jargon, or passive voice |
-| **Impact** | 25 pts | Ensures customer outcomes with quantified results |
-| **Action** | 25 pts | Enforces strong verbs; penalizes weak hedging verbs |
-| **Specificity** | 25 pts | Requires metrics, context, and timeframes |
-
-### Why These Weights?
-
-**Clarity (25 pts)** distinguishes power statements from resume bullets. The validator enforces paragraph format, not bullet points, and penalizes common AI writing patterns:
-- **No filler phrases** (6 pts): Clean language without "It's worth noting...", "In today's landscape..."
-- **No jargon** (6 pts): Avoids buzzwords like "synergy", "leverage", "cutting-edge" unless defined
-- **Appropriate length** (5 pts): 50-150 words for sales messaging (NOT 15-25 word resume bullets)
-- **Active voice** (4 pts): Uses active voice, avoids "was/were + verb" constructions
-- **Flowing paragraphs** (4 pts): Uses paragraphs, NOT bullet points
-
-**Impact (25 pts)** validates that the statement focuses on outcomes, not activities:
-- **Customer outcome focus** (10 pts): States what customers achieve, not product features
-- **Quantified results** (10 pts): Includes specific numbers, percentages, or dollar amounts
-- **Proof points** (5 pts): Includes credible evidence (case studies, specific results)
-
-**Action (25 pts)** enforces verb quality with explicit penalties for weak language:
-- **Strong verbs** (15 pts): Uses strong action verbs (Delivered, Achieved, Increased, Reduced, Built)
-- **No weak verbs** (5 pts): Avoids "helped", "assisted", "was responsible for" (-10 penalty)
-- **Multiple strong verbs** (5 pts): Uses 2+ strong action verbs throughout
-
-**Specificity (25 pts)** ensures the statement is verifiable:
-- **Quantified metrics** (10 pts): At least 2 specific metrics (%, $, time, quantity)
-- **Context** (8 pts): Clear about company, team, or scope
-- **Timeframes** (7 pts): Includes when (Q1 2026, within 3 months, by March 2026)
-
-### Bonus: Version A/B Format (+5 pts)
-
-The validator awards bonus points for providing both versions:
-- **Version A**: Concise paragraph (sales pitch format)
-- **Version B**: Structured sections (detailed breakdown)
-
-### Adversarial Robustness
-
-The scoring system addresses common power statement failures:
-
-| Gaming Attempt | Why It Fails |
-|----------------|--------------|
-| Using bullet points | Paragraph format required; Unicode bullets (•◆✓✅→►▶) also detected |
-| Vague impact claims | Impact requires quantified results with specific numbers |
-| Weak verb hedging | "Helped", "assisted", "was responsible for" incur -10 penalty |
-| Metric-free statements | Specificity requires 2+ metrics with at least one impact metric (%, $) |
-| Missing timeframes | When-based specificity is separately scored |
-| Vague improvement terms | "improve"/"enhance"/"optimize" without quantification: -3 pts each (max -9) |
-| Version B header forgery | Requires 3+/4 structured sections for full +5 bonus |
-| Filler phrase bypass | Phase1.md banned phrases now detected: "It's worth noting...", etc. |
-| Passive voice obfuscation | Expanded regex catches irregular verbs: "was achieved", "were led", etc. |
-
-### Calibration Notes
-
-The **weak verb penalty** (-10 pts) is intentionally harsh. Phrases like "helped the team" and "was responsible for" are resume-speak that distances the author from their accomplishment. Power statements demand ownership: "Delivered," not "Helped deliver."
-
-The **paragraph requirement** reflects the use case. Power statements are sales tools—elevator pitches for accomplishments. Bullet points signal resume thinking; paragraphs signal storytelling. The validator detects bullet patterns (`- `, `• `, `* `) and penalizes accordingly.
+Calibrated for sales-oriented accomplishment writing—flowing paragraphs that sell outcomes, not resume bullets. Includes +5 bonus for Version A/B format. For complete methodology details including detection patterns, adversarial robustness, and calibration notes, see **[docs/Scoring_Methods.md](./docs/Scoring_Methods.md)**.
 
 ---
 
