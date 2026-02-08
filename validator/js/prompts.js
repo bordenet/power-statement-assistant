@@ -17,11 +17,12 @@ Score this Power Statement using the following rubric (0-100 points total):
 
 ## SCORING RUBRIC
 
-### 1. Clarity (25 points)
-- **No Filler Phrases (8 pts)**: Clean, direct language without "It's worth noting...", "In today's landscape..."
-- **No Jargon (7 pts)**: Avoids buzzwords like "synergy", "leverage", "cutting-edge" unless defined
-- **Plain Language (5 pts)**: Uses words prospects actually use, not internal terminology
-- **Conversational Tone (5 pts)**: Sounds like human speech, not marketing copy
+### 1. Clarity (25 points) - SALES PARAGRAPHS, NOT BULLETS
+- **No Filler Phrases (6 pts)**: Clean, direct language without "It's worth noting...", "In today's landscape..."
+- **No Jargon (6 pts)**: Avoids buzzwords like "synergy", "leverage", "cutting-edge" unless defined
+- **Appropriate Length (5 pts)**: 50-150 words for sales messaging (NOT 15-25 word resume bullets)
+- **Active Voice (4 pts)**: Uses active voice, avoids "was/were + verb"
+- **Flowing Paragraphs (4 pts)**: Uses paragraphs, NOT bullet points
 
 ### 2. Impact (25 points)
 - **Customer Outcome Focus (10 pts)**: States what customers achieve, not product features
@@ -29,21 +30,27 @@ Score this Power Statement using the following rubric (0-100 points total):
 - **Proof Points (5 pts)**: Includes credible evidence (case studies, specific results)
 
 ### 3. Action (25 points)
-- **Problem Clarity (10 pts)**: Names the problem in terms prospects recognize
-- **Solution Specificity (10 pts)**: Clearly explains what you provide and how
-- **Differentiation (5 pts)**: Explains why this is different/better than alternatives
+- **Strong Verbs (15 pts)**: Uses strong action verbs (Delivered, Achieved, Increased)
+- **No Weak Verbs (5 pts)**: Avoids "helped", "assisted", "was responsible for" (-10 penalty)
+- **Multiple Strong Verbs (5 pts)**: Uses 2+ strong action verbs throughout
 
 ### 4. Specificity (25 points)
 - **Quantified Metrics (10 pts)**: At least 2 specific metrics (%, $, time, quantity)
-- **Customer Type Clarity (8 pts)**: Specific about who you serve (not "businesses")
-- **Objection Handling (7 pts)**: Addresses common concerns preemptively
+- **Context (8 pts)**: Clear about company, team, or scope
+- **Timeframes (7 pts)**: Includes when (Q1 2026, within 3 months, by March 2026)
+
+### BONUS: Version A/B Format (+5 points)
+- **Both Versions Present (+5 pts)**: Includes Version A (concise paragraph) AND Version B (structured sections)
+- **Partial (+2 pts)**: Only one version present
 
 ## CALIBRATION GUIDANCE
 - Be HARSH. Most power statements score 30-50. Only exceptional ones score 80+.
 - A score of 70+ means ready for prospect conversations.
 - Deduct heavily for vague claims like "helps improve" or "better results".
 - Deduct for feature-focused language instead of outcome-focused.
-- Reward specific, quantified proof points.
+- Deduct for bullet points - sales messaging uses flowing paragraphs.
+- Deduct for weak verbs: "helped", "assisted", "was responsible for" (-10 pts).
+- Reward specific, quantified proof points with timeframes.
 - The best power statements are specific, credible, and conversational.
 
 ## POWER STATEMENT TO EVALUATE

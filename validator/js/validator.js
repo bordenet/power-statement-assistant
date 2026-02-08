@@ -184,8 +184,12 @@ export function detectSpecificity(text) {
   const percentageMatches = text.match(/\d+(\.\d+)?%/g) || [];
   const dollarMatches = text.match(/\$[\d,]+(\.\d+)?[KMB]?|\d+(\.\d+)?\s*(million|billion|thousand)/gi) || [];
 
-  // Time-based metrics
+  // Time-based metrics (duration)
   const timeMatches = text.match(/\d+\s*(hour|day|week|month|year|minute|second)s?/gi) || [];
+
+  // SALES DOMAIN: Timeframe patterns (when, by when)
+  // Matches: "Q1 2026", "Q2-Q3 2025", "by March 2026", "within 3 months", "next quarter"
+  const timeframeMatches = text.match(/\b(Q[1-4]\s*[-–]?\s*(Q[1-4]\s*)?\d{4}|\d+\s*(months?|quarters?|weeks?)\b|next\s+(quarter|month|year)|by\s+\w+\s+\d{4}|within\s+\d+\s+\w+)/gi) || [];
 
   // Quantity metrics
   const quantityMatches = text.match(/\d+\s*(user|customer|client|team|member|employee|project|product|feature|system|application)s?/gi) || [];
@@ -198,6 +202,10 @@ export function detectSpecificity(text) {
   const hasContext = /\b(at|for|with|across|within)\s+[A-Z][a-zA-Z]*/i.test(text);
   const hasTeamContext = /\b(team|department|organization|company|division|corp|inc|llc)\b/gi.test(text);
 
+  // Combined time detection (duration OR timeframe)
+  const hasTimeMetrics = timeMatches.length > 0 || timeframeMatches.length > 0;
+  const timeCount = timeMatches.length + timeframeMatches.length;
+
   return {
     hasNumbers: numberMatches.length > 0,
     numberCount: numberMatches.length,
@@ -205,8 +213,10 @@ export function detectSpecificity(text) {
     percentageCount: percentageMatches.length,
     hasDollarAmounts: dollarMatches.length > 0,
     dollarCount: dollarMatches.length,
-    hasTimeMetrics: timeMatches.length > 0,
-    timeCount: timeMatches.length,
+    hasTimeMetrics,
+    timeCount,
+    hasTimeframes: timeframeMatches.length > 0,
+    timeframeCount: timeframeMatches.length,
     hasQuantityMetrics: quantityMatches.length > 0,
     quantityCount: quantityMatches.length,
     hasComparisons: comparisonMatches.length > 0,
@@ -218,6 +228,7 @@ export function detectSpecificity(text) {
       percentageMatches.length > 0 && `${percentageMatches.length} percentages`,
       dollarMatches.length > 0 && 'Dollar amounts present',
       timeMatches.length > 0 && 'Time-based metrics',
+      timeframeMatches.length > 0 && 'Specific timeframes (Q1, by date, etc.)',
       comparisonMatches.length > 0 && 'Quantified comparisons',
       hasContext && 'Contextual details present',
       hasTeamContext && 'Team/org context provided'
@@ -291,15 +302,20 @@ export function detectClarity(text) {
     jargonFound.push(...matches);
   }
 
-  // Check sentence length (power statements should be concise)
+  // SALES DOMAIN: Power statements are 3-5 sentence paragraphs (50-150 words)
+  // NOT resume bullets (15-25 words)
   const wordCount = text.split(/\s+/).filter(w => w.length > 0).length;
-  const isConcise = wordCount <= 25;
-  const isTooShort = wordCount < 8;
-  const isTooLong = wordCount > 35;
+  const isConcise = wordCount >= 50 && wordCount <= 150; // Sales paragraph range
+  const isTooShort = wordCount < 30; // Too short for sales messaging
+  const isTooLong = wordCount > 200; // Verbose for sales messaging
 
   // Check for passive voice indicators
   const passiveMatches = text.match(/\b(was|were|been|being)\s+\w+ed\b/gi) || [];
   const hasPassiveVoice = passiveMatches.length > 0;
+
+  // SALES DOMAIN: Detect bullet points (should be paragraphs, not bullets)
+  const bulletMatches = text.match(/^\s*[-*+]\s+/gm) || [];
+  const hasBulletPoints = bulletMatches.length > 2;
 
   return {
     hasFillers: fillerCount > 0,
@@ -314,16 +330,20 @@ export function detectClarity(text) {
     isTooLong,
     hasPassiveVoice,
     passiveCount: passiveMatches.length,
+    hasBulletPoints,
+    bulletCount: bulletMatches.length,
     indicators: [
       fillerCount === 0 && 'No filler words',
       jargonCount === 0 && 'No jargon/buzzwords',
-      isConcise && 'Concise length',
+      isConcise && 'Good length for sales messaging',
       !hasPassiveVoice && 'Active voice',
+      !hasBulletPoints && 'Uses flowing paragraphs',
       fillerCount > 0 && `${fillerCount} filler words detected`,
       jargonCount > 0 && `${jargonCount} jargon terms detected`,
-      isTooLong && 'Statement too long',
-      isTooShort && 'Statement too short',
-      hasPassiveVoice && 'Passive voice detected'
+      isTooLong && 'Statement too verbose',
+      isTooShort && 'Statement too brief for sales messaging',
+      hasPassiveVoice && 'Passive voice detected',
+      hasBulletPoints && 'Uses bullet points instead of paragraphs'
     ].filter(Boolean)
   };
 }
@@ -334,6 +354,7 @@ export function detectClarity(text) {
 
 /**
  * Score clarity (25 pts max)
+ * SALES DOMAIN: Scores flowing paragraphs, not resume bullets
  * @param {string} text - Power statement content
  * @returns {Object} Score result with issues and strengths
  */
@@ -345,44 +366,54 @@ export function scoreClarity(text) {
 
   const clarityDetection = detectClarity(text);
 
-  // No filler words (0-8 pts)
+  // No filler words (0-6 pts)
   if (!clarityDetection.hasFillers) {
-    score += 8;
+    score += 6;
     strengths.push('No filler words - clean, direct language');
   } else {
-    score += Math.max(0, 8 - clarityDetection.fillerCount * 2);
+    score += Math.max(0, 6 - clarityDetection.fillerCount * 2);
     issues.push(`Remove filler words: ${clarityDetection.fillersFound.slice(0, 3).join(', ')}`);
   }
 
-  // No jargon/buzzwords (0-7 pts)
+  // No jargon/buzzwords (0-6 pts)
   if (!clarityDetection.hasJargon) {
-    score += 7;
+    score += 6;
     strengths.push('No jargon or buzzwords');
   } else {
-    score += Math.max(0, 7 - clarityDetection.jargonCount * 2);
+    score += Math.max(0, 6 - clarityDetection.jargonCount * 2);
     issues.push(`Remove jargon: ${clarityDetection.jargonFound.slice(0, 3).join(', ')}`);
   }
 
-  // Concise length (0-5 pts)
-  if (clarityDetection.isConcise && !clarityDetection.isTooShort) {
+  // SALES DOMAIN: Appropriate length for sales messaging (0-5 pts)
+  // 50-150 words is ideal for a 3-5 sentence power statement
+  if (clarityDetection.isConcise) {
     score += 5;
-    strengths.push(`Concise (${clarityDetection.wordCount} words)`);
+    strengths.push(`Good length for sales messaging (${clarityDetection.wordCount} words)`);
   } else if (clarityDetection.isTooLong) {
-    issues.push(`Too long (${clarityDetection.wordCount} words) - aim for 15-25 words`);
+    score += 2;
+    issues.push(`Too verbose (${clarityDetection.wordCount} words) - aim for 50-150 words`);
   } else if (clarityDetection.isTooShort) {
     score += 2;
-    issues.push(`Too short (${clarityDetection.wordCount} words) - add more detail`);
+    issues.push(`Too brief (${clarityDetection.wordCount} words) - expand to 50-150 words`);
   } else {
     score += 3;
   }
 
-  // Active voice (0-5 pts)
+  // Active voice (0-4 pts)
   if (!clarityDetection.hasPassiveVoice) {
-    score += 5;
+    score += 4;
     strengths.push('Uses active voice');
   } else {
-    score += 2;
+    score += 1;
     issues.push('Rewrite in active voice - avoid "was/were + verb"');
+  }
+
+  // SALES DOMAIN: Uses flowing paragraphs, not bullet points (0-4 pts)
+  if (!clarityDetection.hasBulletPoints) {
+    score += 4;
+    strengths.push('Uses flowing paragraphs (not bullet points)');
+  } else {
+    issues.push('Use flowing paragraphs instead of bullet points for sales messaging');
   }
 
   return {
@@ -561,6 +592,48 @@ export function scoreSpecificity(text) {
 }
 
 // ============================================================================
+// Version A/B Detection (Sales Domain)
+// ============================================================================
+
+/**
+ * Detect if power statement has both Version A and Version B
+ * Phase1.md requires:
+ * - Version A: Concise (3-5 sentence paragraph)
+ * - Version B: Structured (Challenge/Solution/Results/Why sections)
+ * @param {string} text - Power statement content
+ * @returns {Object} Version detection results
+ */
+export function detectVersions(text) {
+  // Check for Version A header
+  const hasVersionA = /##?\s*Version\s*A[:\s]/i.test(text);
+
+  // Check for Version B header
+  const hasVersionB = /##?\s*Version\s*B[:\s]/i.test(text);
+
+  // Check for structured sections (Version B content)
+  const hasChallenge = /###?\s*(The\s+)?Challenge/i.test(text);
+  const hasSolution = /###?\s*(The\s+)?Solution/i.test(text);
+  const hasResults = /###?\s*(Proven\s+)?Results/i.test(text);
+  const hasWhyItWorks = /###?\s*Why\s+It\s+Works/i.test(text);
+
+  const structuredSectionCount = [hasChallenge, hasSolution, hasResults, hasWhyItWorks].filter(Boolean).length;
+  const hasStructuredContent = structuredSectionCount >= 3;
+
+  return {
+    hasVersionA,
+    hasVersionB,
+    hasBothVersions: hasVersionA && hasVersionB,
+    hasStructuredContent,
+    structuredSectionCount,
+    indicators: [
+      hasVersionA && 'Version A (concise) present',
+      hasVersionB && 'Version B (structured) present',
+      hasStructuredContent && `${structuredSectionCount}/4 structured sections`
+    ].filter(Boolean)
+  };
+}
+
+// ============================================================================
 // Main Validation Function
 // ============================================================================
 
@@ -585,6 +658,22 @@ export function validatePowerStatement(text) {
   const action = scoreAction(text);
   const specificity = scoreSpecificity(text);
 
+  // SALES DOMAIN: Detect Version A/B format
+  const versionDetection = detectVersions(text);
+  let versionBonus = 0;
+  const versionStrengths = [];
+  const versionIssues = [];
+
+  if (versionDetection.hasBothVersions) {
+    versionBonus = 5; // Bonus for having both versions
+    versionStrengths.push('Both Version A and Version B present (+5 bonus)');
+  } else if (versionDetection.hasVersionA || versionDetection.hasVersionB) {
+    versionBonus = 2;
+    versionIssues.push('Include both Version A (concise) and Version B (structured)');
+  } else {
+    versionIssues.push('Format as Version A (paragraph) and Version B (structured sections)');
+  }
+
   // AI slop detection - power statements must be crisp and specific
   const slopPenalty = getSlopPenalty(text);
   let slopDeduction = 0;
@@ -598,9 +687,9 @@ export function validatePowerStatement(text) {
     }
   }
 
-  const totalScore = Math.max(0,
-    clarity.score + impact.score + action.score + specificity.score - slopDeduction
-  );
+  const totalScore = Math.max(0, Math.min(100,
+    clarity.score + impact.score + action.score + specificity.score + versionBonus - slopDeduction
+  ));
 
   return {
     totalScore,
@@ -613,6 +702,12 @@ export function validatePowerStatement(text) {
     dimension2: impact,
     dimension3: action,
     dimension4: specificity,
+    versionDetection: {
+      ...versionDetection,
+      bonus: versionBonus,
+      strengths: versionStrengths,
+      issues: versionIssues
+    },
     slopDetection: {
       ...slopPenalty,
       deduction: slopDeduction,

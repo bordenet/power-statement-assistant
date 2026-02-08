@@ -291,15 +291,22 @@ describe('detectClarity', () => {
     expect(result.jargonCount).toBeGreaterThan(0);
   });
 
-  test('identifies concise statements', () => {
-    const result = detectClarity('Led team of 12 to deliver platform in 6 months.');
+  test('identifies concise statements (sales domain: 50-150 words)', () => {
+    // SALES DOMAIN: Power statements are 3-5 sentence paragraphs (50-150 words)
+    // NOT resume bullets (15-25 words)
+    const salesParagraph = `We help automotive dealerships increase their call conversion rates by 30% within the first quarter. Our AI-powered routing system analyzes incoming calls in real-time and connects prospects with the right specialist based on their specific needs. Dealerships using our platform have seen an average increase of $2.3M in annual revenue. The system integrates seamlessly with existing CRM platforms and requires no additional training for your team. We've helped over 200 dealerships across the country transform their sales process.`;
+    const result = detectClarity(salesParagraph);
     expect(result.isConcise).toBe(true);
+    expect(result.wordCount).toBeGreaterThanOrEqual(50);
+    expect(result.wordCount).toBeLessThanOrEqual(150);
   });
 
-  test('identifies too-long statements', () => {
-    const longStatement = 'I was basically responsible for working on and helping with many different types of projects and initiatives across multiple teams and departments within the organization over an extended period of time resulting in various improvements to processes and systems.';
-    const result = detectClarity(longStatement);
+  test('identifies too-long statements (sales domain: >200 words)', () => {
+    // SALES DOMAIN: Too long is >200 words (verbose for sales messaging)
+    const verboseStatement = `We help automotive dealerships increase their call conversion rates by implementing our comprehensive AI-powered routing system that analyzes incoming calls in real-time and connects prospects with the right specialist based on their specific needs and requirements. Our platform has been developed over many years of research and development, incorporating the latest advances in machine learning and natural language processing technology. Dealerships using our platform have seen an average increase of $2.3M in annual revenue, with some achieving even higher results depending on their market conditions and implementation approach. The system integrates seamlessly with existing CRM platforms including Salesforce, HubSpot, and many others, and requires no additional training for your team members. We've helped over 200 dealerships across the country transform their sales process and achieve remarkable results. Our customer success team provides ongoing support and optimization recommendations to ensure you get the maximum value from your investment. We also offer quarterly business reviews and performance analytics dashboards. Additionally, our platform includes advanced reporting features that allow you to track key performance indicators in real-time, including call volume, conversion rates, average handle time, and customer satisfaction scores. Our dedicated implementation team will work closely with your staff to ensure a smooth transition and provide comprehensive training materials.`;
+    const result = detectClarity(verboseStatement);
     expect(result.isTooLong).toBe(true);
+    expect(result.wordCount).toBeGreaterThan(200);
   });
 
   test('detects passive voice', () => {
