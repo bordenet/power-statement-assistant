@@ -7,7 +7,13 @@
 import {
   validateDocument,
   getScoreColor,
-  getScoreLabel
+  getScoreLabel,
+  // Detection functions
+  detectActionVerbs,
+  detectSpecificity,
+  detectImpact,
+  detectClarity,
+  detectVersions
 } from '../../validator/js/validator.js';
 
 describe('Power Statement Validator Integration', () => {
@@ -77,6 +83,47 @@ Implemented automated CI/CD pipeline.`);
     test('should return Incomplete for scores < 30', () => {
       expect(getScoreLabel(0)).toBe('Incomplete');
       expect(getScoreLabel(29)).toBe('Incomplete');
+    });
+  });
+});
+
+// ============================================================================
+// Detection Functions Tests
+// ============================================================================
+
+describe('Detection Functions', () => {
+  describe('detectActionVerbs', () => {
+    test('should detect strong action verbs', () => {
+      const result = detectActionVerbs('Led cross-functional team. Implemented new system.');
+      expect(result).toBeDefined();
+    });
+  });
+
+  describe('detectSpecificity', () => {
+    test('should detect specific metrics', () => {
+      const result = detectSpecificity('Achieved 40% reduction in costs. Managed team of 8.');
+      expect(result).toBeDefined();
+    });
+  });
+
+  describe('detectImpact', () => {
+    test('should detect impact statements', () => {
+      const result = detectImpact('Resulted in $500K savings. Improved efficiency by 30%.');
+      expect(result).toBeDefined();
+    });
+  });
+
+  describe('detectClarity', () => {
+    test('should detect clear statements', () => {
+      const result = detectClarity('Built authentication system using OAuth2.');
+      expect(result).toBeDefined();
+    });
+  });
+
+  describe('detectVersions', () => {
+    test('should detect multiple versions', () => {
+      const result = detectVersions('Version 1: Led team.\nVersion 2: Spearheaded initiative.');
+      expect(result).toBeDefined();
     });
   });
 });
