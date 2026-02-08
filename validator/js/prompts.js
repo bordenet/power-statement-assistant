@@ -102,7 +102,7 @@ export function generateCritiquePrompt(powerStatementContent, currentResult) {
     ...(currentResult.specificity?.issues || [])
   ].slice(0, 5).map(i => `- ${i}`).join('\n');
 
-  return `You are an expert sales messaging strategist providing detailed feedback on a Power Statement.
+  return `You are an expert sales messaging strategist helping improve a Power Statement.
 
 ## CURRENT VALIDATION RESULTS
 Total Score: ${currentResult.totalScore}/100
@@ -122,15 +122,39 @@ ${powerStatementContent}
 
 ## YOUR TASK
 
-Provide:
-1. **Quick Assessment** (2-3 sentences on overall quality)
-2. **Detailed Critique** by dimension:
-   - What works well
-   - What needs improvement
-   - Specific suggestions with examples
-3. **Rewritten Power Statement** - The improved version
+Help the author improve this Power Statement by asking clarifying questions.
 
-Be specific. Show exact rewrites. Focus on clarity, credibility, and customer outcomes.`;
+## REQUIRED OUTPUT FORMAT
+
+**Score Summary:** ${currentResult.totalScore}/100
+
+**Top 3 Issues:**
+1. [Most critical gap - be specific]
+2. [Second most critical gap]
+3. [Third most critical gap]
+
+**Questions to Improve Your Power Statement:**
+1. **[Question about missing/weak area]**
+   _Why this matters:_ [How answering this improves the score]
+
+2. **[Question about another gap]**
+   _Why this matters:_ [Score impact]
+
+3. **[Question about specificity/credibility]**
+   _Why this matters:_ [Score impact]
+
+(Provide 3-5 questions total, focused on the weakest dimensions)
+
+**Quick Wins (fix these now):**
+- [Specific fix that doesn't require user input]
+- [Another immediate improvement]
+
+<output_rules>
+- Start directly with "**Score Summary:**" (no preamble)
+- Do NOT include a rewritten Power Statement
+- Only provide questions and quick wins
+- Focus questions on: specificity, credibility, customer outcomes
+</output_rules>`;
 }
 
 /**
