@@ -15,7 +15,7 @@
 
 import { getProject, updatePhase, updateProject, deleteProject } from './projects.js';
 import { getPhaseMetadata, generatePromptForPhase, getFinalMarkdown, getExportFilename, Workflow, detectPromptPaste } from './workflow.js';
-import { escapeHtml, showToast, copyToClipboard, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal, confirm, confirmWithRemember, createActionMenu } from './ui.js';
+import { escapeHtml, showToast, copyToClipboardAsync, showPromptModal, showDocumentPreviewModal, confirm, confirmWithRemember, createActionMenu } from './ui.js';
 import { navigateTo } from './router.js';
 import { preloadPromptTemplates } from './prompts.js';
 import { validateDocument, getScoreColor, getScoreLabel } from '../../validator/js/validator.js';

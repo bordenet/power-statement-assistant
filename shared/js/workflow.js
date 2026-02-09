@@ -151,7 +151,6 @@ export function exportFinalDocument(project) {
  */
 export async function downloadFinalDocument(project) {
   const content = exportFinalDocument(project);
-  const attribution = '\n\n---\n\n*Generated with [Power Statement Assistant](https://bordenet.github.io/power-statement-assistant/)*';
 
   if (!content) {
     showToast('No power statement content to export', 'warning');
