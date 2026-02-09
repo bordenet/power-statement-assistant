@@ -151,6 +151,58 @@ describe('Smoke Test - App Initialization', () => {
     });
   });
 
+  /**
+   * API Contract Tests - Verify validateDocument returns structure project-view.js expects
+   *
+   * This catches the bug where validator returns different property names than project-view.js expects.
+   * Result: "Cannot read properties of undefined (reading 'issues')" at runtime
+   */
+  describe('API Contract - validateDocument returns structure project-view.js expects', () => {
+    let result;
+
+    beforeAll(async () => {
+      const validator = await import('../../validator/js/validator.js');
+      result = validator.validateDocument('# Power Statement\n\nLed team to deliver project.');
+    });
+
+    test('returns totalScore property (number)', () => {
+      expect(result.totalScore).toBeDefined();
+      expect(typeof result.totalScore).toBe('number');
+    });
+
+    test('returns action category breakdown with issues array', () => {
+      expect(result.action).toBeDefined();
+      expect(result.action).toHaveProperty('score');
+      expect(result.action).toHaveProperty('maxScore');
+      expect(result.action).toHaveProperty('issues');
+      expect(Array.isArray(result.action.issues)).toBe(true);
+    });
+
+    test('returns clarity category breakdown with issues array', () => {
+      expect(result.clarity).toBeDefined();
+      expect(result.clarity).toHaveProperty('score');
+      expect(result.clarity).toHaveProperty('maxScore');
+      expect(result.clarity).toHaveProperty('issues');
+      expect(Array.isArray(result.clarity.issues)).toBe(true);
+    });
+
+    test('returns impact category breakdown with issues array', () => {
+      expect(result.impact).toBeDefined();
+      expect(result.impact).toHaveProperty('score');
+      expect(result.impact).toHaveProperty('maxScore');
+      expect(result.impact).toHaveProperty('issues');
+      expect(Array.isArray(result.impact.issues)).toBe(true);
+    });
+
+    test('returns specificity category breakdown with issues array', () => {
+      expect(result.specificity).toBeDefined();
+      expect(result.specificity).toHaveProperty('score');
+      expect(result.specificity).toHaveProperty('maxScore');
+      expect(result.specificity).toHaveProperty('issues');
+      expect(Array.isArray(result.specificity.issues)).toBe(true);
+    });
+  });
+
   describe('Export Consistency - diff-view.js exports match project-view.js imports', () => {
     test('diff-view.js exports computeWordDiff', async () => {
       const diffView = await import('../../shared/js/diff-view.js');
