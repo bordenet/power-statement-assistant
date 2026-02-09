@@ -47,9 +47,14 @@ let defaultPrompts = {};
  * @module workflow
  */
 export async function loadDefaultPrompts() {
+  // Determine base path - works from both /assistant/ and root
+  const basePath = window.location.pathname.includes('/assistant')
+    ? '../shared/prompts'
+    : 'shared/prompts';
+
   try {
     for (let phase = 1; phase <= 3; phase++) {
-      const response = await fetch(`prompts/phase${phase}.md`);
+      const response = await fetch(`${basePath}/phase${phase}.md`);
       const content = await response.text();
       defaultPrompts[phase] = content;
 
