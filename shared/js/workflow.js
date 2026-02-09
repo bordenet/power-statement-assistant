@@ -52,20 +52,22 @@ export async function loadDefaultPrompts() {
     ? '../shared/prompts'
     : 'shared/prompts';
 
-  try {
-    for (let phase = 1; phase <= 3; phase++) {
-      const response = await fetch(`${basePath}/phase${phase}.md`);
-      const content = await response.text();
-      defaultPrompts[phase] = content;
+  for (const phase of WORKFLOW_CONFIG.phases) {
+    try {
+      const response = await fetch(`${basePath}/phase${phase.number}.md`);
+      if (response.ok) {
+        const content = await response.text();
+        defaultPrompts[phase.number] = content;
 
-      // Save to IndexedDB if not already saved
-      const existing = await storage.getPrompt(phase);
-      if (!existing) {
-        await storage.savePrompt(phase, content);
+        // Save to IndexedDB if not already saved
+        const existing = await storage.getPrompt(phase.number);
+        if (!existing) {
+          await storage.savePrompt(phase.number, content);
+        }
       }
+    } catch (error) {
+      console.warn(`Failed to load prompt for phase ${phase.number}:`, error);
     }
-  } catch (error) {
-    console.error('Failed to load default prompts:', error);
   }
 }
 
