@@ -1,12 +1,14 @@
 # Power Statement Assistant
 
-> ⚠️ **Deprecation Notice**: This repository is deprecated in favor of [DocForge AI](https://github.com/bordenet/docforge-ai), which consolidates all genesis-derived assistants into a single project. This repo will be archived on **March 1, 2026**.
+> 🗄️ **ARCHIVED**: This repository has been archived. All pages now **redirect to [DocForge AI](https://bordenet.github.io/docforge-ai/)**, which consolidates all genesis-derived assistants into a single unified platform.
+>
+> **New location**: https://bordenet.github.io/docforge-ai/
 
 Write power statements with AI. Three phases: draft, review, refine.
 
 [![Star this repo](https://img.shields.io/github/stars/bordenet/power-statement-assistant?style=social)](https://github.com/bordenet/power-statement-assistant)
 
-**Try it**: [Assistant](https://bordenet.github.io/power-statement-assistant/) · [Validator](https://bordenet.github.io/power-statement-assistant/validator/)
+**⚠️ Redirects to DocForge AI**: [Assistant](https://bordenet.github.io/power-statement-assistant/) · [Validator](https://bordenet.github.io/power-statement-assistant/validator/)
 
 > **What is a Power Statement?** A power statement is a concise accomplishment description following the formula: *Action + Context + Result*. Used in resumes and interviews, it quantifies impact with specific metrics. Example: "Reduced API latency by 40% by implementing Redis caching, saving $50K/month in compute costs."
 
